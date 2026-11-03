@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mockup: LINE OCR PO Bot - 3 Cases | NV. Portfolio</title>
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --secondary-color: #38bdf8;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Language Toggle Visibility */
+        body.lang-th .lang-en { display: none !important; }
+        body.lang-en .lang-th { display: none !important; }
+
+        /* Top Navbar */
+        .navbar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 14px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+        .logo { font-size: 1.4rem; font-weight: bold; color: white; text-decoration: none; letter-spacing: 1px; }
+        .logo span { color: var(--secondary-color); }
+        .nav-right { display: flex; align-items: center; gap: 18px; }
+        .lang-switcher {
+            display: inline-flex;
+            background: #1e293b;
+            border-radius: 6px;
+            padding: 3px;
+            border: 1px solid #334155;
+        }
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            font-family: inherit;
+            font-size: 12.5px;
+            font-weight: 700;
+            padding: 4px 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover { color: #ffffff; }
+        .lang-btn.active { background: var(--secondary-color); color: var(--primary-color); }
+        .back-btn { color: var(--secondary-color); text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+        .back-btn:hover { text-decoration: underline; }
+
+        .mockup-container {
+            display: flex;
+            gap: 40px;
+            padding: 60px 40px 50px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* สไตล์มือถือ LINE */
+        .mobile-screen { width: 310px; height: 620px; background-color: #749eb5; border-radius: 30px; border: 10px solid #333; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 20px rgba(0,0,0,0.2); position: relative; }
+        .line-header { background-color: #273246; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 15px; }
+        .case-label { position: absolute; top: -35px; left: 0; width: 100%; text-align: center; font-weight: bold; color: #1e293b; font-size: 15.5px; }
+        
+        .chat-area { padding: 15px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; height: 100%; }
+        .bubble-right { align-self: flex-end; background-color: #06c755; color: white; padding: 10px 15px; border-radius: 15px 15px 0 15px; font-size: 13px; }
+        .bubble-left { align-self: flex-start; background-color: white; color: #333; padding: 10px 15px; border-radius: 15px 15px 15px 0; font-size: 13px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); line-height: 1.5; }
+        .user-action { align-self: center; background: rgba(0,0,0,0.25); color: #fff; font-size: 11.5px; padding: 4px 12px; border-radius: 12px; }
+        
+        /* LINE Flex Message */
+        .flex-message { background-color: white; border-radius: 10px; overflow: hidden; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.1); align-self: flex-start; }
+        .flex-header { color: white; padding: 10px; font-weight: bold; font-size: 14px; text-align: center; }
+        .header-green { background-color: #4CAF50; }
+        .header-yellow { background-color: #f39c12; }
+        .header-red { background-color: #e74c3c; }
+        
+        .flex-body { padding: 15px; font-size: 12px; color: #555; line-height: 1.6; }
+        .flex-body strong { color: #222; }
+        .flex-footer { display: flex; flex-direction: column; border-top: 1px solid #eee; }
+        
+        .btn { background-color: white; border: none; padding: 10px; font-weight: bold; cursor: pointer; font-size: 12.5px; border-bottom: 1px solid #eee; }
+        .btn-confirm { color: #06c755; }
+        .btn-warn { color: #f39c12; }
+        .btn-edit { color: #d9534f; }
+        .btn-disabled { color: #999; cursor: not-allowed; }
+    </style>
+</head>
+<body class="lang-en">
+
+    <div class="navbar">
+        <a href="index.html" class="logo">NV<span>.</span></a>
+        <div class="nav-right">
+            <div class="lang-switcher" role="group" aria-label="Language Switcher">
+                <button type="button" id="btn-th" class="lang-btn" onclick="setLanguage('th')">TH</button>
+                <button type="button" id="btn-en" class="lang-btn active" onclick="setLanguage('en')">EN</button>
+            </div>
+            <a href="project2_detail.html" class="back-btn">
+                <span class="lang-en">← Back to Project</span>
+                <span class="lang-th">← กลับหน้าโปรเจกต์</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="mockup-container">
+        <!-- Case 1: Normal (New Ref) -->
+        <div style="position: relative;">
+            <div class="case-label">
+                <span class="lang-en">Case 1: New Document</span>
+                <span class="lang-th">กรณีที่ 1: เอกสารใหม่ (New Document)</span>
+            </div>
+            <div class="mobile-screen">
+                <div class="line-header">🤖 LogiPO-Bot</div>
+                <div class="chat-area">
+                    <div class="bubble-right">📄 SCM_202605001.pdf</div>
+                    <div class="bubble-left">
+                        <span class="lang-en">📝 Data extracted successfully (New Document).<br>Please review and confirm.</span>
+                        <span class="lang-th">📝 ระบบอ่านข้อมูลสำเร็จ (เอกสารใหม่)<br>กรุณาตรวจสอบความถูกต้องครับ</span>
+                    </div>
+                    <div class="flex-message">
+                        <div class="flex-header header-green">PO Data Extraction</div>
+                        <div class="flex-body">
+                            <strong>Supplier:</strong> ABC Co.,Ltd.<br>
+                            <strong>Date:</strong> 25/05/2026<br>
+                            <strong>Product Name:</strong> Product Test<br>
+                            <strong>Quantity:</strong> 1,000<br>
+                            <strong>Amount:</strong> 50,000.00 THB<br>
+                            <strong>Ref Doc:</strong> SCM_202605001
+                        </div>
+                        <div class="flex-footer">
+                            <button class="btn btn-confirm">
+                                <span class="lang-en">✅ Confirm &amp; Request Approval</span>
+                                <span class="lang-th">✅ ยืนยันส่งขออนุมัติ</span>
+                            </button>
+                            <button class="btn btn-edit">
+                                <span class="lang-en">✏️ Edit Data</span>
+                                <span class="lang-th">✏️ แก้ไขข้อมูล</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="user-action">
+                        <span class="lang-en">User clicked: ✅ Confirm &amp; Request Approval</span>
+                        <span class="lang-th">User clicked: ✅ ยืนยันส่งขออนุมัติ</span>
+                    </div>
+                    <div class="bubble-left">
+                        <span class="lang-en">✅ <b>Confirmed!</b><br>Data recorded and approval email sent to executive.</span>
+                        <span class="lang-th">✅ <b>รับทราบครับ!</b><br>ระบบได้บันทึกข้อมูลและส่งอีเมลขออนุมัติเรียบร้อยแล้ว</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 2: Duplicate (Revision/Pending) -->
+        <div style="position: relative;">
+            <div class="case-label">
+                <span class="lang-en">Case 2: Revision (Pending / Rejected)</span>
+                <span class="lang-th">กรณีที่ 2: เอกสารแก้ไข (สถานะรออนุมัติ/ตีกลับ)</span>
+            </div>
+            <div class="mobile-screen">
+                <div class="line-header">🤖 LogiPO-Bot</div>
+                <div class="chat-area">
+                    <div class="bubble-right">📄 SCM_202605001_Rev2.pdf</div>
+                    <div class="bubble-left">
+                        <span class="lang-en">⚠️ <b>Ref: SCM_202605001 is currently Pending / Rejected.</b><br>Would you like to overwrite the existing record?</span>
+                        <span class="lang-th">⚠️ <b>เอกสาร SCM_202605001 สถานะ รออนุมัติ/ตีกลับ</b><br>ต้องการบันทึกทับข้อมูลเดิมหรือไม่ครับ?</span>
+                    </div>
+                    <div class="flex-message">
+                        <div class="flex-header header-yellow">Update Pending PO</div>
+                        <div class="flex-body">
+                            <strong>Supplier:</strong> ABC Co.,Ltd.<br>
+                            <strong>Date:</strong> 25/05/2026<br>
+                            <strong>Product Name:</strong> Product Test<br>
+                            <strong>Quantity:</strong> 1,000<br>
+                            <strong>Amount:</strong> 50,000.00 THB<br>
+                            <strong>Ref Doc:</strong> SCM_202605001
+                        </div>
+                        <div class="flex-footer">
+                            <button class="btn btn-warn">
+                                <span class="lang-en">🔄 Overwrite Existing Record</span>
+                                <span class="lang-th">🔄 ยืนยันบันทึกทับข้อมูลเดิม</span>
+                            </button>
+                            <button class="btn btn-edit">
+                                <span class="lang-en">✏️ Edit Data</span>
+                                <span class="lang-th">✏️ แก้ไขข้อมูล</span>
+                            </button>
+                            <button class="btn btn-edit">
+                                <span class="lang-en">❌ Cancel</span>
+                                <span class="lang-th">❌ ยกเลิก</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="user-action">
+                        <span class="lang-en">User clicked: 🔄 Overwrite Existing Record</span>
+                        <span class="lang-th">User clicked: 🔄 ยืนยันบันทึกทับข้อมูลเดิม</span>
+                    </div>
+                    <div class="bubble-left">
+                        <span class="lang-en">✅ <b>Updated!</b><br>Record overwritten and updated approval email sent.</span>
+                        <span class="lang-th">✅ <b>รับทราบครับ!</b><br>ระบบได้บันทึกทับข้อมูลและส่งอีเมลใหม่เรียบร้อยแล้ว</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 3: Locked (Already Approved) -->
+        <div style="position: relative;">
+            <div class="case-label">
+                <span class="lang-en">Case 3: Locked (Already Approved)</span>
+                <span class="lang-th">กรณีที่ 3: ล็อกการแก้ไข (อนุมัติเข้าระบบแล้ว)</span>
+            </div>
+            <div class="mobile-screen">
+                <div class="line-header">🤖 LogiPO-Bot</div>
+                <div class="chat-area">
+                    <div class="bubble-right">📄 SCM_202605001_Fix.pdf</div>
+                    <div class="bubble-left">
+                        <span class="lang-en">❌ <b>Modification Blocked!</b><br>Ref: SCM_202605001 has already been approved and synced to ERP.</span>
+                        <span class="lang-th">❌ <b>ไม่อนุญาตให้แก้ไข!</b><br>เอกสาร Ref: SCM_202605001 ได้รับการอนุมัติและเข้าระบบ ERP ไปแล้ว</span>
+                    </div>
+                    <div class="flex-message">
+                        <div class="flex-header header-red">Document Locked</div>
+                        <div class="flex-body">
+                            <strong>Supplier:</strong> ABC Co.,Ltd.<br>
+                            <strong>Date:</strong> 25/05/2026<br>
+                            <strong>Product Name:</strong> Product Test<br>
+                            <strong>Quantity:</strong> 1,000<br>
+                            <strong>Amount:</strong> 50,000.00 THB<br>
+                            <strong>Ref Doc:</strong> SCM_202605001
+                        </div>
+                        <div class="flex-footer">
+                            <button class="btn btn-disabled">
+                                <span class="lang-en">🔒 Action Disabled (Synced to ERP)</span>
+                                <span class="lang-th">🔒 ไม่สามารถทำรายการได้</span>
+                            </button>
+                            <button class="btn btn-edit">
+                                <span class="lang-en">📞 Contact System Admin</span>
+                                <span class="lang-th">📞 ติดต่อผู้ดูแลระบบ</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setLanguage(lang) {
+            document.body.classList.remove('lang-th', 'lang-en');
+            document.body.classList.add('lang-' + lang);
+            document.getElementById('btn-th').classList.toggle('active', lang === 'th');
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            document.documentElement.lang = lang;
+            try { localStorage.setItem('nv_portfolio_lang', lang); } catch(e) {}
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const savedLang = localStorage.getItem('nv_portfolio_lang') || 'en';
+                setLanguage(savedLang);
+            } catch(e) {
+                setLanguage('en');
+            }
+        });
+    </script>
+</body>
+</html>

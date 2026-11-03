@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epicor ERP Analytics & Dashboard Development | Nathan V.</title>
+    <style>
+        /* ตั้งค่าพื้นฐาน - โทนเดียวกับ Portfolio หลัก */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Language Toggle Visibility */
+        body.lang-th .lang-en { display: none !important; }
+        body.lang-en .lang-th { display: none !important; }
+
+        /* Navbar */
+        .navbar {
+            background-color: #0f172a;
+            color: white;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+
+        .navbar-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+        .navbar-logo span { color: #38bdf8; }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .lang-switcher {
+            display: inline-flex;
+            background: #1e293b;
+            border-radius: 6px;
+            padding: 3px;
+            border: 1px solid #334155;
+        }
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            font-family: inherit;
+            font-size: 12.5px;
+            font-weight: 700;
+            padding: 4px 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover { color: #ffffff; }
+        .lang-btn.active { background: #38bdf8; color: #0f172a; }
+
+        .navbar-back {
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .navbar-back:hover { text-decoration: underline; }
+
+        /* Container หลัก */
+        .project-detail-container {
+            max-width: 1040px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* ส่วนหัวข้อโปรเจกต์ */
+        .project-header-section {
+            margin-bottom: 30px;
+        }
+
+        .project-title {
+            color: #0f172a;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            display: inline-block;
+            border-bottom: 3px solid #38bdf8;
+            padding-bottom: 5px;
+        }
+
+        .project-subtitle {
+            color: #4b5563;
+            font-size: 18px;
+            margin-top: 12px;
+            margin-bottom: 15px;
+        }
+
+        /* Badge สำหรับสาย Technical */
+        .tech-badge-container {
+            margin: 10px 0 20px 0;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background-color: #e2e8f0;
+            color: #334155;
+            padding: 5px 13px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        /* กรอบพื้นหลังสีขาวสำหรับเนื้อหา */
+        .content-card-main {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 45px 50px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            margin-bottom: 40px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .section-title {
+            color: #0f172a;
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 45px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        /* กล่อง Executive Summary / Context */
+        .summary-box {
+            background-color: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 25px 30px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 30px;
+        }
+
+        .summary-box h3 {
+            color: #1e40af;
+            margin-top: 0;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .summary-box p {
+            margin: 0 0 12px 0;
+            color: #334155;
+        }
+        
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* List สไตล์สำหรับเน้น Technical Detail */
+        .tech-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 25px 0;
+        }
+
+        .tech-list li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 18px;
+            color: #475569;
+        }
+
+        .tech-list li::before {
+            content: "•";
+            color: #3b82f6;
+            font-weight: bold;
+            font-size: 20px;
+            position: absolute;
+            left: 0;
+            top: -2px;
+        }
+
+        .tech-list strong {
+            color: #0f172a;
+        }
+
+        /* ==========================================
+           INTERACTIVE SPEC SHOWCASE
+           ========================================== */
+        .interactive-showcase {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            border: 1px solid #cbd5e1;
+        }
+
+        .showcase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .showcase-title {
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .showcase-badge {
+            background: #dbeafe;
+            color: #1e40af;
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        /* ปุ่มเลือก Spec ทั้ง 7 ตัว */
+        .spec-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .spec-tab-btn {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #334155;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .spec-tab-btn:hover {
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+
+        .spec-tab-btn.active {
+            background: #0f172a;
+            color: #38bdf8;
+            border-color: #0f172a;
+        }
+
+        /* กล่องแสดงรายละเอียด Spec */
+        .spec-document-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+
+        .spec-meta-label { color: #94a3b8; font-size: 11px; text-transform: uppercase; display: block; }
+        .spec-meta-val { color: #f8fafc; font-weight: 600; font-size: 14px; }
+        .spec-meta-val.accent { color: #38bdf8; }
+
+        .spec-doc-body { padding: 20px; }
+
+        .spec-purpose-box {
+            background: #eff6ff;
+            border-left: 3px solid #3b82f6;
+            padding: 10px 15px;
+            font-size: 13.5px;
+            color: #1e3a8a;
+            margin-bottom: 18px;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .spec-table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .spec-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .spec-table th {
+            background: #f1f5f9;
+            color: #334155;
+            padding: 10px 12px;
+            border-bottom: 2px solid #cbd5e1;
+            font-weight: 700;
+        }
+
+        .spec-table td {
+            padding: 9px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #475569;
+            vertical-align: top;
+        }
+
+        .spec-table tr:hover td { background-color: #f8fafc; }
+        .code-pill {
+            font-family: Consolas, Monaco, monospace;
+            background: #f1f5f9;
+            color: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ==========================================
+           EPICOR ERP CLASSIC UI MOCKUP (จำลองหน้าจอจริง)
+           ========================================== */
+        .erp-mockup-section {
+            margin: 22px 0;
+        }
+        .erp-mockup-label {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .erp-privacy-tag {
+            font-size: 11px;
+            font-weight: 600;
+            color: #047857;
+            background: #d1fae5;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .erp-window {
+            border: 2px solid #64748b;
+            border-radius: 5px;
+            background: #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            overflow: hidden;
+            font-family: Tahoma, 'Segoe UI', sans-serif;
+            font-size: 12px;
+            color: #1e293b;
+        }
+
+        /* Title bar สไตล์ Epicor Windows */
+        .erp-titlebar {
+            background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            padding: 5px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .erp-titlebar-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .erp-app-icon {
+            background: #38bdf8;
+            color: #0f172a;
+            font-weight: 900;
+            font-size: 10px;
+            width: 16px;
+            height: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2px;
+        }
+        .erp-win-btns {
+            display: flex;
+            gap: 4px;
+        }
+        .erp-win-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            width: 18px;
+            height: 16px;
+            font-size: 10px;
+            line-height: 14px;
+            text-align: center;
+            border-radius: 2px;
+            cursor: default;
+        }
+        .erp-win-btn.close { background: #ef4444; border-color: #dc2626; }
+
+        /* Menu & Toolbar */
+        .erp-menubar {
+            background: #f1f5f9;
+            border-bottom: 1px solid #cbd5e1;
+            padding: 3px 10px;
+            font-size: 11.5px;
+            color: #334155;
+            display: flex;
+            gap: 14px;
+        }
+        .erp-menubar span { cursor: default; }
+        .erp-menubar span u { text-decoration: underline; }
+
+        .erp-toolbar {
+            background: #e2e8f0;
+            border-bottom: 1px solid #94a3b8;
+            padding: 4px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+        }
+        .erp-tool-btn {
+            background: #f8fafc;
+            border: 1px solid #94a3b8;
+            padding: 2px 7px;
+            border-radius: 2px;
+            font-size: 11px;
+            color: #1e293b;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .erp-tool-sep {
+            width: 1px;
+            height: 16px;
+            background: #94a3b8;
+            margin: 0 2px;
+        }
+
+        /* Criteria Panel (จำลองช่องกรอกพารามิเตอร์) */
+        .erp-criteria-pane {
+            background: #f8fafc;
+            border-bottom: 2px solid #94a3b8;
+            padding: 10px 12px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+        .erp-param-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #1e40af;
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+            padding: 3px 8px;
+            border-radius: 3px;
+        }
+        .erp-field-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11.5px;
+        }
+        .erp-field-label {
+            color: #334155;
+            font-weight: 600;
+        }
+        .erp-input-mock {
+            background: #ffffff;
+            border: 1px solid #64748b;
+            padding: 2px 8px;
+            font-family: Consolas, monospace;
+            font-size: 11.5px;
+            color: #0f172a;
+            min-width: 70px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+        }
+        .erp-input-mock.date-picker {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            background: #fffbeb;
+            border-color: #d97706;
+            font-weight: bold;
+        }
+
+        /* DataGrid (UltraGrid style) */
+        .erp-grid-Banner {
+            background: #cbd5e1;
+            color: #1e293b;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-bottom: 1px solid #94a3b8;
+        }
+        .erp-grid-scroll {
+            overflow-x: auto;
+            background: #ffffff;
+        }
+        .erp-grid-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: Tahoma, sans-serif;
+            font-size: 11.5px;
+            white-space: nowrap;
+        }
+        .erp-grid-table th {
+            background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%);
+            color: #0f172a;
+            border: 1px solid #94a3b8;
+            padding: 5px 8px;
+            font-weight: bold;
+            text-align: left;
+        }
+        .erp-grid-table th.num, .erp-grid-table td.num {
+            text-align: right;
+            font-family: Consolas, Monaco, monospace;
+        }
+        .erp-grid-table td {
+            border: 1px solid #cbd5e1;
+            padding: 4px 8px;
+            color: #1e293b;
+        }
+        .erp-grid-table tr:nth-child(even) td {
+            background-color: #f8fafc;
+        }
+        .erp-grid-table tr.selected-row td {
+            background-color: #dbeafe;
+        }
+        /* ไฮไลท์คอลัมน์ที่เป็น Calculated Logic พิเศษ */
+        .erp-grid-table td.calc-col {
+            background-color: #fef9c3 !important;
+            font-weight: 600;
+            color: #854d0e;
+        }
+        .erp-grid-table td.neg-val {
+            color: #dc2626;
+            font-weight: 600;
+        }
+        .erp-grid-table td.pos-val {
+            color: #15803d;
+            font-weight: 600;
+        }
+
+        .erp-statusbar {
+            background: #e2e8f0;
+            border-top: 1px solid #94a3b8;
+            padding: 3px 10px;
+            font-size: 11px;
+            color: #475569;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* กล่อง SQL / BAQ Logic */
+        .baq-code-box {
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 6px;
+            padding: 15px 18px;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 12.5px;
+            line-height: 1.55;
+            overflow-x: auto;
+        }
+        .baq-code-header {
+            color: #38bdf8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+            font-weight: bold;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 5px;
+        }
+
+        /* ==========================================
+           INTERACTIVE POWER BI MOCKUP (EXECUTIVE FINANCIAL FOCUS)
+           ========================================== */
+        .pbi-frame {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 24px;
+            color: white;
+            margin-top: 15px;
+            border: 1px solid #1e293b;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2);
+        }
+
+        .pbi-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .pbi-title-group h4 {
+            margin: 0;
+            font-size: 17px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pbi-dot { width: 10px; height: 10px; background: #f59e0b; border-radius: 50%; display: inline-block; }
+        .pbi-subtitle { font-size: 12px; color: #94a3b8; margin-top: 3px; }
+
+        .pbi-slicers {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .pbi-slicer-btn {
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            padding: 6px 13px;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pbi-slicer-btn.active, .pbi-slicer-btn:hover {
+            background: #38bdf8;
+            color: #0f172a;
+            border-color: #38bdf8;
+            font-weight: 700;
+        }
+
+        .pbi-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .pbi-kpi-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-left: 4px solid #38bdf8;
+            border-radius: 6px;
+            padding: 15px 16px;
+        }
+        .pbi-kpi-card.green { border-left-color: #22c55e; }
+        .pbi-kpi-card.amber { border-left-color: #f59e0b; }
+        .pbi-kpi-card.teal { border-left-color: #14b8a6; }
+
+        .pbi-kpi-label { font-size: 11.5px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.4px; }
+        .pbi-kpi-val { font-size: 22px; font-weight: bold; color: #ffffff; margin: 5px 0; }
+        .pbi-kpi-sub { font-size: 11.5px; color: #cbd5e1; display: flex; align-items: center; gap: 5px; }
+        .trend-up { color: #4ade80; font-weight: 600; }
+
+        .pbi-visual-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .pbi-panel {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 16px 18px;
+        }
+        .pbi-panel-title {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .pbi-panel-tag {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: normal;
+        }
+
+        .bar-row { margin-bottom: 11px; font-size: 12px; }
+        .bar-label-line { display: flex; justify-content: space-between; margin-bottom: 4px; color: #cbd5e1; }
+        .bar-track { background: #0f172a; height: 9px; border-radius: 5px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 5px; transition: width 0.4s ease; }
+
+        .image-caption {
+            font-size: 13.5px;
+            color: #64748b;
+            margin-top: 15px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* กล่อง Impact */
+        .impact-box {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-left: 5px solid #22c55e;
+            padding: 25px 30px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        .impact-box h3 {
+            color: #166534;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .impact-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #15803d;
+        }
+
+        .impact-box li {
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .content-card-main { padding: 25px 20px; }
+            .project-title { font-size: 26px; }
+        }
+    </style>
+</head>
+<body class="lang-en">
+
+<!-- Navbar -->
+<div class="navbar">
+    <a href="index.html" class="navbar-logo">NV<span>.</span></a>
+    <div class="nav-right">
+        <div class="lang-switcher" role="group" aria-label="Language Switcher">
+            <button type="button" id="btn-th" class="lang-btn" onclick="setLanguage('th')">TH</button>
+            <button type="button" id="btn-en" class="lang-btn active" onclick="setLanguage('en')">EN</button>
+        </div>
+        <a href="index.html" class="navbar-back">
+            <span class="lang-en">← Back to Portfolio</span>
+            <span class="lang-th">← กลับหน้าหลัก</span>
+        </a>
+    </div>
+</div>
+
+<div class="project-detail-container">
+    
+    <!-- Header Section -->
+    <div class="project-header-section">
+        <h1 class="project-title">Epicor ERP Analytics & Dashboard Development (~30 Modules)</h1>
+        <p class="project-subtitle">
+            <span class="lang-en">End-to-End System Specification, BAQ Customization & Executive Financial BI Architecture</span>
+            <span class="lang-th">การออกแบบ System Specification, การเขียน BAQ สร้างแดชบอร์ดในระบบ ERP ~30 โมดูล และการเชื่อม API สู่ Power BI สำหรับผู้บริหาร</span>
+        </p>
+        
+        <div class="tech-badge-container">
+            <span class="tech-badge">Epicor ERP (~30 Dashboards)</span>
+            <span class="tech-badge">BAQ (Business Activity Query)</span>
+            <span class="tech-badge">System Specification (ICRID)</span>
+            <span class="tech-badge">REST API (JSON)</span>
+            <span class="tech-badge">Power BI & DAX</span>
+            <span class="tech-badge">Financial Analytics (GP / Cash Flow / Cost)</span>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="content-card-main">
+        
+        <!-- Context & Solution -->
+        <h2 class="section-title">Context & Objective</h2>
+        
+        <div class="summary-box">
+            <div class="lang-en">
+                <h3>The Challenge: Extracting Logic from a Complex ERP</h3>
+                <p>A classic challenge with enterprise ERPs like Epicor is their deeply fragmented relational database structure coupled with rigid standard reports. Operational teams lacked reliable real-time verification tools, while executives lacked timely visibility into Gross Profit (GP), cost structures, and operating cash flow health.</p>
+                
+                <h3 style="margin-top: 22px;">The Solution: ~30 Native ERP Dashboards & Executive Financial BI</h3>
+                <p>Overcame ERP limitations through an end-to-end dual-layer architecture: <strong>1) Operational Empowerment:</strong> Gathered cross-departmental requirements, authored formal System Specifications, and built nearly <strong>30 native Epicor dashboards</strong> for daily operational auditing. <strong>2) Executive Financial BI Pipeline:</strong> Engineered complex Business Activity Queries (BAQ) exposed via REST API (JSON) to feed interactive <strong>Power BI Executive Dashboards</strong> tracking GP, Cost Structure, and Cash Flow.</p>
+            </div>
+
+            <div class="lang-th">
+                <h3>The Challenge: ข้อจำกัดของฐานข้อมูล ERP และรายงานมาตรฐาน</h3>
+                <p>ปัญหาคลาสสิกของการใช้ระบบ ERP ขนาดใหญ่ (อย่าง Epicor) คือโครงสร้างฐานข้อมูลที่กระจายอยู่หลายตาราง (Relational Tables) และรายงานมาตรฐานที่ไม่ตอบโจทย์ธุรกิจจริง ส่งผลให้ทีมปฏิบัติการขาดเครื่องมือตรวจสอบข้อมูลแบบ Real-time และผู้บริหารไม่สามารถมองเห็นภาพรวมทางการเงิน (เช่น กำไรขั้นต้น GP, โครงสร้างต้นทุน และกระแสเงินสดรับ-จ่าย) ได้อย่างทันท่วงที</p>
+                
+                <h3 style="margin-top: 22px;">The Solution: แดชบอร์ดในระบบ ERP ~30 ชิ้นงาน & Executive Financial BI</h3>
+                <p>ทลายข้อจำกัดของระบบ ERP แบบครบวงจร (End-to-End) โดยแบ่งเป็น 2 แกนหลัก: <strong>1) Operational Empowerment:</strong> เก็บ Requirement จากผู้ใช้งานจริง ออกแบบ System Specification และสร้าง Dashboard ภายในระบบ Epicor รวมเกือบ <strong>30 ชิ้นงาน</strong> ให้พนักงานใช้ตรวจสอบข้อมูลหน้างานได้ทันที <strong>2) Executive Financial BI Pipeline:</strong> พัฒนา Query (BAQ) เชื่อมโยงข้อมูลรายได้ ต้นทุน และกระแสเงินสด แปลงออกเป็น JSON ผ่าน REST API ดึงเข้าสู่ <strong>Power BI</strong> เพื่อสร้าง Executive Financial Dashboard สำหรับผู้บริหาร</p>
+            </div>
+        </div>
+
+        <!-- Section 1: Operational Dashboards (Specs) -->
+        <h2 class="section-title">1. Operational Reports & System Mapping (~30 Dashboards)</h2>
+        <p class="lang-en" style="color: #475569; margin-bottom: 20px;">Established an operational Single Source of Truth within the ERP by designing and deploying nearly 30 custom inquiry dashboards across 4 core functional pillars:</p>
+        <p class="lang-th" style="color: #475569; margin-bottom: 20px;">สร้าง "Single Source of Truth" ภายในระบบ ERP โดยออกแบบ System Mapping Specification และพัฒนา Dashboard เกือบ 30 โมดูล ครอบคลุม 4 สายงานหลัก:</p>
+        
+        <ul class="tech-list">
+            <li>
+                <div class="lang-en">
+                    <strong>Last-Mile COD Reconciliation & Dynamic Parameter Aging (ICRID008 & ICRID003):</strong> Engineered Last-Mile COD tracking linking Sales Orders (<code>OrderHed</code>), custom delivery statuses (<code>ShipHead.DoStatus_c = 'Delivered'</code>), AR Invoices (<code>InvcHead</code>), and Cash Receipts (<code>CashDtl</code>). Paired with a dynamic 7-tier Micro-Aging dashboard (<code>ICRID003</code>) that calculates overdue days between the invoice date (<code>InvcHead.InvoiceDate</code>) and the user-input <strong>Criteria Date Parameter</strong> (0, 1–3, 4–7, 8–15, 16–30, 31–90, and >90 days).
+                </div>
+                <div class="lang-th">
+                    <strong>Last-Mile COD Reconciliation & Dynamic Parameter Aging (ICRID008 & ICRID003):</strong> พัฒนาแดชบอร์ดติดตามเงินเก็บปลายทาง (COD) เชื่อมตารางใบสั่งขาย (<code>OrderHed</code>) สถานะขนส่ง (<code>ShipHead.DoStatus_c = 'Delivered'</code>) ใบแจ้งหนี้ (<code>InvcHead</code>) และการรับชำระเงิน (<code>CashDtl</code>) พร้อมสร้างแดชบอร์ดวิเคราะห์อายุหนี้ 7 ช่วง (<code>ICRID003</code>) ที่รับค่า <strong>วันที่จาก Criteria Parameter ที่ผู้ใช้กรอก</strong> มาคำนวณหาจำนวนวันคงค้างเทียบกับวันที่ในเอกสาร (<code>InvcHead.InvoiceDate</code>) แบบ Dynamic (0, 1-3, 4-7, 8-15, 16-30, 31-90 และ >90 วัน)
+                </div>
+            </li>
+            <li>
+                <div class="lang-en">
+                    <strong>AR Invoice Verification & Accounting Export (ICRID001):</strong> Built automated AR Invoice verification with dynamic conditional logic for Net Price, Advance Bill Credits, VAT separation, and automated account mapping (<code>TRCloudAcc</code>) tailored for external accounting firms utilizing TRCloud ERP.
+                </div>
+                <div class="lang-th">
+                    <strong>AR Invoice Verification & Accounting Export (ICRID001):</strong> ออกแบบลอจิกตรวจสอบความถูกต้องของใบแจ้งหนี้ คำนวณยอดขายสุทธิ, ยอดรับเงินล่วงหน้า, แยกภาษีมูลค่าเพิ่ม และทำ Mapping รหัสบัญชีอัตโนมัติ (<code>TRCloudAcc</code>) ให้ตรงตาม Format ที่สำนักงานบัญชีใช้สำหรับนำเข้าสู่ <strong>TRCloud ERP</strong>
+                </div>
+            </li>
+            <li>
+                <div class="lang-en">
+                    <strong>Procure-to-Pay & Cost Tracking (ICRID002):</strong> Integrated end-to-end procurement and cost workflows connecting Purchase Orders (<code>POHeader/PODetail</code>), unit costs (<code>UnitCost / ExtCost</code>), warehouse receipts (<code>RcvDtl</code>), advance payment balances (<code>AdvancePayBal</code>), and AP invoice posting (<code>APInvHed</code>).
+                </div>
+                <div class="lang-th">
+                    <strong>Procure-to-Pay & Cost Tracking (ICRID002):</strong> เชื่อมโยงข้อมูลฝั่งจัดซื้อและต้นทุนแบบ End-to-End ตั้งแต่การเปิดใบสั่งซื้อ (<code>POHeader/PODetail</code>) ต้นทุนต่อหน่วย, การรับสินค้าเข้าคลัง (<code>RcvDtl</code>), ยอดเงินจ่ายล่วงหน้าคงเหลือ ไปจนถึงการตั้งหนี้เจ้าหนี้ (<code>APInvHed</code>)
+                </div>
+            </li>
+            <li>
+                <div class="lang-en">
+                    <strong>Warehouse & Inventory Movement Control (ICRID004, ICRID005, ICRID007):</strong> Transformed raw <code>PartTran</code> logs into auditable Stockcards, Reason-coded Miscellaneous Issue cost trackers (<code>Issue Misc. & Reason Code</code>), and split In/Out Bin Transfer dashboards (<code>TranQty < 0 vs > 0</code>).
+                </div>
+                <div class="lang-th">
+                    <strong>Warehouse & Inventory Movement Control (ICRID004, ICRID005, ICRID007):</strong> แปลงข้อมูลตาราง <code>PartTran</code> ให้เป็นรายงานตรวจสอบการเบิกจ่ายพัสดุ/ต้นทุนเบ็ดเตล็ดตามสาเหตุ (<code>Issue Misc. & Reason Code</code>), รายงานการโอนย้ายคลังที่แยกขาออกและขาเข้าอย่างชัดเจน (<code>BIN Transfer</code>) และรายงานความเคลื่อนไหวสต็อกการ์ด
+                </div>
+            </li>
+        </ul>
+
+        <!-- INTERACTIVE SPECIFICATION EXPLORER (All 7 Specs + Simulated Epicor UI) -->
+        <div class="interactive-showcase">
+            <div class="showcase-header">
+                <div class="showcase-title">
+                    📋 Interactive System Specification & Simulated Epicor ERP UI (7 Flagship Modules)
+                </div>
+                <span class="showcase-badge">
+                    <span class="lang-en">Click any Spec ID to inspect Spec, ERP UI & BAQ Logic</span>
+                    <span class="lang-th">คลิกที่รหัส Spec เพื่อดูตาราง Spec, หน้าจอจำลอง ERP และคำสั่ง BAQ</span>
+                </span>
+            </div>
+
+            <!-- Spec Selector Buttons -->
+            <div class="spec-tabs" id="specTabs">
+                <button class="spec-tab-btn active" onclick="renderSpec('ICRID001', this)">1. ICRID001 (AR & TRCloud)</button>
+                <button class="spec-tab-btn" onclick="renderSpec('ICRID008', this)">2. ICRID008 (LastMile Cash)</button>
+                <button class="spec-tab-btn" onclick="renderSpec('ICRID003', this)">3. ICRID003 (AR Aging)</button>
+                <button class="spec-tab-btn" onclick="renderSpec('ICRID002', this)">4. ICRID002 (PO & Cost Detail)</button>
+                <button class="spec-tab-btn" onclick="renderSpec('ICRID004', this)">5. ICRID004 (Issue Misc. Cost)</button>
+                <button class="spec-tab-btn" onclick="renderSpec('ICRID005', this)">6. ICRID005 (BIN Transfer)</button>
+                <button class="spec-tab-btn" onclick="renderSpec('ICRID007', this)">7. ICRID007 (Stockcard)</button>
+            </div>
+
+            <!-- Dynamic Spec Card -->
+            <div class="spec-document-card" id="specCardContent">
+                <!-- Populated by JavaScript -->
+            </div>
+
+            <div class="image-caption">
+                <span class="lang-en">Interactive System Customization Specification paired with a high-definition recreation of the resulting Epicor ERP Dashboard UI and underlying BAQ logic.</span>
+                <span class="lang-th">เอกสาร System Specification คู่กับหน้าจอจำลองผลลัพธ์บน Epicor ERP (จำลองจาก Screenshot จริงโดยใช้ข้อมูล Sanitized เพื่อปกป้องความลับบริษัท) และคำสั่ง BAQ</span>
+            </div>
+        </div>
+
+        <!-- Section 2: Data Pipeline Architecture (Executive Focus: GP, Cash Flow, Cost) -->
+        <h2 class="section-title">2. API Pipeline Architecture & Executive Financial BI</h2>
+        <p class="lang-en" style="color: #475569; margin-bottom: 20px;">While operational teams rely on line-item ERP grids, executive leadership requires high-level financial visibility. Engineered an automated REST API pipeline into <strong>Power BI</strong> focused on <strong>Gross Profit (GP), Cost Structure, and Operating Cash Flow</strong>:</p>
+        <p class="lang-th" style="color: #475569; margin-bottom: 20px;">ในขณะที่ทีมปฏิบัติการใช้ Dashboard บน ERP เพื่อตรวจสอบรายการรายวัน ผู้บริหารระดับสูงต้องการมองเห็นตัวเลขทางการเงินในภาพรวม จึงได้ออกแบบ Data Pipeline ดึงข้อมูลจาก BAQ ผ่าน REST API เข้าสู่ <strong>Power BI</strong> เพื่อวิเคราะห์ <strong>กำไรขั้นต้น (GP), โครงสร้างต้นทุน (Cost) และกระแสเงินสด (Cash Flow)</strong>:</p>
+        
+        <ul class="tech-list">
+            <li>
+                <div class="lang-en">
+                    <strong>BAQ to REST API (JSON) Data Consolidation:</strong> Authored cross-modular Business Activity Queries (BAQ) consolidating net revenue (<code>InvcHead / InvcDtl</code>), procurement/inventory costs (<code>PODetail / PartTran</code>), and cash receipts/disbursements (<code>CashDtl / APInvHed</code>), exposing the unified dataset via REST API in <strong>JSON format</strong>.
+                </div>
+                <div class="lang-th">
+                    <strong>BAQ to REST API (JSON) Data Consolidation:</strong> เขียนคำสั่ง <strong>Business Activity Query (BAQ)</strong> เพื่อรวบรวมข้อมูลข้ามโมดูล ทั้งฝั่งรายได้สุทธิ (<code>InvcHead / InvcDtl</code>), ต้นทุนสินค้าและการเบิกจ่าย (<code>PODetail / PartTran</code>) และกระแสเงินสดรับ-จ่าย (<code>CashDtl / APInvHed</code>) จากนั้นเปิด Endpoint ออกมาในรูปแบบ <strong>JSON Format</strong>
+                </div>
+            </li>
+            <li>
+                <div class="lang-en">
+                    <strong>Executive Financial Modeling in Power BI (GP, Cost & Cash Flow):</strong> Independently developed the Power BI financial data model and DAX measures to track executive KPIs: <strong>Gross Profit (GP Margin %)</strong>, <strong>COGS & Logistics Cost structure</strong>, and <strong>Net Operating Cash Flow / Working Capital health</strong>.
+                </div>
+                <div class="lang-th">
+                    <strong>Executive Financial Modeling in Power BI (GP, Cost & Cash Flow):</strong> นำข้อมูล JSON เข้าสู่ <strong>Power BI</strong> สร้าง Data Model และเขียนสูตร DAX เพื่อคำนวณตัวชี้วัดทางการเงินที่สำคัญสำหรับผู้บริหาร เช่น <strong>Gross Profit (GP & GP Margin %)</strong>, สัดส่วนต้นทุนขายและค่าขนส่ง (<strong>COGS & Logistics Cost %</strong>), และกระแสเงินสดสุทธิจากการดำเนินงาน (<strong>Net Operating Cash Flow & Working Capital</strong>)
+                </div>
+            </li>
+        </ul>
+
+        <!-- INTERACTIVE POWER BI EXECUTIVE MOCKUP (GP, CASH FLOW, COST) -->
+        <div class="pbi-frame">
+            <div class="pbi-top-bar">
+                <div class="pbi-title-group">
+                    <h4><span class="pbi-dot"></span> Power BI Executive Dashboard: Financial Performance, GP & Cash Flow</h4>
+                    <div class="pbi-subtitle">Consolidated Financial View powered by Epicor BAQ JSON Pipelines (Revenue, COGS, OpEx & Cash Flow)</div>
+                </div>
+                <div class="pbi-slicers">
+                    <button class="pbi-slicer-btn active" onclick="updatePBI('YTD', this)">FY Consolidated (YTD)</button>
+                    <button class="pbi-slicer-btn" onclick="updatePBI('Q1', this)">Q1</button>
+                    <button class="pbi-slicer-btn" onclick="updatePBI('Q2', this)">Q2</button>
+                    <button class="pbi-slicer-btn" onclick="updatePBI('Q3', this)">Q3</button>
+                    <button class="pbi-slicer-btn" onclick="updatePBI('Q4', this)">Q4</button>
+                </div>
+            </div>
+
+            <!-- Executive Financial KPI Cards -->
+            <div class="pbi-kpi-grid">
+                <div class="pbi-kpi-card">
+                    <div class="pbi-kpi-label">Net Revenue (Ex. VAT)</div>
+                    <div class="pbi-kpi-val" id="kpiRev">฿142.80M</div>
+                    <div class="pbi-kpi-sub"><span class="trend-up" id="kpiRevSub">▲ +14.2% YoY</span> (Target: ฿138.0M)</div>
+                </div>
+                <div class="pbi-kpi-card green">
+                    <div class="pbi-kpi-label">Gross Profit (GP) & Margin</div>
+                    <div class="pbi-kpi-val" id="kpiGP">฿48.55M <span style="font-size:15px; color:#4ade80;">(34.0%)</span></div>
+                    <div class="pbi-kpi-sub"><span class="trend-up" id="kpiGPSub">▲ +1.8% GP Margin</span> vs Last Year</div>
+                </div>
+                <div class="pbi-kpi-card amber">
+                    <div class="pbi-kpi-label">Total COGS & Operating Cost</div>
+                    <div class="pbi-kpi-val" id="kpiCost">฿112.10M</div>
+                    <div class="pbi-kpi-sub" id="kpiCostSub">COGS 66.0% | Logistics & Misc 12.5%</div>
+                </div>
+                <div class="pbi-kpi-card teal">
+                    <div class="pbi-kpi-label">Net Operating Cash Flow</div>
+                    <div class="pbi-kpi-val" id="kpiCashFlow">+฿31.40M</div>
+                    <div class="pbi-kpi-sub" id="kpiCashSub"><span class="trend-up">92.4%</span> Cash Conversion Cycle</div>
+                </div>
+            </div>
+
+            <!-- Visual Panels: P&L Cost Structure vs Cash Flow & Working Capital -->
+            <div class="pbi-visual-grid">
+                <div class="pbi-panel">
+                    <div class="pbi-panel-title">
+                        <span>📊 P&L Profitability & Cost Structure (% of Revenue)</span>
+                        <span class="pbi-panel-tag">InvcDtl + PODetail + PartTran</span>
+                    </div>
+                    <div id="pbiProfitBars"></div>
+                </div>
+                <div class="pbi-panel">
+                    <div class="pbi-panel-title">
+                        <span>💰 Cash Flow & Working Capital Position</span>
+                        <span class="pbi-panel-tag">CashDtl + InvcHead + APInvHed</span>
+                    </div>
+                    <div id="pbiCashBars"></div>
+                </div>
+            </div>
+        </div>
+        <div class="image-caption">
+            <span class="lang-en">Interactive simulation of the Executive Power BI Financial Dashboard focusing on Gross Profit (GP), Cost Structure, and Operating Cash Flow. Click the period buttons above to filter financial metrics.</span>
+            <span class="lang-th">จำลองหน้าจอ Power BI Executive Dashboard สำหรับผู้บริหาร เน้นวิเคราะห์กำไรขั้นต้น (GP), โครงสร้างต้นทุน (Cost Structure) และกระแสเงินสด (Cash Flow) (คลิกปุ่มไตรมาสด้านบนเพื่อดูการเปลี่ยนแปลงของตัวเลข)</span>
+        </div>
+
+        <!-- Business Impact -->
+        <h2 class="section-title">Business Impact</h2>
+        
+        <div class="impact-box">
+            <h3>Value Delivered</h3>
+            <ul>
+                <li>
+                    <div class="lang-en">
+                        <strong>Executive Financial Clarity (GP, Cost & Cash Flow):</strong> Provided executive leadership with real-time visibility into Gross Profit (GP) margins, cost structures, and operating cash flow via Power BI without waiting for month-end closures.
+                    </div>
+                    <div class="lang-th">
+                        <strong>Executive Financial Clarity (GP, Cost & Cash Flow):</strong> ผู้บริหารสามารถติดตามอัตรากำไรขั้นต้น (GP Margin), ต้นทุนสินค้าและค่าขนส่ง (COGS & Logistics Cost) รวมถึงสภาพคล่องทางการเงิน (Operating Cash Flow & Working Capital) ได้แบบ Real-time บน Power BI โดยไม่ต้องรอปิดงบปลายเดือน
+                    </div>
+                </li>
+                <li>
+                    <div class="lang-en">
+                        <strong>Operational Empowerment (~30 Custom ERP Dashboards):</strong> Empowered operational staff across 4 departments (Accounting, Procurement, Warehouse, Logistics) with nearly 30 tailored native ERP dashboards, completely eliminating manual cross-table Excel VLOOKUPs.
+                    </div>
+                    <div class="lang-th">
+                        <strong>Operational Empowerment (~30 Custom ERP Dashboards):</strong> พนักงานระดับปฏิบัติการ (บัญชี, จัดซื้อ, คลังสินค้า, โลจิสติกส์) มีเครื่องมือตรวจสอบตัวเลขที่ถูกต้องแม่นยำเกือบ 30 รูปแบบอยู่ภายในระบบ Epicor ERP โดยตรง ยกเลิกการดึงข้อมูลมาผูกสูตร VLOOKUP ใน Excel นอกระบบ
+                    </div>
+                </li>
+                <li>
+                    <div class="lang-en">
+                        <strong>End-to-End Data Governance & Auditability:</strong> Standardized business logic from granular ERP transactions up to executive BI visuals, ensuring 100% reconciliation integrity and full line-item auditability.
+                    </div>
+                    <div class="lang-th">
+                        <strong>End-to-End Data Governance & Auditability:</strong> โครงสร้างข้อมูลตั้งแต่ระดับ Transaction ใน ERP จนถึงระดับ Executive BI ใช้ลอจิกเดียวกันทั้งหมด (Single Source of Truth) ทำให้ตัวเลขตรงกัน 100% โปร่งใส และตรวจสอบย้อนกลับได้ทุกบรรทัดรายการ
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let currentSpecKey = 'ICRID001';
+
+    // ข้อมูล System Specification ทั้ง 7 ฉบับ พร้อมข้อมูลจำลองหน้าจอ Epicor ERP UI
+    const specsData = {
+        ICRID001: {
+            code: "ICRID001",
+            name: "AR Invoice Dashboard & TRCloud ERP Integration",
+            module: "Account Receivable (AR)",
+            tables: "InvcHead, InvcDtl, InvcTax, Customer, ShipHead, ShipVia, Terms",
+            purpose_th: "ตรวจสอบความครบถ้วนถูกต้องของใบแจ้งหนี้ (AR Invoice) คำนวณยอดขายสุทธิ ภาษี และทำ Data Mapping ฟิลด์ TRCloudAcc ตาม Format ที่สำนักงานบัญชีใช้สำหรับนำเข้าสู่ระบบ TRCloud ERP",
+            purpose_en: "Verify AR Invoice completeness, calculate Net Revenue, VAT separation, and dynamically map accounting codes (TRCloudAcc) to match the required import format for external accounting firms utilizing TRCloud ERP.",
+            fields: [
+                { field: "Fiscal Year / Period", format: ">>>9 / >>9", source: "InvcHead.FiscalYear, InvcHead.FiscalPeriod", logic_th: "Filter ตามปีและงวดบัญชี (Criteria Parameter)", logic_en: "Filter by fiscal year and accounting period parameter" },
+                { field: "Legal Number & Invoice", format: "x(30) / >>>>>>>>9", source: "InvcHead.LegalNumber, InvcDtl.InvoiceNum", logic_th: "เชื่อมเลขที่เอกสารทางภาษีและเลขที่ใบแจ้งหนี้", logic_en: "Join official tax document number and internal invoice number" },
+                { field: "FfmCode_c", format: "x(200)", source: "ShipHead.FfmCode_c", logic_th: "รหัสอ้างอิง Fulfillment จากระบบจัดส่งสินค้า", logic_en: "Custom fulfillment reference code from shipping module" },
+                { field: "Ext. NetPrice", format: ">>>>9.99", source: "Calculated Field (Net Revenue)", logic_th: "InvcDtl.DocExtPrice - InvcDtl.DocDiscount", logic_en: "InvcDtl.DocExtPrice - InvcDtl.DocDiscount" },
+                { field: "Ext. Advance Bill Credit", format: ">>>>9.99", source: "Calculated Conditional Logic", logic_th: "IF InvcHead.DocInvoiceAmt = 0 THEN (InvcDtl.DocExtPrice - InvcDtl.DocDiscount) ELSE 0", logic_en: "IF InvcHead.DocInvoiceAmt = 0 THEN (InvcDtl.DocExtPrice - InvcDtl.DocDiscount) ELSE 0" },
+                { field: "Ext. Vat", format: ">>>>>9.99", source: "InvcTax.DocTaxAmt (Conditional)", logic_th: "IF InvcHead.DocInvoiceAmt = 0 THEN 0 ELSE InvcTax.DocTaxAmt", logic_en: "IF InvcHead.DocInvoiceAmt = 0 THEN 0 ELSE InvcTax.DocTaxAmt" },
+                { field: "Ext. Total", format: ">>>>9.99", source: "Calculated Field", logic_th: "(Ext. NetPrice) - (Ext. Advance Bill Credit) + (Ext. Vat)", logic_en: "(Ext. NetPrice) - (Ext. Advance Bill Credit) + (Ext. Vat)" },
+                { field: "TRCloudAcc", format: "x(100)", source: "Dynamic Account Mapping", logic_th: "IF TermsCode = 1 THEN ('Sales ' + ShipVia.Description) ELSE Terms.Description (Format สำหรับนำเข้า TRCloud ERP)", logic_en: "IF TermsCode = 1 THEN ('Sales ' + ShipVia.Description) ELSE Terms.Description (Mapped for TRCloud ERP import)" }
+            ],
+            mockup: {
+                winTitle: "AR Invoice Dashboard (ICRID001)",
+                criteria: [
+                    { label: "Fiscal Year:", val: "2022", type: "text" },
+                    { label: "Period:", val: "10", type: "text" },
+                    { label: "Date From:", val: "01/10/2022", type: "date" },
+                    { label: "To:", val: "31/10/2022", type: "date" },
+                    { label: "Inv Type:", val: "SHP", type: "text" }
+                ],
+                headers: ["FiscalYear", "Period", "LegalNumber", "Type", "Invoice", "InvDate", "Part", "OurOrderQty", "FfmCode_c", "Ext.NetPrice", "Ext.AdvCredit", "Ext.Vat", "Ext.Total", "ShipViaDesc", "TRCloudAcc"],
+                rows: [
+                    ["2022", "10", "INV221000421", "SHP", "118374", "10/10/2022", "FHC-006", {v:"3.00", c:"num"}, "MC221001301", {v:"831.78", c:"num"}, {v:"0.00", c:"num"}, {v:"58.22", c:"num"}, {v:"890.00", c:"num calc-col"}, "COD DHL", {v:"Sales - Cash On Delivery (COD DHL)", c:"calc-col"}],
+                    ["2022", "10", "INV221000423", "SHP", "118375", "10/10/2022", "FHC-010", {v:"1.00", c:"num"}, "MC221001306", {v:"925.23", c:"num"}, {v:"0.00", c:"num"}, {v:"64.77", c:"num"}, {v:"990.00", c:"num calc-col"}, "COD Kerry", {v:"Sales - Cash On Delivery (COD Kerry)", c:"calc-col"}],
+                    ["2022", "10", "INV221000447", "SHP", "118388", "11/10/2022", "FHC-018", {v:"1.00", c:"num"}, "MC221001402", {v:"925.23", c:"num"}, {v:"0.00", c:"num"}, {v:"64.77", c:"num"}, {v:"990.00", c:"num calc-col"}, "COD Flash", {v:"Sales - Cash On Delivery (COD Flash)", c:"calc-col"}],
+                    ["2022", "10", "INV221000467", "SHP", "118405", "12/10/2022", "PROMO-SET", {v:"1.00", c:"num"}, "MC221001455", {v:"508.25", c:"num"}, {v:"508.25", c:"num calc-col"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num calc-col"}, "Ground", {v:"Advance / Free Replacement", c:"calc-col"}]
+                ]
+            },
+            sql: `SELECT H.FiscalYear, H.FiscalPeriod, H.LegalNumber, D.InvoiceNum, D.PartNum, S.FfmCode_c,
+  (D.DocExtPrice - D.DocDiscount) AS Ext_NetPrice,
+  CASE WHEN H.DocInvoiceAmt = 0 THEN (D.DocExtPrice - D.DocDiscount) ELSE 0 END AS Ext_AdvanceBillCredit,
+  CASE WHEN H.DocInvoiceAmt = 0 THEN 0 ELSE T.DocTaxAmt END AS Ext_Vat,
+  CASE WHEN H.TermsCode = '1' THEN CONCAT('Sales - ', SV.Description) ELSE TM.Description END AS TRCloudAcc,
+  H.DocInvoiceBal AS Balance
+FROM Erp.InvcHead H
+INNER JOIN Erp.InvcDtl D ON H.Company = D.Company AND H.InvoiceNum = D.InvoiceNum
+LEFT JOIN Erp.InvcTax T ON D.Company = T.Company AND D.InvoiceNum = T.InvoiceNum AND D.InvoiceLine = T.InvoiceLine
+LEFT JOIN Erp.ShipHead S ON D.Company = S.Company AND D.PackNum = S.PackNum
+LEFT JOIN Erp.ShipVia SV ON H.Company = SV.Company AND H.ShipViaCode = SV.ShipViaCode
+LEFT JOIN Erp.Terms TM ON H.Company = TM.Company AND H.TermsCode = TM.TermsCode;`
+        },
+        ICRID008: {
+            code: "ICRID008",
+            name: "TMSI Collection by LastMile - Detail (LGT)",
+            module: "AR & Cash Collection",
+            tables: "OrderHed, OrderDtl, OrderRelTax, ShipHead, InvcHead, CashHead, CashDtl",
+            purpose_th: "ติดตามสถานะการจัดส่งสินค้าและกระแสเงินสดรับจากการเก็บเงินปลายทาง (COD) รายใบสั่งขาย เทียบยอดตั้งหนี้ ยอดจัดส่งสำเร็จ (Delivered) และยอดเงินสดที่โพสต์รับจริง",
+            purpose_en: "Track last-mile delivery status and COD cash collection per Sales Order, comparing billed amounts, delivered amounts (Delivered), and posted cash receipts.",
+            fields: [
+                { field: "Order / Ship Date", format: ">>>>>>>>9 / (date)", source: "OrderHed.OrderNum, ShipHead.ShipDate", logic_th: "กรองเฉพาะ SO ที่สถานะไม่ใช่ Unassigned และจัดส่งทาง Ground", logic_en: "Filter active Sales Orders (excluding Unassigned) shipped via Ground" },
+                { field: "Amount", format: ">>,>>9.99", source: "OrderRelTax", logic_th: "SUM(OrderRelTax.DocTaxableAmt + OrderRelTax.DocTaxAmt)", logic_en: "SUM(OrderRelTax.DocTaxableAmt + OrderRelTax.DocTaxAmt)" },
+                { field: "DrAmount", format: ">>,>>9.99", source: "InvcHead.InvoiceAmt (Conditional)", logic_th: "แสดงยอดเฉพาะกรณี ShipHead.DoStatus_c = 'Delivered' AND InvcHead.CreditMemo = false", logic_en: "Recognize billed amount only when ShipHead.DoStatus_c = 'Delivered' AND CreditMemo = false" },
+                { field: "DR ProdQTY", format: ">>>>9.99", source: "OrderDtl.SellingQuantity", logic_th: "นับจำนวนสินค้าเฉพาะรายการที่ ShipHead.DoStatus_c = 'Delivered'", logic_en: "Count item quantity strictly for orders with DoStatus_c = 'Delivered'" },
+                { field: "Collection", format: ">>>>9.99", source: "Calculated Cash Collection", logic_th: "InvcHead.InvoiceAmt - InvcHead.InvoiceBal", logic_en: "InvcHead.InvoiceAmt - InvcHead.InvoiceBal" },
+                { field: "Cash Posted / Amount", format: "yes/no / ->>>,>>9.99", source: "CashHead.Posted, CashDtl.TranAmt", logic_th: "ตรวจสอบสถานะการโพสต์รับเงินและกระแสเงินสดที่รับเข้าบัญชีจริง", logic_en: "Verify GL cash receipt posting status and actual settled transaction amount" },
+                { field: "DoStatus_c & Tracking", format: "x(200) / x(50)", source: "ShipHead.DoStatus_c, TrackingNumber", logic_th: "Custom fields เชื่อมสถานะขนส่ง (Delivered/In Transit) และเลขพัสดุ", logic_en: "Custom fields mapping 3PL carrier status (Delivered/In Transit) and tracking ID" }
+            ],
+            mockup: {
+                winTitle: "TMSI Collection by LastMile - Detail (ICRID008)",
+                criteria: [
+                    { label: "Specify Parameter — StartDate:", val: "01/10/2022", type: "date" },
+                    { label: "To:", val: "29/10/2022", type: "date" },
+                    { label: "ShipVia:", val: "Ground (COD)", type: "text" }
+                ],
+                headers: ["OrderDate", "Order", "ShipDate", "ShipViaDesc", "LegalNumber", "Invoice", "Amount", "DrAmount", "DR_ProdQTY", "InvBalc", "Collection", "DoStatus_c", "CashPosted", "CashGroup", "CashAmount", "TrackingNumber"],
+                rows: [
+                    ["10/10/2022", "22100412", "11/10/2022", "COD DHL", "INV221000421", "118374", {v:"890.00", c:"num"}, {v:"890.00", c:"num calc-col"}, {v:"3.00", c:"num"}, {v:"0.00", c:"num"}, {v:"890.00", c:"num pos-val"}, "Delivered", "Yes", "RV-1014", {v:"890.00", c:"num pos-val"}, "TH019283741D"],
+                    ["10/10/2022", "22100418", "11/10/2022", "COD Kerry", "INV221000423", "118375", {v:"990.00", c:"num"}, {v:"990.00", c:"num calc-col"}, {v:"1.00", c:"num"}, {v:"0.00", c:"num"}, {v:"990.00", c:"num pos-val"}, "Delivered", "Yes", "RV-1015", {v:"990.00", c:"num pos-val"}, "KEX2022109912"],
+                    ["12/10/2022", "22100455", "13/10/2022", "COD Flash", "INV221000447", "118388", {v:"990.00", c:"num"}, {v:"990.00", c:"num calc-col"}, {v:"1.00", c:"num"}, {v:"990.00", c:"num"}, {v:"0.00", c:"num"}, "Delivered", "No", "-", {v:"0.00", c:"num"}, "TH010482910A"],
+                    ["14/10/2022", "22100490", "15/10/2022", "COD DHL", "INV221000481", "118412", {v:"1,450.00", c:"num"}, {v:"0.00", c:"num calc-col"}, {v:"0.00", c:"num"}, {v:"1,450.00", c:"num"}, {v:"0.00", c:"num"}, "In Transit", "No", "-", {v:"0.00", c:"num"}, "TH019288120D"]
+                ]
+            },
+            sql: `SELECT OH.OrderDate, OH.OrderNum, SH.ShipDate, SV.Description AS ShipViaDesc,
+  IH.LegalNumber, IH.InvoiceNum,
+  (ORT.DocTaxableAmt + ORT.DocTaxAmt) AS OrderAmount,
+  CASE WHEN SH.DoStatus_c = 'Delivered' AND IH.CreditMemo = 0 THEN IH.InvoiceAmt ELSE 0 END AS DrAmount,
+  (IH.InvoiceAmt - IH.InvoiceBal) AS CollectionAmt,
+  SH.DoStatus_c, CH.Posted AS CashPosted, CD.TranAmt AS CashAmount, SH.TrackingNumber, SH.FfmCode_c
+FROM Erp.OrderHed OH
+INNER JOIN Erp.ShipHead SH ON OH.Company = SH.Company AND OH.OrderNum = SH.OrderNum
+LEFT JOIN Erp.InvcHead IH ON SH.Company = IH.Company AND SH.PackNum = IH.PackNum
+LEFT JOIN Erp.CashDtl CD ON IH.Company = CD.Company AND IH.InvoiceNum = CD.InvoiceNum
+WHERE OH.SoStatusName_c <> 'Unassigned';`
+        },
+        ICRID003: {
+            code: "ICRID003",
+            name: "TMSI AR Aging Dashboard (Dynamic Criteria Date Aging)",
+            module: "Account Receivable (AR)",
+            tables: "InvcHead, Customer, CashDetail",
+            purpose_th: "ตรวจสอบยอดคงเหลือลูกหนี้รายใบแจ้งหนี้ และคำนวณอายุหนี้ (Aging) แบบ Dynamic โดยเมื่อ User กรอกวันที่ในช่อง Criteria ระบบจะนำวันที่ที่กรอกไปหักลบกับวันที่ในเอกสาร (InvcHead.InvoiceDate) เพื่อคำนวณหาจำนวนวันคงค้างและจัดเข้า 7 ช่วงอายุหนี้ (0, 1-3, 4-7, 8-15, 16-30, 31-90, >90 วัน)",
+            purpose_en: "Audit open AR balances per invoice using dynamic parameter-driven aging: when a user inputs a target date in the Criteria field, the system calculates the exact day difference between the Criteria Date and the document date (InvcHead.InvoiceDate) across 7 aging buckets (0, 1–3, 4–7, 8–15, 16–30, 31–90, and >90 days).",
+            fields: [
+                { field: "Date (Criteria Parameter)", format: "(date)", source: "User Input Parameter (@CriteriaDate)", logic_th: "รับค่าวันที่จาก User เพื่อใช้เป็นวันตั้งต้น (Cut-off Date) ในการคำนวณหาจำนวนวันคงค้างเทียบกับวันที่ของเอกสาร (InvcHead.InvoiceDate)", logic_en: "User-defined parameter date used as the baseline to calculate elapsed days from InvcHead.InvoiceDate" },
+                { field: "Invoice & Customer", format: ">>>>>>>>9 / x(50)", source: "InvcHead.InvoiceNum, Customer.Name", logic_th: "แสดงรหัสใบแจ้งหนี้ รหัสลูกค้า และชื่อลูกค้า", logic_en: "Display invoice number, customer ID, and customer name" },
+                { field: "Apply / Inv / Due Date", format: "(date)", source: "InvcHead.ApplyDate, InvoiceDate, DueDate", logic_th: "แสดงวันที่เอกสาร (InvoiceDate) ซึ่งระบบจะดึงไปคำนวณหาผลต่างของวันกับวันที่ใน Criteria", logic_en: "Display document InvoiceDate used to compute exact day variance against the user's Criteria Date" },
+                { field: "Doc Invoice Balance", format: ">>>>>>>>>>>9.999", source: "Calculated Balance", logic_th: "InvcHead.DocInvoiceAmt - CashDetail.DocTranAmount", logic_en: "InvcHead.DocInvoiceAmt - CashDetail.DocTranAmount" },
+                { field: "0 Days / 1-3 Days", format: "->>,>>9.999", source: "Micro-Aging Bucket 1 & 2", logic_th: "แสดงยอด DocInvoiceBal เมื่อผลต่างของ (วันที่ Criteria - InvcHead.InvoiceDate) = 0 วัน หรืออยู่ระหว่าง 1–3 วัน", logic_en: "Populate DocInvoiceBal when (Criteria Date - InvcHead.InvoiceDate) = 0 days, or between 1–3 days" },
+                { field: "4-7 Days / 8-15 Days", format: "->>,>>9.999", source: "Micro-Aging Bucket 3 & 4", logic_th: "แสดงยอด DocInvoiceBal เมื่อผลต่างของ (วันที่ Criteria - InvcHead.InvoiceDate) อยู่ระหว่าง 4–7 วัน หรือ 8–15 วัน", logic_en: "Populate DocInvoiceBal when (Criteria Date - InvcHead.InvoiceDate) is between 4–7 days or 8–15 days" },
+                { field: "16-30 / 31-90 / >90 Days", format: "->>,>>9.999", source: "Standard Aging Buckets", logic_th: "แสดงยอด DocInvoiceBal เมื่อผลต่างของ (วันที่ Criteria - InvcHead.InvoiceDate) อยู่ระหว่าง 16–30 วัน, 31–90 วัน และ >90 วัน", logic_en: "Populate DocInvoiceBal when (Criteria Date - InvcHead.InvoiceDate) falls into 16–30, 31–90, or >90 days" }
+            ],
+            mockup: {
+                winTitle: "TMSI AR Aging Dashboard (ICRID003) — Dynamic Parameter Aging",
+                criteria: [
+                    { label: "Specify Parameter — Date (As-Of Criteria):", val: "20/10/2022", type: "date" },
+                    { label: "Logic:", val: "Elapsed Days = Criteria Date (20/10/2022) - InvcHead.InvoiceDate", type: "text" }
+                ],
+                headers: ["Company", "Invoice", "CustID", "CustomerName", "InvDate", "DueDate", "Curr", "DocInvoiceAmt", "DocInvoiceBal", "0 Days", "1-3 Days", "4-7 Days", "8-15 Days", "16-30 Days", "31-90 Days", ">90 Days"],
+                rows: [
+                    ["TMSI", "118450", "C-DHL01", "DHL eCommerce COD", "20/10/2022", "27/10/2022", "THB", {v:"2,800.00", c:"num"}, {v:"2,800.00", c:"num"}, {v:"2,800.00", c:"num calc-col"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}],
+                    ["TMSI", "118429", "C-FLS01", "Flash Express COD", "18/10/2022", "25/10/2022", "THB", {v:"3,500.00", c:"num"}, {v:"1,800.00", c:"num"}, {v:"0.00", c:"num"}, {v:"1,800.00", c:"num calc-col"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}],
+                    ["TMSI", "118395", "C-KEX01", "Kerry Express COD", "14/10/2022", "21/10/2022", "THB", {v:"2,100.00", c:"num"}, {v:"2,100.00", c:"num"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}, {v:"2,100.00", c:"num calc-col"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}],
+                    ["TMSI", "118310", "C-RET02", "Modern Retail Partner", "08/10/2022", "07/11/2022", "THB", {v:"8,300.00", c:"num"}, {v:"8,300.00", c:"num"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}, {v:"8,300.00", c:"num calc-col"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}, {v:"0.00", c:"num"}]
+                ]
+            },
+            sql: `SELECT H.Company, H.InvoiceNum, C.CustID, C.Name, H.ApplyDate, H.InvoiceDate, H.DueDate,
+  (H.DocInvoiceAmt - ISNULL(CD.DocTranAmount, 0)) AS DocInvoiceBal,
+  -- คำนวณจำนวนวันระหว่าง วันที่ในเอกสาร (H.InvoiceDate) กับ วันที่ที่ User กรอกใน Criteria (@CriteriaDate)
+  CASE WHEN DATEDIFF(DAY, H.InvoiceDate, @CriteriaDate) = 0 THEN H.DocInvoiceBal ELSE 0 END AS [Age_0_Days],
+  CASE WHEN DATEDIFF(DAY, H.InvoiceDate, @CriteriaDate) BETWEEN 1 AND 3 THEN H.DocInvoiceBal ELSE 0 END AS [Age_1_3_Days],
+  CASE WHEN DATEDIFF(DAY, H.InvoiceDate, @CriteriaDate) BETWEEN 4 AND 7 THEN H.DocInvoiceBal ELSE 0 END AS [Age_4_7_Days],
+  CASE WHEN DATEDIFF(DAY, H.InvoiceDate, @CriteriaDate) BETWEEN 8 AND 15 THEN H.DocInvoiceBal ELSE 0 END AS [Age_8_15_Days],
+  CASE WHEN DATEDIFF(DAY, H.InvoiceDate, @CriteriaDate) BETWEEN 16 AND 30 THEN H.DocInvoiceBal ELSE 0 END AS [Age_16_30_Days],
+  CASE WHEN DATEDIFF(DAY, H.InvoiceDate, @CriteriaDate) BETWEEN 31 AND 90 THEN H.DocInvoiceBal ELSE 0 END AS [Age_31_90_Days],
+  CASE WHEN DATEDIFF(DAY, H.InvoiceDate, @CriteriaDate) > 90 THEN H.DocInvoiceBal ELSE 0 END AS [Age_Over_90_Days]
+FROM Erp.InvcHead H
+INNER JOIN Erp.Customer C ON H.Company = C.Company AND H.CustNum = C.CustNum
+LEFT JOIN Erp.CashDtl CD ON H.Company = CD.Company AND H.InvoiceNum = CD.InvoiceNum
+WHERE H.OpenInvoice = 1 AND H.InvoiceDate <= @CriteriaDate;`
+        },
+        ICRID002: {
+            code: "ICRID002",
+            name: "TMSI PO Transaction Detail (Procurement Cost & AP Outflow)",
+            module: "Procurement / Cost / AP",
+            tables: "POHeader, PODetail, Vendor, Part, RcvDtl, APInvHed",
+            purpose_th: "ติดตามต้นทุนการสั่งซื้อสินค้า (UnitCost / ExtCost) ยอดเงินจ่ายล่วงหน้า (AdvancePayBal) การรับของเข้าคลัง และยอดตั้งหนี้เจ้าหนี้การค้า (AP InvoiceAmt)",
+            purpose_en: "Track procurement unit/extended costs, advance payment balances, warehouse goods receipts, and posted AP invoice liabilities.",
+            fields: [
+                { field: "PO & Order Date", format: ">>>>>>>>9 / (date)", source: "POHeader.PONum, POHeader.OrderDate", logic_th: "กรองข้อมูลตามช่วงวันที่เปิดใบสั่งซื้อ", logic_en: "Filter records by Purchase Order creation date range" },
+                { field: "Open Status & Part", format: "Open/Closed / x(50)", source: "PODetail.OpenLine, PODetail.PartNum", logic_th: "แสดงสถานะบรรทัดรายการสั่งซื้อและรหัสสินค้า", logic_en: "Display PO line open/closed status and item part number" },
+                { field: "Unit Price & Extended Cost", format: ">>>>9.99999 / >>>>.99", source: "PODetail.UnitCost, PODetail.ExtCost", logic_th: "ต้นทุนสินค้าต่อหน่วยและต้นทุนรวม (ใช้คำนวณ COGS & Purchase Cost)", logic_en: "Item unit cost and extended line cost (feeding COGS & purchase variance)" },
+                { field: "Advance Pay Balance", format: ">>>>>>>>>>>9.999", source: "PODetail.AdvancePayBal", logic_th: "ติดตามกระแสเงินสดจ่ายล่วงหน้าคงเหลือราย PO Line", logic_en: "Monitor remaining vendor advance payment balance per PO line" },
+                { field: "Receipt Date / Qty / Bin", format: "(date) / >>>>9.99 / x(10)", source: "RcvDtl.ReceiptDate, OurQty, BinNum", logic_th: "เชื่อมข้อมูลการรับของเข้าคลังและตำแหน่งจัดเก็บ (Bin)", logic_en: "Link warehouse receiving date, received quantity, and storage bin location" },
+                { field: "AP Invoice & Amount", format: "x(50) / >>>>>>>>>>>9.999", source: "APInvHed.InvoiceNum, InvoiceAmt", logic_th: "เชื่อมข้อมูลการตั้งหนี้ AP เพื่อวางแผนกระแสเงินสดจ่าย (Cash Outflow)", logic_en: "Match against posted AP Invoices for cash outflow forecasting" }
+            ],
+            mockup: {
+                winTitle: "TMSI PO Transaction Detail (ICRID002)",
+                criteria: [
+                    { label: "Order Date From:", val: "01/10/2022", type: "date" },
+                    { label: "To:", val: "31/10/2022", type: "date" }
+                ],
+                headers: ["PO", "OrderDate", "SupplierID", "Open", "PartNum", "SupplierQty", "UnitPrice", "ExtendedCost", "TotalTax", "AdvancePayBal", "ReceiptDate", "ReceiptQty", "Whse", "Bin", "AP_Invoice", "AP_InvoiceAmt"],
+                rows: [
+                    ["20220891", "03/10/2022", "V-PKG01", "Closed", "FHC-006", {v:"1,000.00", c:"num"}, {v:"185.00000", c:"num"}, {v:"185,000.00", c:"num"}, {v:"12,950.00", c:"num"}, {v:"0.00", c:"num"}, "10/10/2022", {v:"1,000.00", c:"num pos-val"}, "MAIN", "A01-02", "AP-2210098", {v:"197,950.00", c:"num calc-col"}],
+                    ["20220895", "05/10/2022", "V-OEM04", "Closed", "FHC-010", {v:"500.00", c:"num"}, {v:"310.00000", c:"num"}, {v:"155,000.00", c:"num"}, {v:"10,850.00", c:"num"}, {v:"0.00", c:"num"}, "14/10/2022", {v:"500.00", c:"num pos-val"}, "MAIN", "B02-01", "AP-2210112", {v:"165,850.00", c:"num calc-col"}],
+                    ["20220902", "12/10/2022", "V-OEM04", "Open", "FHC-018", {v:"800.00", c:"num"}, {v:"290.00000", c:"num"}, {v:"232,000.00", c:"num"}, {v:"16,240.00", c:"num"}, {v:"69,600.00", c:"num calc-col"}, "19/10/2022", {v:"400.00", c:"num"}, "MAIN", "B02-04", "Pending", {v:"0.00", c:"num"}]
+                ]
+            },
+            sql: `SELECT PH.PONum, PH.OrderDate, V.VendorID, PD.OpenLine, PD.PartNum,
+  PD.OrderQty AS SupplierQty, PD.UnitCost, PD.ExtCost, PD.TotalTax, PD.AdvancePayBal,
+  RD.ReceiptDate, RD.OurQty AS ReceiptQty, RD.BinNum, RD.LegalNumber,
+  AP.InvoiceDate, AP.InvoiceNum, AP.InvoiceAmt
+FROM Erp.POHeader PH
+INNER JOIN Erp.PODetail PD ON PH.Company = PD.Company AND PH.PONum = PD.PONum
+LEFT JOIN Erp.RcvDtl RD ON PD.Company = RD.Company AND PD.PONum = RD.PONum AND PD.POLine = RD.POLine
+LEFT JOIN Erp.APInvDtl APD ON RD.Company = APD.Company AND RD.PackSlip = APD.PackSlip
+LEFT JOIN Erp.APInvHed AP ON APD.Company = AP.Company AND APD.VendorNum = AP.VendorNum AND APD.InvoiceNum = AP.InvoiceNum;`
+        },
+        ICRID004: {
+            code: "ICRID004",
+            name: "TMSI Issue Misc. Dashboard (Operating Material Cost)",
+            module: "Inventory & Cost Control",
+            tables: "PartTran, Part, Warehse, Reason, TranDocType",
+            purpose_th: "ตรวจสอบรายการเบิกจ่ายพัสดุหรือสินค้าเบ็ดเตล็ดออกจากคลัง (Miscellaneous Issue) พร้อมระบุสาเหตุการเบิก (Reason Code) เพื่อควบคุมต้นทุนการดำเนินงานและค่าใช้จ่ายสูญเสีย",
+            purpose_en: "Audit miscellaneous inventory issues by Reason Code to control operating material costs, internal requisitions, and write-offs.",
+            fields: [
+                { field: "TranDate - To", format: "(date)", source: "PartTran.TranDate", logic_th: "กรองตามช่วงวันที่เกิดรายการเคลื่อนไหวสินค้า", logic_en: "Filter by inventory transaction date range" },
+                { field: "Part Desc (Starts With)", format: "x(1000)", source: "Part.PartDescription", logic_th: "เพิ่ม Logic ค้นหาแบบ Starts With สำหรับชื่อสินค้า", logic_en: "Implement 'Starts With' prefix search logic on Part Description" },
+                { field: "Legal Number & Reference", format: "x(30) / x(1000)", source: "PartTran.LegalNumber, TranReference", logic_th: "แสดงเลขที่เอกสารและหมายเหตุอ้างอิงการเบิก", logic_en: "Display official document number and requisition reference notes" },
+                { field: "Reason Code", format: "x(30)", source: "Reason.Description", logic_th: "แสดงสาเหตุการตัดจ่ายต้นทุน (เช่น เคลมสินค้า, ชำรุด, เบิกใช้ภายใน, ส่งเสริมการขาย)", logic_en: "Classify cost drivers (e.g., warranty claim, damaged stock, internal use, promo)" },
+                { field: "Quantity & UOM", format: "->>>>9.99 / x(6)", source: "PartTran.TranQty, PartTran.UM", logic_th: "จำนวนที่เบิกจ่ายและหน่วยนับ", logic_en: "Issued transaction quantity and unit of measure" },
+                { field: "Warehouse & Bin", format: "x(30) / x(10)", source: "Warehse.Description, PartTran.BinNum", logic_th: "คลังสินค้าและตำแหน่ง Bin ที่ถูกตัดสต็อก", logic_en: "Source warehouse description and storage bin location" }
+            ],
+            mockup: {
+                winTitle: "List of Issue Miscellaneous Material Dashboard (ICRID004)",
+                criteria: [
+                    { label: "TranDate From:", val: "01/11/2022", type: "date" },
+                    { label: "To:", val: "30/11/2022", type: "date" },
+                    { label: "Part Desc (Starts With):", val: "FHC-", type: "text" },
+                    { label: "Reason Code:", val: "All Reasons", type: "text" }
+                ],
+                headers: ["LegalNumber", "TranReference", "ReasonCode", "Type", "Part", "PartDesc", "UOM", "Bin", "TranDate", "Quantity", "Warehouse", "TransactionType"],
+                rows: [
+                    ["525221112420", "REF-MKT-1102", {v:"Marketing / Sample Issue", c:"calc-col"}, "STK-UKN", "FHC-006", "Facial Herbal Care 006", "EA", "A01-00", "11/11/2022", {v:"-10.00", c:"num neg-val"}, "Main Warehouse THB", "Issue Miscellaneous"],
+                    ["525221120004", "CN-RET-0891", {v:"Credit Note with Return", c:"calc-col"}, "STK-UKN", "FHC-010", "Facial Herbal Care 010", "EA", "B01-00", "16/11/2022", {v:"-4.00", c:"num neg-val"}, "Main Warehouse THB", "Issue Miscellaneous"],
+                    ["525221121304", "QA-INSP-2211", {v:"Cost Adjustment / QA Test", c:"calc-col"}, "STK-UKN", "FHC-012", "Facial Herbal Care 012", "EA", "B02-01", "21/11/2022", {v:"-2.00", c:"num neg-val"}, "Main Warehouse THB", "Issue Miscellaneous"]
+                ]
+            },
+            sql: `SELECT PT.LegalNumber, PT.TranReference, R.Description AS ReasonCode,
+  PT.TranType, PT.PartNum, P.PartDescription, PT.UM, PT.BinNum,
+  PT.TranDate, PT.TranQty, W.Description AS WarehouseDesc, TDT.Description AS TransactionType
+FROM Erp.PartTran PT
+INNER JOIN Erp.Part P ON PT.Company = P.Company AND PT.PartNum = P.PartNum
+LEFT JOIN Erp.Reason R ON PT.Company = R.Company AND PT.ReasonCode = R.ReasonCode
+LEFT JOIN Erp.Warehse W ON PT.Company = W.Company AND PT.WareHouseCode = W.WarehouseCode
+LEFT JOIN Erp.TranDocType TDT ON PT.Company = TDT.Company AND PT.TranDocTypeID = TDT.TranDocTypeID
+WHERE PT.TranType = 'STK-UKN' AND P.PartDescription LIKE @PartStartWith + '%';`
+        },
+        ICRID005: {
+            code: "ICRID005",
+            name: "TMSI BIN Transfer Dashboard",
+            module: "Warehouse Management",
+            tables: "PartTran (Self-Paired Out/In), Part, Warehse, TranDocType",
+            purpose_th: "ตรวจสอบการโอนย้ายสินค้าระหว่างคลังและตำแหน่งจัดเก็บ (Bin-to-Bin Transfer) โดยแยกคอลัมน์จำนวนจ่ายออก (< 0) และจำนวนรับเข้า (> 0) ในบรรทัดเดียวกัน",
+            purpose_en: "Audit inter-warehouse and bin-to-bin transfers by pairing outbound (< 0) and inbound (> 0) PartTran records onto a single unified row.",
+            fields: [
+                { field: "Tran Date & Legal Number", format: "(date) / x(30)", source: "PartTran.TranDate, LegalNumber", logic_th: "วันที่โอนย้ายและเลขที่เอกสารอ้างอิง", logic_en: "Transfer transaction date and legal document number" },
+                { field: "From Warehouse / From Bin", format: "x(8) / x(10)", source: "Warehse.Description, PartTran.BinNum", logic_th: "เพิ่ม Logic ตัดคำแสดงเฉพาะตัวย่อของคลังสินค้าต้นทาง", logic_en: "Substring logic extracting origin warehouse code and source bin" },
+                { field: "Quantity Out", format: "->>>>9.99", source: "PartTran.TranQty (Out)", logic_th: "เพิ่ม Logic กรองแสดงเฉพาะค่าที่ติดลบ (PartTran.TranQty < 0)", logic_en: "Filter strictly for negative outbound quantities (PartTran.TranQty < 0)" },
+                { field: "To Warehouse / To Bin", format: "x(8) / x(10)", source: "Warehse.Description, PartTran2.BinNum", logic_th: "แสดงตัวย่อคลังสินค้าปลายทางและตำแหน่ง Bin ปลายทาง", logic_en: "Display destination warehouse code and target receiving bin" },
+                { field: "Quantity In", format: "->>>>9.99", source: "PartTran.TranQty (In)", logic_th: "เพิ่ม Logic กรองแสดงเฉพาะค่าที่เป็นบวก (PartTran.TranQty > 0)", logic_en: "Filter strictly for positive inbound quantities (PartTran.TranQty > 0)" },
+                { field: "Entry Person", format: "x(75)", source: "PartTran.EntryPerson", logic_th: "ตรวจสอบรายชื่อผู้ทำรายการโอนย้ายในระบบ", logic_en: "User ID of staff executing the transfer for audit accountability" }
+            ],
+            mockup: {
+                winTitle: "TMSI BIN Transfer Dashboard (ICRID005)",
+                criteria: [
+                    { label: "Tran Date From:", val: "01/11/2022", type: "date" },
+                    { label: "To:", val: "30/11/2022", type: "date" }
+                ],
+                headers: ["TranDate", "LegalNumber", "Type", "Part", "PartDescription", "UOM", "FromWhse", "FromBin", "QuantityOut (<0)", "ToWhse", "ToBin", "QuantityIn (>0)", "TranReference", "EntryPerson"],
+                rows: [
+                    ["12/11/2022", "TRN22110084", "STK-STK", "FHC-006", "Facial Herbal Care 006", "EA", "MAIN-WH", "RCV-00", {v:"-100.00", c:"num neg-val calc-col"}, "MAIN-WH", "PICK-A1", {v:"100.00", c:"num pos-val calc-col"}, "Replenish Fast Pick", "wh_staff01"],
+                    ["14/11/2022", "TRN22110092", "STK-STK", "FHC-015", "Body Lotion Care 015", "EA", "MAIN-WH", "BULK-02", {v:"-60.00", c:"num neg-val calc-col"}, "FFM-WH", "PACK-01", {v:"60.00", c:"num pos-val calc-col"}, "Transfer to E-Com Pack", "wh_staff02"],
+                    ["15/11/2022", "TRN22110105", "STK-STK", "FHC-018", "Serum Concentrate 018", "EA", "MAIN-WH", "PICK-B2", {v:"-25.00", c:"num neg-val calc-col"}, "QC-HOLD", "INSP-01", {v:"25.00", c:"num pos-val calc-col"}, "Batch Packaging Check", "wh_super01"]
+                ]
+            },
+            sql: `SELECT PT_Out.TranDate, PT_Out.LegalNumber, PT_Out.TranType, PT_Out.PartNum, P.PartDescription,
+  LEFT(W_From.Description, 8) AS FromWarehouse, PT_Out.BinNum AS FromBin,
+  PT_Out.TranQty AS QuantityOut, -- Filtered < 0
+  PT_In.BinNum AS ToBin, LEFT(W_To.Description, 8) AS ToWarehouse,
+  PT_In.TranQty AS QuantityIn,   -- Filtered > 0
+  PT_Out.TranReference, PT_Out.EntryPerson
+FROM Erp.PartTran PT_Out
+INNER JOIN Erp.PartTran PT_In ON PT_Out.Company = PT_In.Company 
+  AND PT_Out.TranDate = PT_In.TranDate AND PT_Out.LegalNumber = PT_In.LegalNumber
+  AND PT_Out.TranQty < 0 AND PT_In.TranQty > 0
+INNER JOIN Erp.Part P ON PT_Out.Company = P.Company AND PT_Out.PartNum = P.PartNum;`
+        },
+        ICRID007: {
+            code: "ICRID007",
+            name: "TMSI Stockcard",
+            module: "Inventory Audit & Valuation",
+            tables: "PartTran, Warehse, Part",
+            purpose_th: "รายงานความเคลื่อนไหวของสต็อกสินค้า (Stock Card) รายตัวตามช่วงเวลา แสดงเลขที่ใบสั่งขาย (OrderNum) เลขที่ใบส่งของ (PackNum) และตำแหน่งจัดเก็บ",
+            purpose_en: "Chronological item-level Stock Card movement report linking inventory transactions back to Sales Orders (OrderNum), Packing Slips (PackNum), and Bins.",
+            fields: [
+                { field: "Tran Date - To & Part", format: "(date) / x(1000)", source: "PartTran.TranDate, PartDescription", logic_th: "กรองตามช่วงวันที่ และค้นหาด้วยคำขึ้นต้นของสินค้า (Starts With)", logic_en: "Date range filter paired with 'Starts With' item description parameter" },
+                { field: "Legal Number & Type", format: "x(30) / x(7)", source: "PartTran.LegalNumber, TranType", logic_th: "แสดงเลขที่เอกสารและประเภทรายการ (เช่น STK-CUS, PUR-STK, STK-STK)", logic_en: "Legal document number and transaction type (STK-CUS, PUR-STK, STK-STK)" },
+                { field: "Whse & Description", format: "x(8) / x(30)", source: "PartTran.WareHouseCode, Warehse.Description", logic_th: "รหัสคลังสินค้าและชื่อคลังสินค้า", logic_en: "Warehouse code and full warehouse description" },
+                { field: "Order & Pack Number", format: ">>>>>>>>9", source: "PartTran.OrderNum, PartTran.PackNum", logic_th: "เชื่อมโยงกลับไปยังเลขที่ Sales Order และ Packing Slip", logic_en: "Traceability links to originating Sales Order and Packing Slip numbers" },
+                { field: "Bin / Quantity / UOM", format: "x(10) / >>>>9.99 / x(6)", source: "PartTran.BinNum, TranQty, UM", logic_th: "แสดงยอดเคลื่อนไหวบวก/ลบ พร้อมหน่วยนับเพื่อกระทบยอดคงเหลือ", logic_en: "Signed movement quantity (+/-), bin code, and UOM for stock balance auditing" }
+            ],
+            mockup: {
+                winTitle: "TMSI KNS Stockcard (ICRID007)",
+                criteria: [
+                    { label: "Tran Date From:", val: "01/12/2022", type: "date" },
+                    { label: "To:", val: "31/12/2022", type: "date" },
+                    { label: "Part (Starts With):", val: "FHC-010", type: "text" }
+                ],
+                headers: ["Company", "Date", "LegalNumber", "Type", "Whse", "WhseDescription", "Part", "Description", "Order", "Pack", "Reference", "Bin", "Quantity", "UOM"],
+                rows: [
+                    ["TMSI", "02/12/2022", "RCV22120003", "PUR-STK", "MAIN", "Main Warehouse THB", "FHC-010", "Facial Herbal Care 010", "0", "20220895", "PO Receipt 500 EA", "B02-01", {v:"500.00", c:"num pos-val calc-col"}, "EA"],
+                    ["TMSI", "05/12/2022", "TRN22120006", "STK-STK", "MAIN", "Main Warehouse THB", "FHC-010", "Facial Herbal Care 010", "0", "0", "Move to Fast Pick", "B02-01", {v:"-50.00", c:"num neg-val"}, "EA"],
+                    ["TMSI", "05/12/2022", "TRN22120006", "STK-STK", "MAIN", "Main Warehouse THB", "FHC-010", "Facial Herbal Care 010", "0", "0", "Move to Fast Pick", "PICK-01", {v:"50.00", c:"num pos-val"}, "EA"],
+                    ["TMSI", "06/12/2022", "SHP22120011", "STK-CUS", "MAIN", "Main Warehouse THB", "FHC-010", "Facial Herbal Care 010", "22120105", "118902", "Cust Shipment COD", "PICK-01", {v:"-2.00", c:"num neg-val calc-col"}, "EA"]
+                ]
+            },
+            sql: `SELECT PT.Company, PT.TranDate, PT.LegalNumber, PT.TranType,
+  PT.WareHouseCode AS Whse, W.Description AS WhseDesc,
+  PT.PartNum, PT.PartDescription, PT.OrderNum, PT.PackNum,
+  PT.TranReference, PT.BinNum, PT.TranQty AS Quantity, PT.UM
+FROM Erp.PartTran PT
+LEFT JOIN Erp.Warehse W ON PT.Company = W.Company AND PT.WareHouseCode = W.WarehouseCode
+WHERE PT.TranDate BETWEEN @StartDate AND @EndDate
+  AND PT.PartDescription LIKE @PartPrefix + '%'
+ORDER BY PT.TranDate ASC, PT.SysTime ASC;`
+        }
+    };
+
+    function getCurrentLang() {
+        return document.body.classList.contains('lang-th') ? 'th' : 'en';
+    }
+
+    function renderSpec(specKey, btnEl) {
+        currentSpecKey = specKey;
+        if (btnEl) {
+            document.querySelectorAll('.spec-tab-btn').forEach(b => b.classList.remove('active'));
+            btnEl.classList.add('active');
+        }
+        const s = specsData[specKey];
+        const lang = getCurrentLang();
+        const purposeText = lang === 'th' ? s.purpose_th : s.purpose_en;
+
+        const rowsHtml = s.fields.map(f => `
+            <tr>
+                <td><strong>${f.field}</strong></td>
+                <td><span class="code-pill">${f.format}</span></td>
+                <td><span class="code-pill">${f.source}</span></td>
+                <td>${lang === 'th' ? f.logic_th : f.logic_en}</td>
+            </tr>
+        `).join('');
+
+        // สร้างส่วนจำลองหน้าจอ Epicor ERP Window
+        const m = s.mockup;
+        const criteriaHtml = m.criteria.map(c => `
+            <div class="erp-field-group">
+                <span class="erp-field-label">${c.label}</span>
+                <span class="erp-input-mock ${c.type === 'date' ? 'date-picker' : ''}">
+                    ${c.val} ${c.type === 'date' ? '📅' : ''}
+                </span>
+            </div>
+        `).join('');
+
+        const gridHeadersHtml = m.headers.map(h => `<th>${h}</th>`).join('');
+        const gridRowsHtml = m.rows.map((r, idx) => {
+            const cells = r.map(cell => {
+                if (typeof cell === 'object' && cell !== null) {
+                    return `<td class="${cell.c || ''}">${cell.v}</td>`;
+                }
+                return `<td>${cell}</td>`;
+            }).join('');
+            return `<tr class="${idx === 0 ? 'selected-row' : ''}">${cells}</tr>`;
+        }).join('');
+
+        const mockupSectionTitle = lang === 'th'
+            ? `🖥️ หน้าจอจำลองผลลัพธ์บนระบบ Epicor ERP (${s.code} UI Simulation)`
+            : `🖥️ Simulated Epicor ERP Dashboard Interface (${s.code} UI Simulation)`;
+        const privacyText = lang === 'th'
+            ? `🔒 ข้อมูลจำลอง (Sanitized Data) ตามโครงสร้างจริง`
+            : `🔒 Sanitized Data (PDPA / NDA Compliant)`;
+
+        document.getElementById('specCardContent').innerHTML = `
+            <div style="background:#1e293b; color:white; padding:15px 20px; display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+                <div>
+                    <span class="spec-meta-label">Specification No.</span>
+                    <span class="spec-meta-val accent">${s.code}</span>
+                </div>
+                <div>
+                    <span class="spec-meta-label">Dashboard Name</span>
+                    <span class="spec-meta-val">${s.name}</span>
+                </div>
+                <div>
+                    <span class="spec-meta-label">ERP Module</span>
+                    <span class="spec-meta-val">${s.module}</span>
+                </div>
+                <div>
+                    <span class="spec-meta-label">Primary Tables</span>
+                    <span class="spec-meta-val" style="font-size:12.5px;">${s.tables}</span>
+                </div>
+            </div>
+            <div class="spec-doc-body">
+                <div class="spec-purpose-box">
+                    <strong>Objective / Requirement:</strong> ${purposeText}
+                </div>
+                <div class="spec-table-wrapper">
+                    <table class="spec-table">
+                        <thead>
+                            <tr>
+                                <th style="width:22%;">Display / Criteria Field</th>
+                                <th style="width:16%;">Epicor Format</th>
+                                <th style="width:25%;">Source Table & Field</th>
+                                <th>System Mapping & Calculation Logic</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- SIMULATED EPICOR ERP SCREENSHOT WINDOW -->
+                <div class="erp-mockup-section">
+                    <div class="erp-mockup-label">
+                        <span>${mockupSectionTitle}</span>
+                        <span class="erp-privacy-tag">${privacyText}</span>
+                    </div>
+                    <div class="erp-window">
+                        <div class="erp-titlebar">
+                            <div class="erp-titlebar-left">
+                                <span class="erp-app-icon">E</span>
+                                <span>${m.winTitle}</span>
+                            </div>
+                            <div class="erp-win-btns">
+                                <span class="erp-win-btn">_</span>
+                                <span class="erp-win-btn">□</span>
+                                <span class="erp-win-btn close">×</span>
+                            </div>
+                        </div>
+                        <div class="erp-menubar">
+                            <span><u>F</u>ile</span>
+                            <span><u>E</u>dit</span>
+                            <span><u>V</u>iew</span>
+                            <span><u>T</u>ools</span>
+                            <span><u>A</u>ctions</span>
+                            <span><u>H</u>elp</span>
+                        </div>
+                        <div class="erp-toolbar">
+                            <span class="erp-tool-btn">📄 Clear</span>
+                            <span class="erp-tool-btn">🔄 Refresh (F5)</span>
+                            <span class="erp-tool-sep"></span>
+                            <span class="erp-tool-btn">📊 Export to Excel</span>
+                            <span class="erp-tool-btn">🖨️ Print</span>
+                        </div>
+                        <div class="erp-criteria-pane">
+                            <span class="erp-param-title">Criteria / Parameters</span>
+                            ${criteriaHtml}
+                        </div>
+                        <div class="erp-grid-Banner">Grid View — Query Results (Highlighted cells indicate custom calculated BAQ logic)</div>
+                        <div class="erp-grid-scroll">
+                            <table class="erp-grid-table">
+                                <thead>
+                                    <tr>${gridHeadersHtml}</tr>
+                                </thead>
+                                <tbody>
+                                    ${gridRowsHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="erp-statusbar">
+                            <span>Ready | BAQ Execution Time: 0.18s</span>
+                            <span>Company: TMSI | Plant: MAIN</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="baq-code-box">
+                    <div class="baq-code-header">⚡ Underlying Epicor BAQ / SQL Extraction Logic (${s.code})</div>
+                    <pre style="margin:0; font-family:inherit;">${s.sql}</pre>
+                </div>
+            </div>
+        `;
+    }
+
+    // ข้อมูลจำลองสำหรับ Power BI Executive Dashboard (เน้น GP, Cost Structure, Cash Flow)
+    const pbiFinancialData = {
+        YTD: {
+            rev: "฿142.80M",
+            revSub: "▲ +14.2% YoY",
+            gp: "฿48.55M <span style='font-size:15px; color:#4ade80;'>(34.0%)</span>",
+            gpSub: "▲ +1.8% GP Margin",
+            cost: "฿112.10M",
+            costSub: "COGS 66.0% | Logistics & OpEx 12.5%",
+            cashFlow: "+฿31.40M",
+            cashSub: "<span class='trend-up'>92.4%</span> AR Cash Conversion Rate",
+            profitBars: [
+                { label: "Cost of Goods Sold - COGS (PODetail / PartTran)", val: "฿94.25M (66.0%)", pct: 66.0, color: "#f59e0b" },
+                { label: "Gross Profit - GP (Net Revenue - COGS)", val: "฿48.55M (34.0%)", pct: 34.0, color: "#22c55e" },
+                { label: "Last-Mile Logistics & Fulfillment Cost", val: "฿14.85M (10.4%)", pct: 18.0, color: "#38bdf8" },
+                { label: "Inventory Issue Misc. & Write-offs (ICRID004)", val: "฿3.00M (2.1%)", pct: 6.0, color: "#f97316" },
+                { label: "Operating Profit (EBITDA Contribution)", val: "฿30.70M (21.5%)", pct: 21.5, color: "#14b8a6" }
+            ],
+            cashBars: [
+                { label: "Operating Cash Inflow (AR & COD Collected)", val: "฿131.95M (92.4%)", pct: 92.4, color: "#22c55e" },
+                { label: "Working Capital in AR Aging 1-15 Days (Normal Cycle)", val: "฿8.40M (5.9%)", pct: 18.0, color: "#38bdf8" },
+                { label: "Overdue AR >15 Days (Escalated Collection)", val: "฿2.45M (1.7%)", pct: 8.0, color: "#ef4444" },
+                { label: "Operating Cash Outflow (AP Invoices & PO Advance Pay)", val: "-฿100.55M (70.4%)", pct: 70.4, color: "#f59e0b" }
+            ]
+        },
+        Q1: {
+            rev: "฿32.40M",
+            revSub: "▲ +10.5% YoY",
+            gp: "฿10.69M <span style='font-size:15px; color:#4ade80;'>(33.0%)</span>",
+            gpSub: "▲ +0.9% GP Margin",
+            cost: "฿25.92M",
+            costSub: "COGS 67.0% | Logistics & OpEx 13.0%",
+            cashFlow: "+฿6.48M",
+            cashSub: "<span class='trend-up'>91.0%</span> AR Cash Conversion Rate",
+            profitBars: [
+                { label: "Cost of Goods Sold - COGS (PODetail / PartTran)", val: "฿21.71M (67.0%)", pct: 67.0, color: "#f59e0b" },
+                { label: "Gross Profit - GP (Net Revenue - COGS)", val: "฿10.69M (33.0%)", pct: 33.0, color: "#22c55e" },
+                { label: "Last-Mile Logistics & Fulfillment Cost", val: "฿3.50M (10.8%)", pct: 19.0, color: "#38bdf8" },
+                { label: "Inventory Issue Misc. & Write-offs (ICRID004)", val: "฿0.71M (2.2%)", pct: 6.5, color: "#f97316" },
+                { label: "Operating Profit (EBITDA Contribution)", val: "฿6.48M (20.0%)", pct: 20.0, color: "#14b8a6" }
+            ],
+            cashBars: [
+                { label: "Operating Cash Inflow (AR & COD Collected)", val: "฿29.48M (91.0%)", pct: 91.0, color: "#22c55e" },
+                { label: "Working Capital in AR Aging 1-15 Days (Normal Cycle)", val: "฿2.20M (6.8%)", pct: 20.0, color: "#38bdf8" },
+                { label: "Overdue AR >15 Days (Escalated Collection)", val: "฿0.72M (2.2%)", pct: 9.0, color: "#ef4444" },
+                { label: "Operating Cash Outflow (AP Invoices & PO Advance Pay)", val: "-฿23.00M (71.0%)", pct: 71.0, color: "#f59e0b" }
+            ]
+        },
+        Q2: {
+            rev: "฿35.10M",
+            revSub: "▲ +12.8% YoY",
+            gp: "฿11.86M <span style='font-size:15px; color:#4ade80;'>(33.8%)</span>",
+            gpSub: "▲ +1.4% GP Margin",
+            cost: "฿27.65M",
+            costSub: "COGS 66.2% | Logistics & OpEx 12.6%",
+            cashFlow: "+฿7.62M",
+            cashSub: "<span class='trend-up'>92.1%</span> AR Cash Conversion Rate",
+            profitBars: [
+                { label: "Cost of Goods Sold - COGS (PODetail / PartTran)", val: "฿23.24M (66.2%)", pct: 66.2, color: "#f59e0b" },
+                { label: "Gross Profit - GP (Net Revenue - COGS)", val: "฿11.86M (33.8%)", pct: 33.8, color: "#22c55e" },
+                { label: "Last-Mile Logistics & Fulfillment Cost", val: "฿3.68M (10.5%)", pct: 18.0, color: "#38bdf8" },
+                { label: "Inventory Issue Misc. & Write-offs (ICRID004)", val: "฿0.73M (2.1%)", pct: 6.0, color: "#f97316" },
+                { label: "Operating Profit (EBITDA Contribution)", val: "฿7.45M (21.2%)", pct: 21.2, color: "#14b8a6" }
+            ],
+            cashBars: [
+                { label: "Operating Cash Inflow (AR & COD Collected)", val: "฿32.33M (92.1%)", pct: 92.1, color: "#22c55e" },
+                { label: "Working Capital in AR Aging 1-15 Days (Normal Cycle)", val: "฿2.14M (6.1%)", pct: 18.0, color: "#38bdf8" },
+                { label: "Overdue AR >15 Days (Escalated Collection)", val: "฿0.63M (1.8%)", pct: 8.0, color: "#ef4444" },
+                { label: "Operating Cash Outflow (AP Invoices & PO Advance Pay)", val: "-฿24.71M (70.4%)", pct: 70.4, color: "#f59e0b" }
+            ]
+        },
+        Q3: {
+            rev: "฿36.50M",
+            revSub: "▲ +15.4% YoY",
+            gp: "฿12.52M <span style='font-size:15px; color:#4ade80;'>(34.3%)</span>",
+            gpSub: "▲ +2.1% GP Margin",
+            cost: "฿28.47M",
+            costSub: "COGS 65.7% | Logistics & OpEx 12.3%",
+            cashFlow: "+฿8.25M",
+            cashSub: "<span class='trend-up'>92.8%</span> AR Cash Conversion Rate",
+            profitBars: [
+                { label: "Cost of Goods Sold - COGS (PODetail / PartTran)", val: "฿23.98M (65.7%)", pct: 65.7, color: "#f59e0b" },
+                { label: "Gross Profit - GP (Net Revenue - COGS)", val: "฿12.52M (34.3%)", pct: 34.3, color: "#22c55e" },
+                { label: "Last-Mile Logistics & Fulfillment Cost", val: "฿3.76M (10.3%)", pct: 17.5, color: "#38bdf8" },
+                { label: "Inventory Issue Misc. & Write-offs (ICRID004)", val: "฿0.73M (2.0%)", pct: 5.8, color: "#f97316" },
+                { label: "Operating Profit (EBITDA Contribution)", val: "฿8.03M (22.0%)", pct: 22.0, color: "#14b8a6" }
+            ],
+            cashBars: [
+                { label: "Operating Cash Inflow (AR & COD Collected)", val: "฿33.87M (92.8%)", pct: 92.8, color: "#22c55e" },
+                { label: "Working Capital in AR Aging 1-15 Days (Normal Cycle)", val: "฿2.04M (5.6%)", pct: 17.0, color: "#38bdf8" },
+                { label: "Overdue AR >15 Days (Escalated Collection)", val: "฿0.59M (1.6%)", pct: 7.0, color: "#ef4444" },
+                { label: "Operating Cash Outflow (AP Invoices & PO Advance Pay)", val: "-฿25.62M (70.2%)", pct: 70.2, color: "#f59e0b" }
+            ]
+        },
+        Q4: {
+            rev: "฿38.80M",
+            revSub: "▲ +17.6% YoY",
+            gp: "฿13.48M <span style='font-size:15px; color:#4ade80;'>(34.7%)</span>",
+            gpSub: "▲ +2.5% GP Margin",
+            cost: "฿30.06M",
+            costSub: "COGS 65.3% | Logistics & OpEx 12.2%",
+            cashFlow: "+฿9.05M",
+            cashSub: "<span class='trend-up'>93.5%</span> AR Cash Conversion Rate",
+            profitBars: [
+                { label: "Cost of Goods Sold - COGS (PODetail / PartTran)", val: "฿25.32M (65.3%)", pct: 65.3, color: "#f59e0b" },
+                { label: "Gross Profit - GP (Net Revenue - COGS)", val: "฿13.48M (34.7%)", pct: 34.7, color: "#22c55e" },
+                { label: "Last-Mile Logistics & Fulfillment Cost", val: "฿3.91M (10.1%)", pct: 17.0, color: "#38bdf8" },
+                { label: "Inventory Issue Misc. & Write-offs (ICRID004)", val: "฿0.83M (2.1%)", pct: 6.0, color: "#f97316" },
+                { label: "Operating Profit (EBITDA Contribution)", val: "฿8.74M (22.5%)", pct: 22.5, color: "#14b8a6" }
+            ],
+            cashBars: [
+                { label: "Operating Cash Inflow (AR & COD Collected)", val: "฿36.27M (93.5%)", pct: 93.5, color: "#22c55e" },
+                { label: "Working Capital in AR Aging 1-15 Days (Normal Cycle)", val: "฿2.02M (5.2%)", pct: 16.0, color: "#38bdf8" },
+                { label: "Overdue AR >15 Days (Escalated Collection)", val: "฿0.51M (1.3%)", pct: 6.0, color: "#ef4444" },
+                { label: "Operating Cash Outflow (AP Invoices & PO Advance Pay)", val: "-฿27.22M (70.1%)", pct: 70.1, color: "#f59e0b" }
+            ]
+        }
+    };
+
+    function updatePBI(periodKey, btnEl) {
+        if (btnEl) {
+            document.querySelectorAll('.pbi-slicer-btn').forEach(b => b.classList.remove('active'));
+            btnEl.classList.add('active');
+        }
+        const d = pbiFinancialData[periodKey];
+        document.getElementById('kpiRev').textContent = d.rev;
+        document.getElementById('kpiRevSub').textContent = d.revSub;
+        document.getElementById('kpiGP').innerHTML = d.gp;
+        document.getElementById('kpiGPSub').textContent = d.gpSub;
+        document.getElementById('kpiCost').textContent = d.cost;
+        document.getElementById('kpiCostSub').textContent = d.costSub;
+        document.getElementById('kpiCashFlow').textContent = d.cashFlow;
+        document.getElementById('kpiCashSub').innerHTML = d.cashSub;
+
+        document.getElementById('pbiProfitBars').innerHTML = d.profitBars.map(item => `
+            <div class="bar-row">
+                <div class="bar-label-line">
+                    <span>${item.label}</span>
+                    <strong>${item.val}</strong>
+                </div>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width:${item.pct}%; background:${item.color};"></div>
+                </div>
+            </div>
+        `).join('');
+
+        document.getElementById('pbiCashBars').innerHTML = d.cashBars.map(item => `
+            <div class="bar-row">
+                <div class="bar-label-line">
+                    <span>${item.label}</span>
+                    <strong>${item.val}</strong>
+                </div>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width:${item.pct}%; background:${item.color};"></div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function setLanguage(lang) {
+        document.body.classList.remove('lang-th', 'lang-en');
+        document.body.classList.add('lang-' + lang);
+        document.getElementById('btn-th').classList.toggle('active', lang === 'th');
+        document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+        document.documentElement.lang = lang;
+        renderSpec(currentSpecKey);
+        try { localStorage.setItem('nv_portfolio_lang', lang); } catch(e) {}
+    }
+
+    // โหลดข้อมูลเริ่มต้นทันทีที่เปิดหน้าเว็บ
+    window.addEventListener('DOMContentLoaded', () => {
+        let savedLang = 'en';
+        try { savedLang = localStorage.getItem('nv_portfolio_lang') || 'en'; } catch(e) {}
+        setLanguage(savedLang);
+        updatePBI('YTD');
+    });
+</script>
+
+</body>
+</html>

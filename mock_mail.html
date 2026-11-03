@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mockup: Email Approval - 2 Cases</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; gap: 40px; padding: 40px; justify-content: center; flex-wrap: wrap; }
+        
+        /* สไตล์ Email Desktop */
+        .email-screen { width: 500px; background-color: white; border-radius: 10px; border: 1px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; height: fit-content; position: relative; }
+        .case-label { position: absolute; top: -35px; left: 0; width: 100%; text-align: center; font-weight: bold; color: #333; font-size: 16px; }
+        
+        .email-header { border-bottom: 1px solid #eee; padding: 15px 20px; }
+        .email-header h3 { margin: 0 0 5px 0; font-size: 17px; }
+        .header-normal { color: #202124; }
+        .header-revision { color: #d93025; } /* สีแดงเตือนว่าเป็นฉบับแก้ไข */
+        
+        .email-header p { margin: 0; color: #5f6368; font-size: 13px; }
+        .email-body { padding: 20px; font-size: 14px; color: #3c4043; line-height: 1.6; }
+        
+        /* กล่องข้อมูล */
+        .data-box { padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .box-normal { background-color: #f8f9fa; border-left: 4px solid #fbbc04; }
+        .box-revision { background-color: #fce8e6; border-left: 4px solid #ea4335; } /* ไฮไลต์กล่องข้อมูลแก้ไข */
+        
+        .highlight-change { background-color: #fff000; padding: 2px 5px; font-weight: bold; border-radius: 3px; }
+        
+        /* กล่องกรอกเหตุผล */
+        .reason-box { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .reason-box label { font-size: 13px; color: #d93025; font-weight: bold; }
+        .reason-box textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; font-size: 13px; resize: none; box-sizing: border-box; outline: none; }
+        
+        /* ปุ่มกด */
+        .action-buttons { display: flex; gap: 15px; margin-top: 15px; }
+        .btn-approve { background-color: #1a73e8; color: white; text-align: center; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; flex: 1; border: none; cursor: pointer; font-size: 14px; }
+        .btn-reject { background-color: white; color: #d93025; border: 1px solid #d93025; text-align: center; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; flex: 1; cursor: pointer; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <!-- Case 1: Normal Request -->
+    <div style="position: relative; margin-top: 40px;">
+        <div class="case-label">Case 1: Normal PO Request</div>
+        <div class="email-screen">
+            <div class="email-header">
+                <h3 class="header-normal">🟡 [Action Required] Request for PO Approval</h3>
+                <p><strong>From:</strong> Automated Workflow &lt;system@company.com&gt;</p>
+            </div>
+            <div class="email-body">
+                <p>Dear Executive,</p>
+                <p>Please review the purchase order request submitted by the Logistics Team.</p>
+                <div class="data-box box-normal">
+                    <strong>Supplier:</strong> ABC Co.,Ltd.<br>
+			<strong>Date:</strong> 25/05/2026<br>
+			<strong>Product Name:</strong> Product Test<br>
+			<strong>Quantity:</strong> 1,000<br>
+                        <strong>Amount:</strong> 50,000.00 THB<br>
+                        <strong>Ref Doc:</strong> SCM_202605001
+
+                    <a href="#" style="color: #1a73e8; display: block; margin-top: 10px; font-weight: bold;">📎 View Original PDF Document</a>
+                </div>
+                
+                <div class="reason-box">
+                    <label for="reject-reason-1">Remarks / Reject Reason (Optional):</label>
+                    <textarea id="reject-reason-1" rows="2" placeholder="กรุณาระบุเหตุผลกรณีไม่อนุมัติ..."></textarea>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-approve">✅ APPROVE</button>
+                    <button class="btn-reject">❌ REJECT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Case 2: Revised Request -->
+    <div style="position: relative; margin-top: 40px;">
+        <div class="case-label">Case 2: Revised PO Request (Updated Data)</div>
+        <div class="email-screen">
+            <div class="email-header">
+                <h3 class="header-revision">🔴 [REVISED - Action Required] Updated PO Approval</h3>
+                <p><strong>From:</strong> Automated Workflow &lt;system@company.com&gt;</p>
+            </div>
+            <div class="email-body">
+                <p>Dear Executive,</p>
+                <p>The Logistics Team has submitted a <strong>revised version</strong> of a pending purchase order. Please review the highlighted changes below.</p>
+                <div class="data-box box-revision">
+                    <strong>Supplier:</strong> ABC Co.,Ltd.<br>
+			<strong>Date:</strong> 25/05/2026<br>
+			<strong>Product Name:</strong> Product Test<br>
+			<strong>Quantity:</strong> 1,000<br>
+                       
+                        
+
+                    <strong>Total Amount:</strong> <del style="color:#777;">50,000.00 THB</del> ➔ <span class="highlight-change">55,000.00 THB</span><br>
+                    <strong>Ref Doc:</strong> SCM_202605001(Revision 2)<br>
+                    <a href="#" style="color: #1a73e8; display: block; margin-top: 10px; font-weight: bold;">📎 View Revised PDF Document</a>
+                </div>
+                
+                <div class="reason-box">
+                    <label for="reject-reason-2">Remarks / Reject Reason (Optional):</label>
+                    <textarea id="reject-reason-2" rows="2" placeholder="กรุณาระบุเหตุผลกรณีไม่อนุมัติ..."></textarea>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-approve">✅ APPROVE</button>
+                    <button class="btn-reject">❌ REJECT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

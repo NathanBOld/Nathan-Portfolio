@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nathan V. | Senior Financial Business Analyst & System Analyst</title>
+    <style>
+        /* CSS Styles - Unified Theme */
+        :root {
+            --primary-color: #0f172a;
+            --primary-light: #1e293b;
+            --secondary-color: #38bdf8;
+            --accent-blue: #3b82f6;
+            --bg-color: #f8fafc;
+            --text-color: #334155;
+            --muted-text: #64748b;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, Tahoma, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        a { text-decoration: none; color: var(--secondary-color); }
+
+        /* Language Toggle Visibility */
+        body.lang-th .lang-en { display: none !important; }
+        body.lang-en .lang-th { display: none !important; }
+        
+        /* Navbar */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+        .logo { font-size: 1.5rem; font-weight: bold; letter-spacing: 1px; color: #fff; }
+        .logo span { color: var(--secondary-color); }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        nav ul { list-style: none; display: flex; gap: 24px; margin: 0; padding: 0; }
+        nav a { color: #cbd5e1; font-weight: 500; transition: color 0.3s; font-size: 0.95rem; }
+        nav a:hover { color: var(--secondary-color); }
+
+        .lang-switcher {
+            display: inline-flex;
+            background: #1e293b;
+            border-radius: 6px;
+            padding: 3px;
+            border: 1px solid #334155;
+        }
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            font-family: inherit;
+            font-size: 12.5px;
+            font-weight: 700;
+            padding: 4px 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover { color: #ffffff; }
+        .lang-btn.active {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 70px 5% 65px;
+            text-align: center;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            border-bottom: 4px solid var(--secondary-color);
+        }
+
+        /* Profile Avatar Wrapper */
+        .profile-avatar-wrap {
+            width: 128px;
+            height: 128px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            border: 3px solid var(--secondary-color);
+            box-shadow: 0 8px 24px rgba(56, 189, 248, 0.25);
+            overflow: hidden;
+            background-color: #1e293b;
+        }
+        .profile-avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 18%;
+            transform: scale(1.12);
+            display: block;
+        }
+
+        .hero-eyebrow {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: var(--secondary-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 5px 16px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+        .hero h1 { font-size: 2.8rem; margin: 0 0 10px 0; letter-spacing: -0.5px; }
+        .hero h2 { font-size: 1.45rem; color: var(--secondary-color); margin-top: 0; font-weight: 500; }
+        .hero p {
+            max-width: 780px;
+            margin: 20px auto;
+            font-size: 1.08rem;
+            color: #cbd5e1;
+            line-height: 1.75;
+        }
+        .hero p strong { color: #ffffff; font-weight: 600; }
+        
+        /* Skills Tags */
+        .skills { margin-top: 28px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; max-width: 880px; margin-left: auto; margin-right: auto; }
+        .skill-tag {
+            background-color: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            color: var(--secondary-color);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .skill-tag:hover {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        /* Key Metrics Strip */
+        .metrics-strip {
+            max-width: 900px;
+            margin: 40px auto 0;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        .metric-item { text-align: center; }
+        .metric-val { font-size: 1.85rem; font-weight: 700; color: var(--secondary-color); line-height: 1.2; }
+        .metric-lbl { font-size: 0.85rem; color: #94a3b8; margin-top: 4px; }
+
+        /* Projects Section */
+        .projects-section { padding: 65px 5%; max-width: 1200px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 45px; }
+        .section-title {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin: 0 0 10px 0;
+            border-bottom: 3px solid var(--secondary-color);
+            display: inline-block;
+            padding-bottom: 8px;
+        }
+        .section-subtitle {
+            color: var(--muted-text);
+            font-size: 1rem;
+            max-width: 680px;
+            margin: 8px auto 0;
+        }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 30px; }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px rgba(0,0,0,0.1); }
+        .card-header { background-color: var(--primary-color); color: white; padding: 20px 22px; }
+        .card-header.support-header { background-color: #1e293b; border-bottom: 2px solid #38bdf8; }
+        .card-header h3 { margin: 0; font-size: 1.22rem; line-height: 1.35; }
+        .card-body { padding: 22px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-body p { margin-top: 0; margin-bottom: 12px; font-size: 0.95rem; color: #334155; }
+        
+        .hero-badge {
+            display: inline-block;
+            background-color: #ef4444;
+            color: white;
+            font-size: 0.72rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .arch-badge {
+            display: inline-block;
+            background-color: #0284c7;
+            color: white;
+            font-size: 0.72rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+            margin-bottom: 16px;
+        }
+        .card-tag {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        /* Buttons */
+        .btn-group { display: flex; gap: 10px; margin-top: auto; padding-top: 12px; flex-wrap: wrap; }
+        .btn-view {
+            display: block;
+            width: 100%;
+            padding: 9px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.3s;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .btn-view:hover { background-color: var(--accent-blue); color: #fff; }
+        
+        .btn-half { flex: 1; min-width: calc(50% - 5px); }
+        .btn-alt { background-color: #f59e0b; }
+        .btn-alt:hover { background-color: #d97706; }
+        .btn-green { background-color: #10b981; }
+        .btn-green:hover { background-color: #059669; }
+        .btn-slate { background-color: #334155; }
+        .btn-slate:hover { background-color: var(--accent-blue); }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary-color);
+            color: #cbd5e1;
+            text-align: center;
+            padding: 35px 20px;
+            margin-top: 40px;
+            font-size: 0.95rem;
+            border-top: 3px solid var(--secondary-color);
+        }
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin: 12px 0 18px;
+        }
+        .contact-links a {
+            color: var(--secondary-color);
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .contact-links a:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="lang-en">
+
+    <!-- Navigation -->
+    <header>
+        <a href="index.html" class="logo">NV<span>.</span></a>
+        <div class="nav-right">
+            <nav>
+                <ul>
+                    <li>
+                        <a href="#about">
+                            <span class="lang-en">About</span>
+                            <span class="lang-th">เกี่ยวกับฉัน</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#projects">
+                            <span class="lang-en">Projects</span>
+                            <span class="lang-th">ผลงาน</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#contact">
+                            <span class="lang-en">Contact</span>
+                            <span class="lang-th">ติดต่อ</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="lang-switcher" role="group" aria-label="Language Switcher">
+                <button type="button" id="btn-th" class="lang-btn" onclick="setLanguage('th')">TH</button>
+                <button type="button" id="btn-en" class="lang-btn active" onclick="setLanguage('en')">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="about">
+        <!-- Profile Picture (Save your uploaded photo as profile.jpg in the same folder) -->
+        <div class="profile-avatar-wrap">
+            <img src="profile.jpg" alt="Nathan Vejvanitchayasakul" class="profile-avatar" onerror="this.parentElement.style.display='none'">
+        </div>
+
+        <div>
+            <span class="hero-eyebrow">
+                <span class="lang-en">Finance • ERP Architecture • Process Automation</span>
+                <span class="lang-th">การเงิน • สถาปัตยกรรมระบบ ERP • ระบบอัตโนมัติ</span>
+            </span>
+        </div>
+        <h1>Nathan Vejvanitchayasakul (Bo)</h1>
+        <h2>
+            <span class="lang-en">Senior Financial Business Analyst &amp; System Analyst</span>
+            <span class="lang-th">นักวิเคราะห์ธุรกิจการเงินและนักวิเคราะห์ระบบอาวุโส (Senior Financial BA &amp; SA)</span>
+        </h2>
+        <p class="lang-en">
+            Bridging the gap between <strong>Financial Governance</strong> and <strong>System Architecture</strong> with over 15 years of experience. 
+            I specialize in translating complex accounting standards (TFRS 9/15/16) and operational bottlenecks into 
+            <strong>automated data pipelines, custom ERP specifications, REST API integrations, and executive BI dashboards</strong>—delivering 100% audit-ready accuracy at scale.
+        </p>
+        <p class="lang-th">
+            เชื่อมโยงโลกของ <strong>การกำกับดูแลทางการเงิน (Financial Governance)</strong> และ <strong>สถาปัตยกรรมระบบ (System Architecture)</strong> เข้าด้วยกันด้วยประสบการณ์กว่า 15 ปี 
+            เชี่ยวชาญในการแปลงมาตรฐานการบัญชีที่ซับซ้อน (TFRS 9/15/16) และคอขวดในการปฏิบัติงาน ให้กลายเป็น 
+            <strong>Data Pipeline อัตโนมัติ, เอกสาร System Specification สำหรับระบบ ERP, การเชื่อมต่อ REST API และแดชบอร์ดบริหารระดับสูงบน Power BI</strong> ที่ตรวจสอบย้อนกลับได้แม่นยำ 100%
+        </p>
+        
+        <div class="skills">
+            <span class="skill-tag">System Specification (BRD / SFD)</span>
+            <span class="skill-tag">Epicor ERP &amp; BAQ (~30 Dashboards)</span>
+            <span class="skill-tag">TRCloud &amp; ArgoERP</span>
+            <span class="skill-tag">Power BI &amp; DAX</span>
+            <span class="skill-tag">Power Query (ETL)</span>
+            <span class="skill-tag">SQL</span>
+            <span class="skill-tag">Excel VBA Macro</span>
+            <span class="skill-tag">REST API &amp; JSON Mapping</span>
+            <span class="skill-tag">Google Apps Script</span>
+            <span class="skill-tag">TFRS 9 / 15 / 16 Compliance</span>
+        </div>
+
+        <div class="metrics-strip">
+            <div class="metric-item">
+                <div class="metric-val">~30</div>
+                <div class="metric-lbl">
+                    <span class="lang-en">Custom ERP Dashboards &amp; Specs</span>
+                    <span class="lang-th">แดชบอร์ดและสเปกในระบบ ERP</span>
+                </div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-val">10,000+</div>
+                <div class="metric-lbl">
+                    <span class="lang-en">Monthly COD / AR Txns Automated</span>
+                    <span class="lang-th">ธุรกรรม COD / AR อัตโนมัติต่อเดือน</span>
+                </div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-val">End-to-End</div>
+                <div class="metric-lbl">
+                    <span class="lang-en">ERP → API → Power BI Pipelines</span>
+                    <span class="lang-th">เชื่อมข้อมูล ERP → API → Power BI</span>
+                </div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-val">100%</div>
+                <div class="metric-lbl">
+                    <span class="lang-en">Auditability &amp; Reconciliation Accuracy</span>
+                    <span class="lang-th">ความแม่นยำในการกระทบยอดและตรวจสอบ</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="projects-section" id="projects">
+        <div class="section-header">
+            <h2 class="section-title">
+                <span class="lang-en">Featured Projects</span>
+                <span class="lang-th">ผลงานและโปรเจกต์เด่น</span>
+            </h2>
+            <p class="section-subtitle">
+                <span class="lang-en">Real-world automation, system integration, and enterprise ERP analytics designed to eliminate manual workflows.</span>
+                <span class="lang-th">ระบบอัตโนมัติ การเชื่อมต่อระบบ API และการวิเคราะห์ข้อมูล ERP จากหน้างานจริงที่ออกแบบมาเพื่อขจัดงาน Manual อย่างครบวงจร</span>
+            </p>
+        </div>
+        
+        <div class="grid">
+
+            <!-- Project 1 (Hero) -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="hero-badge">Hero Project</span>
+                    <h3>"LogiPO-Bot" PO Automation</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lang-en"><strong>Challenge:</strong> Slow, manual PO data entry and physical executive approval bottlenecks delayed weekly cash flow visibility.</p>
+                    <p class="lang-en"><strong>Solution:</strong> Engineered an end-to-end workflow using OCR, LINE Messaging API, and Google Apps Script to extract PO data, enforce duplicate checks, route dynamic email approvals, and sync directly into the ERP.</p>
+                    
+                    <p class="lang-th"><strong>ปัญหา:</strong> การคีย์ข้อมูลใบสั่งซื้อ (PO) ด้วยมือและการเดินเอกสารขออนุมัติที่ล่าช้า ทำให้ฝ่ายบัญชีไม่สามารถอัปเดตงบกระแสเงินสดรายสัปดาห์ได้ทันเวลา</p>
+                    <p class="lang-th"><strong>โซลูชัน:</strong> พัฒนา Workflow อัตโนมัติด้วย OCR, LINE Messaging API และ Google Apps Script เพื่อสกัดข้อมูล PO ตรวจสอบเอกสารซ้ำ ส่งอีเมลขออนุมัติแบบโต้ตอบ และยิงข้อมูลเข้าสู่ ERP ทันที</p>
+                    
+                    <div class="card-tags">
+                        <span class="card-tag">OCR</span>
+                        <span class="card-tag">LINE API</span>
+                        <span class="card-tag">Google Apps Script</span>
+                    </div>
+                    <div class="btn-group">
+                        <a href="project2_detail.html" class="btn-view">
+                            <span class="lang-en">📄 View Full Project Details</span>
+                            <span class="lang-th">📄 ดูรายละเอียดโปรเจกต์</span>
+                        </a>
+                        <a href="mockup.html" target="_blank" class="btn-view btn-half btn-green">📱 LINE UX</a>
+                        <a href="mock_mail.html" target="_blank" class="btn-view btn-half btn-alt">✉️ Email UX</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Project 2 (Hero) -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="hero-badge">Hero Project</span>
+                    <h3>Automated AR Reconciliation &amp; Multi-Invoice Payment Splitting</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lang-en"><strong>Challenge:</strong> Manual file generation (Copy/Paste) took &gt;2 hours daily, while legacy VLOOKUP reconciliation was prone to formula errors and difficult to audit.</p>
+                    <p class="lang-en"><strong>Solution:</strong> Built a Power Query ETL model for automated 3-way matching across 3PL, TMS, and ERP—paired with VBA macros to split TMS upload files and generate a pre-formatted dataset (<code>3PL Code</code>, <code>InvoiceNumber</code>, <code>Amount</code>) ready for direct Copy &amp; Paste into the <strong>Bulk RV API Web App</strong>.</p>
+                    
+                    <p class="lang-th"><strong>ปัญหา:</strong> การทำไฟล์ตัดรับชำระเงินแบบ Manual (Copy/Paste) ใช้เวลามากกว่า 2 ชั่วโมงต่อวัน และการผูกสูตร VLOOKUP เดิมเสี่ยงต่อความผิดพลาดและตรวจสอบยาก</p>
+                    <p class="lang-th"><strong>โซลูชัน:</strong> สร้างโมเดล Power Query ETL ทำ 3-Way Matching (3PL, TMS, ERP) คู่กับ VBA เพื่อแยกไฟล์อัปโหลดเข้า TMS และสร้างชุดข้อมูลสำเร็จรูป (<code>ตัวย่อ 3PL</code>, <code>InvoiceNumber</code>, <code>ยอดเงินแต่ละบิล</code>) ที่พร้อมส่งต่อเข้าสู่ <strong>Bulk RV API Web App</strong> </p>
+                    
+                    <div class="card-tags">
+                        <span class="card-tag">Power Query ETL</span>
+                        <span class="card-tag">Excel VBA</span>
+                        <span class="card-tag">3-Way Matching</span>
+                    </div>
+                    <div class="btn-group">
+                        <a href="project1.html" class="btn-view">
+                            <span class="lang-en">📄 View Full Project Details</span>
+                            <span class="lang-th">📄 ดูรายละเอียดโปรเจกต์</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 3 (Hero) -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="hero-badge">Hero Project</span>
+                    <h3>Bulk RV API Web App (3PL COD Settlement)</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lang-en"><strong>Challenge:</strong> High-volume COD transactions (&gt;10k/month) where a single 3PL payout covers thousands of invoices. Native ERP filters could not query or cross-reference invoices using external 3PL settlement parameters, forcing manual line-by-line clearing.</p>
+                    <p class="lang-en"><strong>Solution:</strong> Developed a middleware Web App (HTML/JS &amp; Google Apps Script) that seamlessly ingests the reconciled dataset (<code>3PL Code</code>, <code>InvoiceNumber</code>, <code>Amount</code>) from the <strong>3-Way Reconciliation tool</strong> via Copy &amp; Paste and batch-posts Receipt Vouchers (RV) via REST API in under 2 seconds.</p>
+                    
+                    <p class="lang-th"><strong>ปัญหา:</strong> รายการเก็บเงินปลายทาง (COD) กว่า 10,000 บิล/เดือน ที่ขนส่งโอนเงินรวมมาเป็นก้อน แต่ระบบ ERP เดิมไม่สามารถกรองหรืออ้างอิงบิลตามพารามิเตอร์จากรายงานของขนส่ง (3PL) ได้ ทำให้ต้องคีย์ตัดรับชำระทีละใบ</p>
+                    <p class="lang-th"><strong>โซลูชัน:</strong> พัฒนา Middleware Web App (HTML/JS และ Google Apps Script) ที่รับชุดข้อมูลซึ่งผ่านการ Reconcile แล้ว (<code>ตัวย่อ 3PL</code>, <code>InvoiceNumber</code>, <code>ยอดเงิน</code>) ต่อเนื่องจากโปรเจกต์ <strong>3-Way Reconciliation</strong> ผ่านการ Copy &amp; Paste เพื่อยิงสร้างใบสำคัญรับ (RV) แบบกลุ่มผ่าน REST API เสร็จภายใน 2 วินาที</p>
+                    
+                    <div class="card-tags">
+                        <span class="card-tag">REST API (JSON / MD5)</span>
+                        <span class="card-tag">JS / HTML Web App</span>
+                        <span class="card-tag">Batch AR Settlement</span>
+                    </div>
+                    <div class="btn-group">
+                        <a href="rv-api-project.html" class="btn-view">
+                            <span class="lang-en">📄 View Full Project Details</span>
+                            <span class="lang-th">📄 ดูรายละเอียดโปรเจกต์</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 4 (System Architecture) -->
+            <div class="card">
+                <div class="card-header support-header">
+                    <span class="arch-badge">System Architecture</span>
+                    <h3>TMS-ERP Integration Architecture</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lang-en"><strong>Challenge:</strong> Migrating from Epicor to TRCloud ERP required eliminating redundant Sales Order creation, manual invoicing, and complex multi-channel revenue &amp; Tax Point recognition (Bank Transfer, 2c2p, COD).</p>
+                    <p class="lang-en"><strong>Solution:</strong> Authored field-level System Mapping Specifications across <strong>12 business scenarios on 5 API endpoints</strong> (<code>IV</code>, <code>MR</code>, <code>CN</code>, <code>Update IV</code>, <code>GL</code>) with automated Tax Point anchoring, 3PL Carrier AR mapping, and simultaneous midnight GL Cut-off/Reversal logic.</p>
+                    
+                    <p class="lang-th"><strong>ปัญหา:</strong> การย้ายระบบจาก Epicor สู่ TRCloud ERP ต้องขจัดการสร้าง Sales Order ซ้ำซ้อน ลดการเปิด Invoice ด้วยมือ และจัดการความซับซ้อนของจุดความรับผิดทางภาษี (Tax Point) และการรับรู้รายได้แยกตามช่องทางชำระเงิน (Bank Transfer, 2c2p, COD)</p>
+                    <p class="lang-th"><strong>โซลูชัน:</strong> ออกแบบโครงสร้างและเขียน System Mapping Specification ระดับ Field-level ครอบคลุม <strong>12 เงื่อนไขธุรกิจ บน 5 API Endpoints</strong> (<code>IV</code>, <code>MR</code>, <code>CN</code>, <code>Update IV</code>, <code>GL</code>) พร้อมผูกสูตรบัญชีอัตโนมัติ ตั้งหนี้ลูกหนี้ขนส่ง และยิงปรับปรุง/กลับรายการรายได้และต้นทุนสินค้าระหว่างทาง (GL Cut-off/Reversal) ตอนเที่ยงคืน</p>
+                    
+                    <div class="card-tags">
+                        <span class="card-tag">12 Scenarios / 5 Endpoints</span>
+                        <span class="card-tag">API Payload Mapping</span>
+                        <span class="card-tag">Automated GL &amp; Tax Point</span>
+                    </div>
+                    <div class="btn-group">
+                        <a href="TMS-ERP-v11.html" class="btn-view btn-slate">
+                            <span class="lang-en">📄 View Architecture &amp; Spec</span>
+                            <span class="lang-th">📄 ดูสถาปัตยกรรมและสเปก API</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Project 5 (Enterprise ERP & BI) -->
+            <div class="card">
+                <div class="card-header support-header">
+                    <span class="arch-badge">ERP &amp; Executive BI</span>
+                    <h3>Epicor ERP Analytics &amp; Dashboard Development (~30 Modules)</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lang-en"><strong>Challenge:</strong> Fragmented relational ERP tables left Accounting, Procurement, Logistics, and Warehouse teams relying on manual Excel VLOOKUPs while executives lacked real-time financial visibility.</p>
+                    <p class="lang-en"><strong>Solution:</strong> Authored ~30 System Specifications (featuring 7 flagship modules: <code>ICRID001–005</code>, <code>007–008</code>), deployed native BAQ operational dashboards, and exposed JSON REST API pipelines to power interactive Power BI Executive Financial Dashboards (GP, Cost, Cash Flow).</p>
+                    
+                    <p class="lang-th"><strong>ปัญหา:</strong> โครงสร้างตารางฐานข้อมูล ERP ที่กระจายตัวทำให้ทีมบัญชี จัดซื้อ โลจิสติกส์ และคลังสินค้าต้องดึง Excel มาผูกสูตร VLOOKUP เอง และผู้บริหารไม่เห็นภาพรวมทางการเงินแบบ Real-time</p>
+                    <p class="lang-th"><strong>โซลูชัน:</strong> ออกแบบ System Specification และพัฒนา BAQ สร้างแดชบอร์ดภายในระบบ Epicor เกือบ 30 โมดูล (แสดงตัวอย่างเด่น 7 โมดูล: <code>ICRID001–005</code>, <code>007–008</code>) พร้อมเปิด REST API (JSON) ดึงเข้าสู่ Power BI สร้าง Executive Financial Dashboard วิเคราะห์กำไรขั้นต้น (GP), โครงสร้างต้นทุน และกระแสเงินสด</p>
+                    
+                    <div class="card-tags">
+                        <span class="card-tag">Epicor BAQ (~30 Dashboards)</span>
+                        <span class="card-tag">System Spec (ICRID)</span>
+                        <span class="card-tag">JSON API → Power BI</span>
+                    </div>
+                    <div class="btn-group">
+                        <a href="epc_dashboard.html" class="btn-view btn-slate">
+                            <span class="lang-en">📊 View Specs &amp; Interactive BI</span>
+                            <span class="lang-th">📊 ดูสเปกและแดชบอร์ด BI จำลอง</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer / Contact -->
+    <footer id="contact">
+        <div style="font-size: 1.15rem; font-weight: 600; color: #ffffff;">Nathan Vejvanitchayasakul (Bo)</div>
+        <div style="color: #94a3b8; font-size: 0.9rem; margin-top: 2px;">
+            <span class="lang-en">Bangkok, Thailand</span>
+            <span class="lang-th">กรุงเทพมหานคร, ประเทศไทย</span>
+        </div>
+        <div class="contact-links">
+            <a href="mailto:nathan.vejvanitchayasakul@gmail.com">✉️ nathan.vejvanitchayasakul@gmail.com</a>
+            <a href="tel:+66942961454">📞 (+66) 94-296-1454</a>
+        </div>
+        <p style="margin: 0; color: #64748b; font-size: 0.85rem;">
+            <span class="lang-en">© 2026 Nathan Vejvanitchayasakul. Built for Financial Precision &amp; Operational Excellence.</span>
+            <span class="lang-th">© 2026 Nathan Vejvanitchayasakul. มุ่งเน้นความแม่นยำทางการเงินและประสิทธิภาพการดำเนินงานสูงสุด</span>
+        </p>
+    </footer>
+
+    <script>
+        function setLanguage(lang) {
+            document.body.classList.remove('lang-th', 'lang-en');
+            document.body.classList.add('lang-' + lang);
+            document.getElementById('btn-th').classList.toggle('active', lang === 'th');
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            document.documentElement.lang = lang;
+            try { localStorage.setItem('nv_portfolio_lang', lang); } catch(e) {}
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const savedLang = localStorage.getItem('nv_portfolio_lang') || 'en';
+                setLanguage(savedLang);
+            } catch(e) {
+                setLanguage('en');
+            }
+        });
+    </script>
+</body>
+</html>

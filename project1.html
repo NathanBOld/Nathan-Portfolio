@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details | 3-Way Reconciliation | NV. Portfolio</title>
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --secondary-color: #38bdf8;
+            --bg-color: #f8fafc;
+            --text-color: #334155;
+        }
+        body { font-family: 'Segoe UI', system-ui, Tahoma, sans-serif; margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
+        
+        /* Language Toggle Visibility */
+        body.lang-th .lang-en { display: none !important; }
+        body.lang-en .lang-th { display: none !important; }
+
+        /* Header */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+        .logo { font-size: 1.5rem; font-weight: bold; color: white; text-decoration: none; letter-spacing: 1px; }
+        .logo span { color: var(--secondary-color); }
+        .nav-right { display: flex; align-items: center; gap: 18px; }
+        .lang-switcher {
+            display: inline-flex;
+            background: #1e293b;
+            border-radius: 6px;
+            padding: 3px;
+            border: 1px solid #334155;
+        }
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            font-family: inherit;
+            font-size: 12.5px;
+            font-weight: 700;
+            padding: 4px 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover { color: #ffffff; }
+        .lang-btn.active { background: var(--secondary-color); color: var(--primary-color); }
+        .back-btn { color: var(--secondary-color); text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+        .back-btn:hover { text-decoration: underline; }
+        
+        /* Container */
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        h1 { color: var(--primary-color); border-bottom: 3px solid var(--secondary-color); display: inline-block; padding-bottom: 10px; margin-bottom: 10px; }
+        
+        /* 2 Perspectives Section */
+        .perspectives { background: white; padding: 28px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 40px; border: 1px solid #e2e8f0; }
+        .perspectives h2 { margin-top: 0; color: #1e293b; }
+        .perspective-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .perspective-grid { grid-template-columns: 1fr; } }
+        .business-view { background-color: #eff6ff; padding: 20px; border-left: 4px solid #3b82f6; border-radius: 5px; }
+        .technical-view { background-color: #f5f3ff; padding: 20px; border-left: 4px solid #8b5cf6; border-radius: 5px; }
+        
+        /* Flowchart Section */
+        .architecture { background: white; padding: 28px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 40px; border: 1px solid #e2e8f0; }
+        .architecture h2 { margin-top: 0; color: #1e293b; }
+        .flowchart-img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        /* --- ระบบ Modal/Lightbox สำหรับขยายรูปภาพ --- */
+        .manual-img { cursor: zoom-in; transition: 0.3s; }
+        .manual-img:hover { opacity: 0.85; box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important; }
+
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 1000;
+            padding-top: 50px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.95); 
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            animation: zoomIn 0.3s ease;
+        }
+        @keyframes zoomIn { from {transform:scale(0.9); opacity:0;} to {transform:scale(1); opacity:1;} }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: #f8fafc;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .close-btn:hover { color: var(--secondary-color); }
+    </style>
+</head>
+<body class="lang-en">
+
+    <header>
+        <a href="index.html" class="logo">NV<span>.</span></a>
+        <div class="nav-right">
+            <div class="lang-switcher" role="group" aria-label="Language Switcher">
+                <button type="button" id="btn-th" class="lang-btn" onclick="setLanguage('th')">TH</button>
+                <button type="button" id="btn-en" class="lang-btn active" onclick="setLanguage('en')">EN</button>
+            </div>
+            <a href="index.html" class="back-btn">
+                <span class="lang-en">← Back to Portfolio</span>
+                <span class="lang-th">← กลับหน้าหลัก</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Automated AR Reconciliation &amp; Multi-Invoice Payment Splitting</h1>
+        <p style="font-size: 1.08rem; color: #475569; margin-bottom: 30px;">
+            <span class="lang-en">A zero-formula automation built with Power Query and Excel VBA to map, audit, and reconcile Cash on Delivery (COD) payment data across 3PL carriers, TMS, and ERP systems.</span>
+            <span class="lang-th">ระบบกระทบยอดลูกหนี้ (3-Way Reconciliation) และแยกไฟล์ตัดรับชำระเงินอัตโนมัติแบบไม่ต้องพึ่งสูตร Excel พัฒนาด้วย Power Query ETL และคำสั่ง VBA Macro เชื่อมข้อมูลระหว่าง ขนส่ง (3PL), ระบบ TMS และ ERP</span>
+        </p>
+
+        <!-- 2 Perspectives Section -->
+        <div class="perspectives">
+            <h2>
+                <span class="lang-en">1. Project Overview: 2 Perspectives</span>
+                <span class="lang-th">1. ภาพรวมโปรเจกต์จาก 2 มุมมองหลัก</span>
+            </h2>
+            <div class="perspective-grid">
+                <!-- มุมมองที่ 1 -->
+                <div class="business-view">
+                    <h3 style="color: #2563eb; margin-top:0;">
+                        <span class="lang-en">1. Business Perspective</span>
+                        <span class="lang-th">1. มุมมองด้านธุรกิจ (Business Perspective)</span>
+                    </h3>
+                    <p class="lang-en"><strong>Goal:</strong> Optimize operational time and eliminate financial leakage.</p>
+                    <ul class="lang-en">
+                        <li>Reduced manual file generation (Copy/Paste) time from <strong>&gt;2 hours to mere minutes</strong>.</li>
+                        <li>Eliminated human errors and visual clutter caused by fragile manual VLOOKUP formulas.</li>
+                        <li>Prevented duplicate document uploads into the TMS system proactively.</li>
+                        <li><strong>Seamless Downstream Integration (<code>Tab: PostToRV</code>):</strong> Automatically outputs a structured 3-column table—<code>PaidDate/Customer</code> (composite batch key: <code>ddMMyyyy + 3PL Code + 3PL Payment Run#</code>, e.g., <code>07112025DHL6</code>, used to separate distinct lump-sum payment batches), <code>InvoiceNumber</code>, and <code>Amount</code>—pre-filtered using TRCloud's <code>Status = Debtor</code> to exclude already-posted RV invoices, ready for direct Copy &amp; Paste into the <a href="rv-api-project.html" style="color:#1d4ed8; font-weight:700; text-decoration:underline;">Bulk RV API Web App</a>.</li>
+                    </ul>
+
+                    <p class="lang-th"><strong>เป้าหมาย:</strong> ลดเวลาปฏิบัติงานหน้างานและป้องกันความผิดพลาดทางการเงิน</p>
+                    <ul class="lang-th">
+                        <li>ลดเวลาการทำไฟล์ตัดรับชำระ (Copy/Paste) จากเดิม <strong>มากกว่า 2 ชั่วโมงต่อวัน เหลือเพียงไม่กี่นาที</strong></li>
+                        <li>ขจัดความผิดพลาดจากคน (Human Error) และปัญหาไฟล์ค้างจากการผูกสูตร VLOOKUP จำนวนมาก</li>
+                        <li>ป้องกันการอัปโหลดเอกสารตัดรับชำระซ้ำเข้าสู่ระบบ TMS ล่วงหน้าอย่างเป็นระบบ</li>
+                        <li><strong>เชื่อมต่อกระบวนการตัดหนี้ ERP แบบไร้รอยต่อ (<code>Tab: PostToRV</code>):</strong> สร้างตารางข้อมูลสำเร็จรูป 3 คอลัมน์ ได้แก่ <code>PaidDate/Customer</code> (รหัสแยกก้อนชำระเงิน: <code>วันที่รับชำระ ddMMyyyy + รหัส 3PL + เลข Run ก้อนการจ่ายเงินของ 3PL</code> เช่น <code>07112025DHL6</code>), <code>InvoiceNumber</code> และ <code>Amount</code> โดยกรองเอาเฉพาะบิลที่ยังไม่เคยตัดรับชำระด้วย <code>Status = Debtor</code> จากระบบ TRCloud (TRC) เพื่อให้พนักงาน Copy &amp; Paste ส่งต่อเข้าสู่ <a href="rv-api-project.html" style="color:#1d4ed8; font-weight:700; text-decoration:underline;">Bulk RV API Web App</a> ได้ทันทีโดยไม่เกิดการโพสต์ RV ซ้ำ</li>
+                    </ul>
+                </div>
+                <!-- มุมมองที่ 2 -->
+                <div class="technical-view">
+                    <h3 style="color: #7c3aed; margin-top:0;">
+                        <span class="lang-en">2. Technical Perspective</span>
+                        <span class="lang-th">2. มุมมองด้านเทคนิค (Technical Perspective)</span>
+                    </h3>
+                    <p class="lang-en"><strong>Goal:</strong> Build a robust, scalable, and foolproof data pipeline.</p>
+                    <ul class="lang-en">
+                        <li><strong>Power Query (ETL &amp; Gatekeeper):</strong> Reconciles data across 3rd-Party Logistics, TMS, and TRCloud ERP. Filters strictly for matched, un-uploaded records and dynamically pre-generates target filenames.</li>
+                        <li><strong>Dual-Output &amp; Dual-Gatekeeper Architecture:</strong> Prevents duplicate TMS uploads via <code>DO Reconciled</code> and prevents duplicate ERP RV postings in <code>Tab: PostToRV</code> by filtering TRCloud data strictly for <code>Status = Debtor</code>—generating a composite batch key in <code>PaidDate/Customer</code> (<code>ddMMyyyy &amp; 3PL Code &amp; 3PL Payment Run#</code>) alongside <code>InvoiceNumber</code> and <code>Amount</code> to group invoices by exact payment transfer batch.</li>
+                        <li><strong>VBA Automation &amp; Zero-Formula Approach:</strong> Reads pre-generated filenames to group invoices, auto-creates individual sheets, and exports separate standardized files without fragile cell formulas.</li>
+                    </ul>
+
+                    <p class="lang-th"><strong>เป้าหมาย:</strong> สร้างโครงสร้างประมวลผลข้อมูลที่แข็งแกร่ง รองรับปริมาณข้อมูลสูง และตรวจสอบได้</p>
+                    <ul class="lang-th">
+                        <li><strong>Power Query (ETL &amp; Gatekeeper):</strong> กระทบยอดข้อมูล 3 ทาง (3PL, TMS, TRCloud ERP) คัดกรองเฉพาะรายการที่ตรงกันและยังไม่เคยอัปโหลด พร้อมสร้างรหัสชื่อไฟล์ปลายทางให้อัตโนมัติ</li>
+                        <li><strong>Dual-Output &amp; Dual-Gatekeeper Architecture:</strong> ป้องกันข้อมูลซ้ำทั้ง 2 ระบบ โดยฝั่ง TMS กรองด้วยชีท <code>DO Reconciled</code> ส่วนฝั่ง ERP ในแท็บ <code>PostToRV</code> กรองอินวอยซ์ที่เคย Post RV ไปแล้วออกด้วยฟิลด์ <code>Status = Debtor</code> จากชีท <code>TRC</code> และผูกสูตรสร้างคีย์ <code>PaidDate/Customer</code> (<code>วันที่รับชำระ ddMMyyyy &amp; 3PL Code &amp; Run Number ของก้อนเงินโอน 3PL</code>) คู่กับ <code>InvoiceNumber</code> และ <code>Amount</code> เพื่อใช้แยกก้อนการรับชำระเงิน (RV Batch) อย่างแม่นยำ</li>
+                        <li><strong>VBA Automation &amp; Zero-Formula Approach:</strong> อ่านรหัสชื่อไฟล์เพื่อแยกสร้างชีทย่อยและส่งออกไฟล์ Excel แยกตามรอบการโอนโดยไม่ต้องพึ่งสูตรในเซลล์</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flowchart Section (Interactive Mermaid with Tab: PostToRV) -->
+        <div class="architecture">
+            <h2>
+                <span class="lang-en">2. System Architecture &amp; Flowchart (COD Payment + PostToRV Pipeline)</span>
+                <span class="lang-th">2. สถาปัตยกรรมระบบและผังการทำงาน (3-Way Reconciliation &amp; Tab: PostToRV)</span>
+            </h2>
+            <p class="lang-en">The flowchart below illustrates the end-to-end data pipeline, highlighting the 3-source ETL process, duplicate prevention, and the 3 output tabs: <strong>TMS Check</strong> (Audit), <strong>Create DO</strong> (Split &amp; Export to TMS), and <strong>PostToRV</strong> (Copy &amp; Paste directly to the Bulk RV API Web App).</p>
+            <p class="lang-th">แผนผังด้านล่างแสดงกระบวนการทำงานแบบ End-to-End ตั้งแต่การดึงข้อมูล 3 ทาง (3PL, TMS, ERP) การป้องกันข้อมูลซ้ำ ไปจนถึงผลลัพธ์ทั้ง 3 แท็บ: <strong>TMS Check</strong> (ตรวจสอบ), <strong>Create DO</strong> (แยกไฟล์อัปโหลดเข้า TMS) และ <strong>PostToRV</strong> (เตรียมข้อมูล ตัวย่อ 3PL, InvoiceNumber, ยอดเงิน สำหรับ Copy &amp; Paste ไปยัง Bulk RV API Web App)</p>
+
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 25px 15px; margin-top: 20px; overflow-x: auto; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <!-- ENGLISH MERMAID FLOWCHART -->
+                <div id="mermaid-en-container" class="lang-en">
+                    <pre class="mermaid" style="margin: 0; text-align: center; background: transparent;">
+flowchart TD
+    classDef srcBox fill:#eff6ff,stroke:#2563eb,color:#1e3a8a,stroke-width:1.5px
+    classDef pqEngine fill:#fff7ed,stroke:#ea580c,color:#9a3412,stroke-width:2px
+    classDef tabAudit fill:#faf5ff,stroke:#9333ea,color:#581c87,stroke-width:1.5px
+    classDef tabDO fill:#f0fdf4,stroke:#16a34a,color:#14532d,stroke-width:1.5px
+    classDef tabRV fill:#ecfeff,stroke:#0891b2,color:#164e63,stroke-width:2px
+    classDef actBtn fill:#fefce8,stroke:#ca8a04,color:#854d0e,stroke-width:1.5px,rx:18,ry:18
+    classDef resBox fill:#fef2f2,stroke:#dc2626,color:#7f1d1d,stroke-width:1.5px
+    classDef resRV fill:#f0f9ff,stroke:#0284c7,color:#0c4a6e,stroke-width:2px
+
+    subgraph S1 ["1. Data Sources"]
+        DS1["<b>3rd Party Reports</b><br/>DHL, Flash, Kerry, DPX"]:::srcBox
+        DS2["<b>TMS-Sales Report</b>"]:::srcBox
+        DS3["<b>ERP TRCloud-Invoice (Tab: TRC)</b><br/>Includes Invoice Status (Debtor / Paid)"]:::srcBox
+        DS4["<b>TMS-DO Reconciled</b><br/>To prevent duplicate TMS upload"]:::srcBox
+    end
+
+    subgraph S2 ["2. Core Engine"]
+        PQ[("<b>Power Query Engine</b><br/>Collect, Clean &amp; 3-Way Match")]:::pqEngine
+    end
+
+    subgraph S3 ["3. Multi-Purpose Output Tabs (Excel)"]
+        T_CHECK["<b>Tab: TMS Check - Audit View</b><br/>// Perform 3-Way Reconciliation<br/>based on TMS DO Date"]:::tabAudit
+        T_DO["<b>Tab: Create DO - Operation View</b><br/>// Extract paid items not yet<br/>uploaded to TMS"]:::tabDO
+        T_RV["<b>Tab: PostToRV - ERP API View</b><br/>// Filter TRC Status = 'Debtor' (Unpaid)<br/>PaidDate/Customer (ddMMyyyy+3PL+Run#) | InvoiceNumber | Amount"]:::tabRV
+    end
+
+    subgraph S4 ["4. Action Buttons (VBA &amp; User Actions)"]
+        B_REF(["Click <b>'Refresh'</b> Button"]):::actBtn
+        B_SPLIT(["Click <b>'Split'</b> Button:<br/>Split Data into Multiple Tabs"]):::actBtn
+        B_EXP(["Click <b>'Export'</b> Button:<br/>Create &amp; Format Excel Files"]):::actBtn
+        B_CLR(["Click <b>'Clear'</b> Button:<br/>Delete Temporary Split Sheets"]):::actBtn
+    end
+
+    subgraph S5 ["5. Final Results (Dual Output: TMS &amp; ERP)"]
+        R_BATCH[("<b>Batch Files (.xlsx)</b><br/>Cut operation time by 2+ hours")]:::resBox
+        R_TMS["<b>Upload to TMS</b><br/>(Accounting &gt;&gt; Batch List)"]:::resBox
+        R_RV["<b>Copy &amp; Paste to Bulk RV API Web App</b><br/>Batch-post Receipt Vouchers (RV)<br/>to TRCloud ERP via REST API"]:::resRV
+    end
+
+    DS1 & DS2 & DS3 --> PQ
+    DS4 -.->|"Check TMS Duplicates"| PQ
+
+    PQ -->|"Process Data"| T_CHECK
+    PQ -->|"Process Data"| T_DO
+    PQ -->|"Filter Status = Debtor"| T_RV
+
+    B_REF -.->|"Fetch Latest Data"| T_CHECK
+    B_REF -.->|"Fetch Latest Data"| T_DO
+    B_REF -.->|"Fetch Latest Data"| T_RV
+    T_CHECK -.-> T_DO
+
+    T_DO -->|"User Action"| B_SPLIT
+    B_SPLIT --> B_EXP
+    B_EXP --> B_CLR
+    B_EXP --> R_BATCH
+    R_BATCH --> R_TMS
+
+    T_RV ==>|"Copy &amp; Paste (PaidDate/Customer, InvoiceNumber, Amount)"| R_RV
+                    </pre>
+                </div>
+
+                <!-- THAI MERMAID FLOWCHART -->
+                <div id="mermaid-th-container" class="lang-th">
+                    <pre class="mermaid" style="margin: 0; text-align: center; background: transparent;">
+flowchart TD
+    classDef srcBox fill:#eff6ff,stroke:#2563eb,color:#1e3a8a,stroke-width:1.5px
+    classDef pqEngine fill:#fff7ed,stroke:#ea580c,color:#9a3412,stroke-width:2px
+    classDef tabAudit fill:#faf5ff,stroke:#9333ea,color:#581c87,stroke-width:1.5px
+    classDef tabDO fill:#f0fdf4,stroke:#16a34a,color:#14532d,stroke-width:1.5px
+    classDef tabRV fill:#ecfeff,stroke:#0891b2,color:#164e63,stroke-width:2px
+    classDef actBtn fill:#fefce8,stroke:#ca8a04,color:#854d0e,stroke-width:1.5px,rx:18,ry:18
+    classDef resBox fill:#fef2f2,stroke:#dc2626,color:#7f1d1d,stroke-width:1.5px
+    classDef resRV fill:#f0f9ff,stroke:#0284c7,color:#0c4a6e,stroke-width:2px
+
+    subgraph S1_TH ["1. แหล่งข้อมูลดิบ (Data Sources)"]
+        DS1_T["<b>3rd Party Reports</b><br/>DHL, Flash, Kerry, DPX"]:::srcBox
+        DS2_T["<b>TMS-Sales Report</b>"]:::srcBox
+        DS3_T["<b>ERP TRCloud-Invoice (Tab: TRC)</b><br/>ใช้เช็ค Status = Debtor เพื่อกรองบิลที่เคย Post RV แล้ว"]:::srcBox
+        DS4_T["<b>TMS-DO Reconciled</b><br/>ป้องกันการอัปโหลดข้อมูลซ้ำเข้า TMS"]:::srcBox
+    end
+
+    subgraph S2_TH ["2. ระบบประมวลผลหลัก (Core Engine)"]
+        PQ_T[("<b>Power Query Engine</b><br/>รวบรวม ทำความสะอาด และทำ 3-Way Matching")]:::pqEngine
+    end
+
+    subgraph S3_TH ["3. ชีทผลลัพธ์ทั้ง 3 มุมมอง (Multi-Purpose Output Tabs)"]
+        T_CHECK_T["<b>Tab: TMS Check - Audit View</b><br/>// กระทบยอด 3 ทาง (3-Way Reconciliation)<br/>ตามวันที่สร้าง DO ใน TMS"]:::tabAudit
+        T_DO_T["<b>Tab: Create DO - Operation View</b><br/>// ดึงรายการที่รับชำระแล้ว<br/>แต่ยังไม่เคยอัปโหลดเข้า TMS"]:::tabDO
+        T_RV_T["<b>Tab: PostToRV - ERP API View</b><br/>// กรองเฉพาะบิลค้างชำระ (TRC Status = Debtor)<br/>PaidDate/Customer (ddMMyyyy+3PL+Run# แยกก้อนโอน) | InvoiceNumber | Amount"]:::tabRV
+    end
+
+    subgraph S4_TH ["4. ปุ่มคำสั่งอัตโนมัติ (Action Buttons - VBA)"]
+        B_REF_T(["กดปุ่ม <b>'Refresh'</b>"]):::actBtn
+        B_SPLIT_T(["กดปุ่ม <b>'Split'</b>:<br/>แยกข้อมูลออกเป็นหลายชีทตามรอบโอน"]):::actBtn
+        B_EXP_T(["กดปุ่ม <b>'Export'</b>:<br/>สร้างและจัดรูปแบบไฟล์ Excel แยกใบ"]):::actBtn
+        B_CLR_T(["กดปุ่ม <b>'Clear'</b>:<br/>ลบชีทย่อยที่สร้างชั่วคราวออก"]):::actBtn
+    end
+
+    subgraph S5_TH ["5. ผลลัพธ์สุดท้าย (เชื่อมทั้ง TMS และ ERP)"]
+        R_BATCH_T[("<b>Batch Files (.xlsx)</b><br/>ลดเวลาทำงานมากกว่า 2 ชั่วโมง/วัน")]:::resBox
+        R_TMS_T["<b>Upload to TMS</b><br/>อัปโหลดเข้าเมนู Batch List ใน TMS"]:::resBox
+        R_RV_T["<b>Copy &amp; Paste ไปยัง Bulk RV API Web App</b><br/>ยิงสร้างใบสำคัญรับ (RV) ล้างหนี้ใน TRCloud ERP<br/>ผ่าน REST API เสร็จภายใน 2 วินาที"]:::resRV
+    end
+
+    DS1_T & DS2_T & DS3_T --> PQ_T
+    DS4_T -.->|"เช็ครายการซ้ำฝั่ง TMS"| PQ_T
+
+    PQ_T -->|"ประมวลผลข้อมูล"| T_CHECK_T
+    PQ_T -->|"ประมวลผลข้อมูล"| T_DO_T
+    PQ_T -->|"กรองเฉพาะ Status = Debtor"| T_RV_T
+
+    B_REF_T -.->|"ดึงข้อมูลล่าสุด"| T_CHECK_T
+    B_REF_T -.->|"ดึงข้อมูลล่าสุด"| T_DO_T
+    B_REF_T -.->|"ดึงข้อมูลล่าสุด"| T_RV_T
+    T_CHECK_T -.-> T_DO_T
+
+    T_DO_T -->|"User Action"| B_SPLIT_T
+    B_SPLIT_T --> B_EXP_T
+    B_EXP_T --> B_CLR_T
+    B_EXP_T --> R_BATCH_T
+    R_BATCH_T --> R_TMS_T
+
+    T_RV_T ==>|"Copy &amp; Paste (PaidDate/Customer, InvoiceNumber, Amount)"| R_RV_T
+                    </pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Manual Section -->
+        <div class="user-manual" style="background: white; padding: 28px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 40px; border: 1px solid #e2e8f0;">
+            <h2 style="margin-top: 0; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
+                <span class="lang-en">3. Step-by-Step User Guide</span>
+                <span class="lang-th">3. คู่มือการใช้งานระบบทีละขั้นตอน (Step-by-Step User Guide)</span>
+            </h2>
+            <p style="color: #64748b; margin-bottom: 25px;">
+                <span class="lang-en">Operational workflow guide for end-users executing daily 3-Way COD Reconciliation (Click any image to enlarge).</span>
+                <span class="lang-th">คู่มือการปฏิบัติงานสำหรับผู้ใช้งานหน้างาน (End-User) ในการทำ 3-Way Reconciliation รายวัน (คลิกที่รูปเพื่อขยายขนาดใหญ่)</span>
+            </p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px;">
+                
+                <!-- Step 1 -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px;">
+                    <div style="background: #3b82f6; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; margin-bottom: 15px;">1</div>
+                    <img src="DataBaseSheet.png" onerror="this.onerror=null;this.src='DataBaseSheet.jpg';" alt="Step 1" class="manual-img" onclick="openModal(this.src)" style="width: 100%; border-radius: 5px; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="margin: 15px 0 5px 0; color: #334155;">1. Export &amp; Paste Raw Data</h4>
+                    <p class="lang-en" style="margin: 0; font-size: 0.9rem; color: #64748b;">Download raw data reports from 3rd-Party Logistics, TMS, and ERP systems and paste them into the designated color-coded sheets (Green, Orange, Red tabs).</p>
+                    <p class="lang-th" style="margin: 0; font-size: 0.9rem; color: #64748b;">ดาวน์โหลดไฟล์ข้อมูลดิบจากระบบ 3rd-Party Logistics, TMS และ ERP นำมาวางตามชีทที่กำหนด (แท็บสีเขียว, ส้ม, แดง)</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px;">
+                    <div style="background: #3b82f6; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; margin-bottom: 15px;">2</div>
+                    <img src="TMS Date.png" onerror="this.onerror=null;this.src='TMS Date.jpg';" alt="Step 2" class="manual-img" onclick="openModal(this.src)" style="width: 100%; border-radius: 5px; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="margin: 15px 0 5px 0; color: #334155;">2. Refresh Power Query Reconciliation</h4>
+                    <p class="lang-en" style="margin: 0; font-size: 0.9rem; color: #64748b;">Navigate to the "TMS Check" sheet, enter the target DO Creation Date range, and click the blue Refresh button to automatically execute 3-source reconciliation.</p>
+                    <p class="lang-th" style="margin: 0; font-size: 0.9rem; color: #64748b;">ไปที่ชีท TMS Check ใส่วันที่ของ DO Create Date ที่ต้องการกระทบยอด จากนั้นกดปุ่มสีฟ้า ระบบจะดึงข้อมูลจาก 3 แหล่งมา Reconcile ให้อัตโนมัติ</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px;">
+                    <div style="background: #3b82f6; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; margin-bottom: 15px;">3</div>
+                    <img src="Refresh Button.png" onerror="this.onerror=null;this.src='Refresh Button.jpg';" alt="Step 3" class="manual-img" onclick="openModal(this.src)" style="width: 100%; border-radius: 5px; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="margin: 15px 0 5px 0; color: #334155;">3. Refresh Output Tabs (Create DO &amp; PostToRV)</h4>
+                    <p class="lang-en" style="margin: 0; font-size: 0.9rem; color: #64748b;">Click "Refresh" to update both <strong>Tab: Create DO</strong> (filtered against <code>DO Reconciled</code>) and <strong>Tab: PostToRV</strong>—which filters <code>TRC</code> for <code>Status = Debtor</code> and constructs <code>PaidDate/Customer</code> (<code>ddMMyyyy + 3PL Code + 3PL Payment Run#</code>, e.g., <code>07112025DHL6</code> to separate payment batches), <code>InvoiceNumber</code>, and <code>Amount</code>.</p>
+                    <p class="lang-th" style="margin: 0; font-size: 0.9rem; color: #64748b;">กดปุ่ม "Refresh" เพื่ออัปเดตชีท <strong>Create DO</strong> และชีท <strong>PostToRV</strong> ซึ่งกรองเฉพาะบิลที่สถานะใน <code>TRC</code> เป็น <code>Debtor</code> พร้อมสร้างรหัส <code>PaidDate/Customer</code> (<code>วันที่รับชำระ ddMMyyyy + 3PL Code + เลข Run ก้อนชำระเงิน</code> เช่น <code>07112025DHL6</code> เพื่อใช้แยกก้อนเงินโอน), <code>InvoiceNumber</code> และ <code>Amount</code></p>
+                </div>
+
+                <!-- Step 4 -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px;">
+                    <div style="background: #3b82f6; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; margin-bottom: 15px;">4</div>
+                    <img src="Split Button.png" onerror="this.onerror=null;this.src='Split Button.jpg';" alt="Step 4" class="manual-img" onclick="openModal(this.src)" style="width: 100%; border-radius: 5px; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="margin: 15px 0 5px 0; color: #334155;">4. Split into Batch Sheets</h4>
+                    <p class="lang-en" style="margin: 0; font-size: 0.9rem; color: #64748b;">Click the "Split" macro button to partition the reconciled records into separate worksheets by carrier and payout date.</p>
+                    <p class="lang-th" style="margin: 0; font-size: 0.9rem; color: #64748b;">กดปุ่ม "Split" เพื่อให้ระบบแยกข้อมูลตามกลุ่มชื่อไฟล์ที่สร้างไว้</p>
+                </div>
+        
+                <!-- Step 5 -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px;">
+                    <div style="background: #3b82f6; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; margin-bottom: 15px;">5</div>
+                    <img src="Split.png" onerror="this.onerror=null;this.src='Split.jpg';" alt="Step 5" class="manual-img" onclick="openModal(this.src)" style="width: 100%; border-radius: 5px; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="margin: 15px 0 5px 0; color: #334155;">5. Review Generated Sheets</h4>
+                    <p class="lang-en" style="margin: 0; font-size: 0.9rem; color: #64748b;">The macro automatically groups invoices into individual sheets and displays a completion confirmation dialog. Click "OK".</p>
+                    <p class="lang-th" style="margin: 0; font-size: 0.9rem; color: #64748b;">ระบบแยกกลุ่มของ Invoice ไปอยู่ในแต่ละชีทอัตโนมัติ และจะมีกล่องข้อความแจ้งเสร็จสิ้นการทำงาน กด "OK"</p>
+                </div>
+    
+                <!-- Step 6 -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px;">
+                    <div style="background: #3b82f6; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; margin-bottom: 15px;">6</div>
+                    <img src="Export Button.png" onerror="this.onerror=null;this.src='Export Button.jpg';" alt="Step 6" class="manual-img" onclick="openModal(this.src)" style="width: 100%; border-radius: 5px; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="margin: 15px 0 5px 0; color: #334155;">6. Export Individual Files</h4>
+                    <p class="lang-en" style="margin: 0; font-size: 0.9rem; color: #64748b;">Click the "Export" button to convert each separated worksheet into an individual upload-ready Excel workbook.</p>
+                    <p class="lang-th" style="margin: 0; font-size: 0.9rem; color: #64748b;">กดปุ่ม "Export" เพื่อส่งออกแต่ละชีทเป็นไฟล์ Excel แยกตามรอบการโอน</p>
+                </div>
+
+                <!-- Step 7 -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px;">
+                    <div style="background: #3b82f6; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; margin-bottom: 15px;">7</div>
+                    <img src="Location_Define.png" onerror="this.onerror=null;this.src='Location_Define.jpg';" alt="Step 7" class="manual-img" onclick="openModal(this.src)" style="width: 100%; border-radius: 5px; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="margin: 15px 0 5px 0; color: #334155;">7. Select Target Folder</h4>
+                    <p class="lang-en" style="margin: 0; font-size: 0.9rem; color: #64748b;">Specify the destination folder to save the exported reconciliation files (select an existing directory or create a new folder).</p>
+                    <p class="lang-th" style="margin: 0; font-size: 0.9rem; color: #64748b;">ระบุโฟลเดอร์ปลายทางที่ต้องการเก็บไฟล์ข้อมูล สามารถเลือกโฟลเดอร์ที่มีอยู่แล้ว หรือสร้างโฟลเดอร์ใหม่ก็ได้</p>
+                </div>
+        
+                <!-- Step 8 -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px;">
+                    <div style="background: #3b82f6; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; margin-bottom: 15px;">8</div>
+                    <img src="Clear_Button.png" onerror="this.onerror=null;this.src='Clear_Button.jpg';" alt="Step 8" class="manual-img" onclick="openModal(this.src)" style="width: 100%; border-radius: 5px; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="margin: 15px 0 5px 0; color: #334155;">8. Clear Workspace</h4>
+                    <p class="lang-en" style="margin: 0; font-size: 0.9rem; color: #64748b;">Click the "Clear" button to remove temporary split sheets and reset the workbook for the next reconciliation cycle.</p>
+                    <p class="lang-th" style="margin: 0; font-size: 0.9rem; color: #64748b;">กดปุ่ม "Clear" ระบบจะล้างชีทย่อยที่ถูกสร้างชั่วคราวออกทั้งหมด เพื่อเตรียมพร้อมทำงานในรอบต่อไป</p>
+                </div>
+
+                <!-- Step 9 -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px;">
+                    <div style="background: #3b82f6; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; margin-bottom: 15px;">9</div>
+                    <img src="Final_File.png" onerror="this.onerror=null;this.src='Final_File.jpg';" alt="Step 9" class="manual-img" onclick="openModal(this.src)" style="width: 100%; border-radius: 5px; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="margin: 15px 0 5px 0; color: #334155;">9. Verify Exported Files</h4>
+                    <p class="lang-en" style="margin: 0; font-size: 0.9rem; color: #64748b;">Inspect the generated batch files in the target folder—each named automatically with the payment date and 3PL carrier code.</p>
+                    <p class="lang-th" style="margin: 0; font-size: 0.9rem; color: #64748b;">ตรวจสอบไฟล์ที่สร้างใหม่ในโฟลเดอร์ที่เลือก ซึ่งตั้งชื่อตามวันที่รับชำระและรหัสขนส่งโดยอัตโนมัติ</p>
+                </div>
+
+                <!-- Step 10 -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px;">
+                    <div style="background: #3b82f6; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; margin-bottom: 15px;">10</div>
+                    <img src="TMS-UploadReconcile.jpg" onerror="this.onerror=null;this.src='TMS-UploadReconcile.png';" alt="Step 10" class="manual-img" onclick="openModal(this.src)" style="width: 100%; border-radius: 5px; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="margin: 15px 0 5px 0; color: #334155;">10. Batch Import into TMS</h4>
+                    <p class="lang-en" style="margin: 0; font-size: 0.9rem; color: #64748b;">In TMS, navigate to Accounting &gt;&gt; Batch List &gt;&gt; Import. Attach the generated file and select the Last-Mile carrier and payment date indicated by the filename.</p>
+                    <p class="lang-th" style="margin: 0; font-size: 0.9rem; color: #64748b;">อัปโหลดไฟล์บนระบบ TMS โดยไปที่เมนู Accounting &gt;&gt; Batch List &gt;&gt; Import เลือกไฟล์ที่สร้าง แล้วเลือกขนส่ง (Lastmile) และวันที่โอนเงินตามที่ระบุในชื่อไฟล์</p>
+                </div>
+
+		<!-- Step 11 -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px;">
+                    <div style="background: #3b82f6; color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; margin-bottom: 15px;">11</div>
+                    <img src="DataPostRV.jpg" onerror="this.onerror=null;this.src='DataPostRV.png';" alt="Step 10" class="manual-img" onclick="openModal(this.src)" style="width: 100%; border-radius: 5px; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="margin: 15px 0 5px 0; color: #334155;">11. Invoice Data for Bulk RV API System</h4>
+                    <p class="lang-en" style="margin: 0; font-size: 0.9rem; color: #64748b;">Go to PostToRV Tab, then copy the data from the InvoiceNumber and Amount columns, open the <a href="rv-api-project.html" style="color:#1d4ed8; font-weight:700; text-decoration:underline;">Bulk RV API Web App</a>.</li> and paste it into the table. Then, use the data from the PaidDate/Customer column to select the customer and specify the document date.</p>
+                    <p class="lang-th" style="margin: 0; font-size: 0.9rem; color: #64748b;">ไปที่ PostToRV Tab แล้วคัดลอกข้อมูลในคอลัมน์ InvoiceNumber และ Amount เปิดลิงค์ <a href="rv-api-project.html" style="color:#1d4ed8; font-weight:700; text-decoration:underline;">Bulk RV API Web App</a>.</li> แล้ววางข้อมูลลงในตาราง และใช้ข้อมูลจากคอลัมน์ PaidDate/Customer เพื่อเลือกลูกค้า และระบุวันที่ของเอกสาร</p>
+                </div>
+
+            </div>
+        </div>
+
+    </div> <!-- ปิด container -->
+
+    <!-- HTML สำหรับหน้าต่างขยายภาพเต็มจอ (Modal) -->
+    <div id="imageModal" class="modal">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="fullImage">
+    </div>
+
+    <!-- Script ควบคุมการทำงานของ Modal และ Language Switcher -->
+    <script>
+        function openModal(imgSrc) {
+            document.getElementById("imageModal").style.display = "block";
+            document.getElementById("fullImage").src = imgSrc;
+        }
+
+        function closeModal() {
+            document.getElementById("imageModal").style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            let modal = document.getElementById("imageModal");
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        function setLanguage(lang) {
+            document.body.classList.remove('lang-th', 'lang-en');
+            document.body.classList.add('lang-' + lang);
+            document.getElementById('btn-th').classList.toggle('active', lang === 'th');
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            document.documentElement.lang = lang;
+            try { localStorage.setItem('nv_portfolio_lang', lang); } catch(e) {}
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const savedLang = localStorage.getItem('nv_portfolio_lang') || 'en';
+                setLanguage(savedLang);
+            } catch(e) {
+                setLanguage('en');
+            }
+        });
+    </script>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        async function renderAllMermaid() {
+            const thContainer = document.getElementById('mermaid-th-container');
+            const enContainer = document.getElementById('mermaid-en-container');
+            const thHidden = thContainer && getComputedStyle(thContainer).display === 'none';
+            const enHidden = enContainer && getComputedStyle(enContainer).display === 'none';
+
+            if (thHidden) thContainer.style.setProperty('display', 'block', 'important');
+            if (enHidden) enContainer.style.setProperty('display', 'block', 'important');
+
+            await mermaid.run({ querySelector: '.mermaid' });
+
+            if (thHidden) thContainer.style.removeProperty('display');
+            if (enHidden) enContainer.style.removeProperty('display');
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', renderAllMermaid);
+        } else {
+            renderAllMermaid();
+        }
+    </script>
+</body>
+</html>

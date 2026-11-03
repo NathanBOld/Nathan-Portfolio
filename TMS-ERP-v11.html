@@ -1,0 +1,1903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMS-ERP Integration Architecture | Portfolio</title>
+    <style>
+        /* ตั้งค่าพื้นฐาน */
+        :root {
+            --primary-dark: #1a202c;
+            --primary-blue: #2563eb;
+            --accent-blue: #3b82f6;
+            --light-blue: #eff6ff;
+            --border-color: #e2e8f0;
+            --text-main: #1e293b;
+            --text-sub: #475569;
+            --text-en: #64748b;
+            --success-green: #16a34a;
+            --amber-warn: #d97706;
+            --purple-gl: #7c3aed;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: var(--text-main);
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Language Toggle Visibility */
+        body.lang-th .lang-en {
+            display: none !important;
+        }
+        body.lang-en .lang-th {
+            display: none !important;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .lang-switcher {
+            display: inline-flex;
+            background: #2d3748;
+            border-radius: 6px;
+            padding: 3px;
+            border: 1px solid #4a5568;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .lang-btn:hover {
+            color: #ffffff;
+        }
+
+        .lang-btn.active {
+            background: var(--accent-blue);
+            color: #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-back {
+            color: #93c5fd;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .navbar-back:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 12px 20px;
+            }
+            .navbar-right {
+                gap: 12px;
+            }
+        }
+
+        /* Container หลัก */
+        .project-detail-container {
+            max-width: 1040px; 
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* ส่วนหัวข้อโปรเจกต์ */
+        .project-header-section {
+            margin-bottom: 30px;
+        }
+
+        .project-title {
+            color: var(--primary-dark);
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            display: inline-block;
+            border-bottom: 3px solid #93c5fd;
+            padding-bottom: 5px;
+        }
+
+        .project-subtitle {
+            color: #4b5563;
+            font-size: 18px;
+            margin-top: 12px;
+            margin-bottom: 16px;
+        }
+
+        .skill-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .skill-badge {
+            background: #e0e7ff;
+            color: #1e40af;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid #c7d2fe;
+        }
+
+        /* กรอบพื้นหลังสีขาวสำหรับเนื้อหา */
+        .content-card-main {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 45px 50px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .content-card-main {
+                padding: 25px 20px;
+            }
+        }
+
+        .section-title {
+            color: var(--primary-dark);
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 45px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        /* กล่อง Executive Summary / Context */
+        .summary-box {
+            background-color: #f8fafc;
+            border-left: 4px solid var(--accent-blue);
+            padding: 25px 30px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 30px;
+        }
+
+        .summary-box h3 {
+            color: #1e40af;
+            margin-top: 0;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p {
+            margin: 0 0 14px 0;
+            color: #334155;
+        }
+        
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-sublist {
+            margin: 8px 0 18px 0;
+            padding-left: 22px;
+            color: #334155;
+        }
+
+        .summary-sublist li {
+            margin-bottom: 8px;
+        }
+
+        /* List สไตล์สำหรับเน้น Technical Detail */
+        .tech-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 30px 0;
+        }
+
+        .tech-list > li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 20px;
+            color: var(--text-sub);
+        }
+
+        .tech-list > li::before {
+            content: "•";
+            color: var(--accent-blue);
+            font-weight: bold;
+            font-size: 22px;
+            position: absolute;
+            left: 0;
+            top: -3px;
+        }
+
+        .tech-list strong {
+            color: var(--text-main);
+        }
+
+        /* ==========================================
+           Architecture Swimlane Flow Diagram (CSS)
+           ========================================== */
+        .flow-wrapper {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 28px;
+            margin: 30px 0;
+        }
+
+        .flow-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .flow-header-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .flow-legend {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 12.5px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .swimlane-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        @media (max-width: 860px) {
+            .swimlane-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .swimlane-col {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .swimlane-banner {
+            padding: 14px 18px;
+            font-weight: 700;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .swimlane-banner.non-cod {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            color: #ffffff;
+        }
+
+        .swimlane-banner.cod {
+            background: linear-gradient(135deg, #065f46, #059669);
+            color: #ffffff;
+        }
+
+        .banner-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .swimlane-body {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            flex: 1;
+        }
+
+        .flow-step-card {
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-blue);
+            border-radius: 8px;
+            padding: 14px 16px;
+            background: #ffffff;
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .flow-step-card.cod-step {
+            border-left-color: #059669;
+        }
+
+        .flow-step-card.bypass-step {
+            border-left-color: #94a3b8;
+            background: #f8fafc;
+        }
+
+        .flow-step-card.return-step {
+            border-left-color: #dc2626;
+        }
+
+        .flow-step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .status-pill {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 5px;
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .status-pill.new { background: #dbeafe; color: #1e40af; }
+        .status-pill.intransit { background: #fef3c7; color: #92400e; }
+        .status-pill.delivered { background: #dcfce7; color: #166534; }
+        .status-pill.returned { background: #fee2e2; color: #991b1b; }
+        .status-pill.cutoff { background: #f3e8ff; color: #6b21a8; }
+
+        .ep-badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 5px;
+            background: #0f172a;
+            color: #38bdf8;
+            font-family: Consolas, monospace;
+        }
+
+        .flow-step-desc {
+            font-size: 13.5px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .gl-box {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: Consolas, 'Courier New', monospace;
+            font-size: 12.5px;
+            color: #0f172a;
+            line-height: 1.5;
+        }
+
+        .gl-formula-tag {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #0369a1;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 11.5px;
+            margin-bottom: 4px;
+        }
+
+        .dr-line { color: #1d4ed8; font-weight: 600; }
+        .cr-line { color: #047857; font-weight: 600; padding-left: 14px; }
+
+        /* Dual-Payload Midnight Cut-off Banner */
+        .cutoff-full-card {
+            margin-top: 22px;
+            background: linear-gradient(to right, #faf5ff, #f3e8ff);
+            border: 1px solid #d8b4fe;
+            border-left: 5px solid var(--purple-gl);
+            border-radius: 10px;
+            padding: 20px 24px;
+        }
+
+        .cutoff-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .cutoff-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #581c87;
+        }
+
+        .dual-payload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .dual-payload-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .payload-card {
+            background: #ffffff;
+            border: 1px solid #e9d5ff;
+            border-radius: 8px;
+            padding: 14px 16px;
+        }
+
+        .payload-card h4 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: #6b21a8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ==========================================
+           Interactive Tabs & Mapping Table
+           ========================================== */
+        .tabs-container {
+            margin: 30px 0;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .tabs-header {
+            display: flex;
+            flex-wrap: wrap;
+            background: #f1f5f9;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            padding: 13px 20px;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-sub);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-blue);
+            background: #e2e8f0;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-blue);
+            background: #ffffff;
+            border-bottom-color: var(--primary-blue);
+        }
+
+        .tab-panel {
+            display: none;
+            padding: 24px;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .panel-subtitle {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 14.5px;
+            color: var(--text-sub);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .mapping-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            text-align: left;
+        }
+
+        .mapping-table th {
+            background-color: #1e293b;
+            color: #ffffff;
+            padding: 11px 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .mapping-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+
+        .mapping-table tr:nth-child(even) td {
+            background-color: #f8fafc;
+        }
+
+        .mapping-table tr.section-divider td {
+            background-color: #e2e8f0;
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 12.5px;
+            letter-spacing: 0.5px;
+            padding: 6px 14px;
+        }
+
+        .code-pill {
+            font-family: Consolas, monospace;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12.5px;
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        /* การจัดการรูปภาพ */
+        .image-showcase {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .image-caption {
+            font-size: 14px;
+            color: var(--text-en);
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        /* กล่อง Impact */
+        .impact-box {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-left: 5px solid #22c55e;
+            padding: 25px 30px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        .impact-box h3 {
+            color: #166534;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .impact-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #15803d;
+        }
+
+        .impact-box li {
+            margin-bottom: 15px;
+        }
+
+        .impact-box li:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body class="lang-en">
+
+<!-- Navbar -->
+<div class="navbar">
+    <a href="index.html" class="navbar-logo">NV<span style="color:#38bdf8;">.</span></a>
+    <div class="navbar-right">
+        <div class="lang-switcher" role="group" aria-label="Language Switcher">
+            <button type="button" id="btn-th" class="lang-btn" onclick="setLanguage('th')">TH</button>
+            <button type="button" id="btn-en" class="lang-btn active" onclick="setLanguage('en')">EN</button>
+        </div>
+        <a href="index.html" class="navbar-back">
+            <span class="lang-th">← กลับหน้าหลัก</span>
+            <span class="lang-en">← Back to Portfolio</span>
+        </a>
+    </div>
+</div>
+
+<div class="project-detail-container">
+    
+    <!-- Header Section -->
+    <div class="project-header-section">
+        <h1 class="project-title">TMS-ERP Integration Architecture</h1>
+        <p class="project-subtitle">
+            <span class="lang-th">การย้ายระบบ, การออกแบบ Workflow การเงินและสูตรบัญชีอัตโนมัติ (12 เงื่อนไขธุรกิจ บน 5 API Endpoints)</span>
+            <span class="lang-en">System Migration, Automated Financial &amp; Accounting Formula Workflows (12 Scenarios across 5 Endpoints)</span>
+        </p>
+        <div class="skill-badges">
+            <span class="skill-badge">REST API Data Mapping</span>
+            <span class="skill-badge">Automated GL &amp; Accounting Formulas</span>
+            <span class="skill-badge">Tax Point &amp; Revenue Recognition Logic</span>
+            <span class="skill-badge">3rd-Party COD Carrier AR Mapping</span>
+            <span class="skill-badge">ERP System Migration (Epicor to TRCloud)</span>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="content-card-main">
+        
+        <!-- Context & Solution -->
+        <h2 class="section-title">Context &amp; Objective</h2>
+        
+        <div class="summary-box">
+            <!-- THAI VERSION -->
+            <div class="lang-th">
+                <h3>The Challenge: System Redundancy, Manual Invoicing &amp; Multi-Channel Reconciliation</h3>
+                <p>โปรเจกต์นี้คือการพัฒนาระบบเพื่อ <strong>ทดแทนระบบ Epicor ERP เดิม</strong> โดยเชื่อมข้อมูลระหว่าง In-house TMS เข้ากับ TRCloud ERP ความท้าทายหลักคือการลดความซ้ำซ้อนของกระบวนการทำงาน ขจัดภาระงานแบบ Manual และจัดการความซับซ้อนของการรับรู้รายได้แยกตามช่องทางชำระเงิน (<strong>Bank Transfer, 2c2p, และ COD</strong>)</p>
+                <p>เนื่องจากระบบ TMS มีการสร้าง Sales Order (SO) และ Delivery Order (DO) ไว้อยู่แล้ว การส่งข้อมูลผ่าน API ไปยัง SO Endpoint แบบระบบเดิมบน TRCloud จึงเป็นความซ้ำซ้อนที่ไม่จำเป็นและทำให้พนักงานต้องเข้ามาทำขั้นตอน <strong>เปิด Invoice บนระบบอีกครั้ง</strong> นอกจากนี้ การบันทึกบัญชีลูกหนี้มีความต่างกันในแต่ละวิธีการรับชำระเงิน ได้แก่</p>
+                <ul class="summary-sublist">
+                    <li><strong>รายการเก็บเงินปลายทาง (COD)</strong> จะต้องตั้งลูกหนี้ด้วยผู้รับเงินจากลูกค้า ซึ่งก็คือบริษัทขนส่ง (3rd-Party Carrier) และจุดความรับผิดในการเสียภาษีมูลค่าเพิ่ม (VAT) จะเกิดขึ้นเมื่อมีการส่งมอบสินค้า (In-transit)</li>
+                    <li><strong>รายการรับชำระเงินล่วงหน้าเป็นเงินโอน (Bank Transfer)</strong> จะต้องบันทึกเป็นรายได้รับล่วงหน้า และจุดความรับผิดในการเสียภาษีมูลค่าเพิ่ม (VAT) จะเกิดขึ้นเมื่อมีการรับชำระเงิน</li>
+                    <li><strong>รายการรับชำระเงินล่วงหน้าเป็นบัตรเครดิต (2c2p)</strong> จะต้องบันทึกเป็นลูกหนี้บัตรเครดิตรอเรียกเก็บ และจุดความรับผิดในการเสียภาษีมูลค่าเพิ่ม (VAT) จะเกิดขึ้นเมื่อมีการรับชำระเงิน</li>
+                </ul>
+
+                <h3 style="margin-top: 25px;">The Solution: Event-Driven API Routing &amp; Date-Driven Accounting Engine</h3>
+                <p>เพื่อแก้ปัญหานี้ จึงได้วิเคราะห์และออกแบบสถาปัตยกรรมใหม่ <strong>โดยตัดการส่งค่าไปยัง SO Endpoint ทิ้งทั้งหมด</strong> และกำหนดเส้นทาง API ครอบคลุม <strong>12 เงื่อนไขธุรกิจ (12 Scenarios) บน 5 Endpoints (IV, MR, CN, Update IV, และ GL)</strong> โดย <strong>การจับ "วันที่ของสถานะการจัดส่ง" (Date of Delivery Status) จาก TMS มาอ้างอิงเป็นวันที่ของเอกสาร (Document Date) บน ERP เพื่อเป็นตัวกำหนด Tax Point อย่างเคร่งครัด</strong> ร่วมกับการผูกสูตรบัญชีอัตโนมัติ (Accounting Formula) และการยิงปรับปรุงรายได้สินค้าระหว่างทางแบบคู่ขนาน (Simultaneous Cut-off &amp; Reversal GL) เพื่อให้ข้อมูลรายได้สอดคล้องกับความเป็นจริงมากที่สุด ซึ่งช่วยลดขั้นตอน Manual ของพนักงานได้ 100% โดยที่งบการเงินและภาษีขายถูกต้องแม่นยำ</p>
+            </div>
+
+            <!-- ENGLISH VERSION -->
+            <div class="lang-en">
+                <h3>The Challenge: System Redundancy, Manual Invoicing &amp; Multi-Channel Reconciliation</h3>
+                <p>This project involved developing an integration architecture to <strong>replace the legacy Epicor ERP</strong> by connecting the in-house TMS with TRCloud ERP. The primary challenge was reducing process redundancy, eliminating manual workloads, and managing the complexity of revenue recognition across different payment channels (<strong>Bank Transfer, 2c2p, and COD</strong>).</p>
+                <p>Because the TMS already generates Sales Orders (SO) and Delivery Orders (DO) internally, sending data via API to the traditional SO Endpoint on TRCloud was unnecessarily redundant and forced staff to <strong>manually open invoices in the system again</strong>. Furthermore, Accounts Receivable (AR) accounting treatments differ across payment methods:</p>
+                <ul class="summary-sublist">
+                    <li><strong>Cash on Delivery (COD):</strong> Accounts Receivable must be recorded under the entity collecting cash from the customer—the 3rd-Party Carrier—and the VAT liability point (Tax Point) occurs upon goods dispatch (<code>In-transit</code>).</li>
+                    <li><strong>Advance Bank Transfer:</strong> Must be recorded as Advance Received (Unearned Revenue), where the VAT liability point (Tax Point) occurs immediately upon payment receipt.</li>
+                    <li><strong>Advance Credit Card (2c2p):</strong> Must be recorded as Accrued Credit Card Receivable (<code>Accrued income-CRC</code>) alongside Advance Received, where the VAT liability point (Tax Point) occurs upon payment receipt.</li>
+                </ul>
+
+                <h3 style="margin-top: 25px;">The Solution: Event-Driven API Routing &amp; Date-Driven Accounting Engine</h3>
+                <p>To resolve this, a new architecture was analyzed and designed by <strong>completely bypassing the SO Endpoint</strong> and defining API routing across <strong>12 business scenarios on 5 Endpoints (IV, MR, CN, Update IV, and GL)</strong>. It strictly <strong>captures the "Date of Delivery Status" from the TMS as the ERP Document Date to dictate the exact Tax Point</strong>, paired with automated Accounting Formulas and simultaneous in-transit revenue &amp; COGS cut-off/reversal GL entries (Simultaneous Cut-off &amp; Reversal GL) so that reported revenue accurately reflects reality—eliminating 100% of manual steps while ensuring accurate financial statements and sales tax compliance.</p>
+            </div>
+        </div>
+
+        <!-- Section 1: Architecture & Workflow -->
+        <h2 class="section-title">1. Workflow Architecture, Tax Point &amp; GL Automation</h2>
+        
+        <p class="lang-th" style="color: #475569; margin-bottom: 20px;">ออกแบบ Business Logic ด้านการเงินและบัญชีใหม่ทั้งหมดให้ทำงานแบบ Event-Driven ตามสถานะการจัดส่งจริง พร้อมแยกโครงสร้างการลงบัญชี (Dr./Cr.) และการผูก Master Data คู่ค้าอย่างรัดกุม</p>
+        <p class="lang-en" style="color: #475569; margin-bottom: 20px;">Redesigned the financial and accounting business logic on an event-driven basis, pairing real-world logistics triggers with automated general ledger (Dr./Cr.) formulas and dynamic partner master data mapping.</p>
+        
+        <ul class="tech-list">
+            <li>
+                <div class="lang-th">
+                    <strong>Separation of Tax Point vs. Revenue Recognition (Non-COD vs. COD):</strong>
+                    <ul class="summary-sublist" style="margin-top: 8px; margin-bottom: 10px;">
+                        <li><strong>กลุ่ม Non-COD (Bank Transfer / 2c2p):</strong> เมื่อสถานะเป็น <code>New</code> ระบบจะยิงสร้างใบกำกับภาษี (<code>IV</code>) เพื่อรับรู้ภาษีขายทันทีตามจุดความรับผิดทางภาษี (Tax Point) หรือก็คือใช้วันที่ของสถานะ <code>New</code> เป็นวันที่ของใบกำกับภาษี และบันทึกเป็น <strong>รายได้รับล่วงหน้า (Advance Received)</strong> ก่อน แล้วจึงบันทึก <strong>รายได้ (Income)</strong> พร้อมตัดสต็อก/ต้นทุนขาย (<code>COGS</code>) เมื่อของออกจากคลัง (<code>Intransit</code>) ผ่านเอกสาร <code>MR</code></li>
+                        <li><strong>กลุ่ม COD:</strong> จะยังไม่เปิดเอกสารตอนสถานะ <code>New</code> แต่จะเปิดทั้ง <code>IV</code> และ <code>MR</code> เมื่อสถานะเป็น <code>Intransit</code></li>
+                    </ul>
+                </div>
+                <div class="lang-en">
+                    <strong>Separation of Tax Point vs. Revenue Recognition (Non-COD vs. COD):</strong>
+                    <ul class="summary-sublist" style="margin-top: 8px; margin-bottom: 10px;">
+                        <li><strong>Non-COD Group (Bank Transfer / 2c2p):</strong> When status is <code>New</code>, the system triggers a Tax Invoice (<code>IV</code>) to immediately recognize Output VAT at the Tax Point—using the <code>New</code> status date as the Tax Invoice date—and records it as <strong>Advance Received</strong> first. Realized <strong>Income</strong> along with inventory deduction / Cost of Goods Sold (<code>COGS</code>) are subsequently recorded when goods leave the warehouse (<code>Intransit</code>) via an <code>MR</code> document.</li>
+                        <li><strong>COD Group:</strong> No ERP documents are generated at status <code>New</code>; instead, both <code>IV</code> and <code>MR</code> are triggered simultaneously when status reaches <code>Intransit</code>.</li>
+                    </ul>
+                </div>
+            </li>
+            <li>
+                <div class="lang-th">
+                    <strong>Smart Customer vs. 3rd-Party Carrier AR Mapping:</strong> ออกแบบการส่งค่าบล็อก <code>CUSTOMER</code> แยกวิธีการรับชำระเงิน
+                    <ul class="summary-sublist" style="margin-top: 8px; margin-bottom: 10px;">
+                        <li><strong>สำหรับ Non-COD:</strong> กำหนดค่า <code>add_contact = 0</code> และใช้ <code>contact_id</code> กลาง (สร้างรอไว้บน ERP) เพื่อไม่ให้ฐานข้อมูล ERP บวมจากลูกค้าขาจร</li>
+                        <li><strong>สำหรับ COD:</strong> ได้ออกแบบให้ mapping <code>contact_id</code> (สร้างรอไว้บน ERP) กับ Master data บนระบบ TMS เพื่อส่งค่ามาในใบกำกับภาษี (<code>IV</code>) เพื่อตั้งหนี้ <code>AR (Lastmile)</code> รองรับการทำ Batch Reconciliation ตอนขนส่งโอนเงินเก็บปลายทางคืนมาเป็นก้อนได้อย่างแม่นยำ</li>
+                    </ul>
+                </div>
+                <div class="lang-en">
+                    <strong>Smart Customer vs. 3rd-Party Carrier AR Mapping:</strong> Designed the <code>CUSTOMER</code> payload block differentiated by payment method:
+                    <ul class="summary-sublist" style="margin-top: 8px; margin-bottom: 10px;">
+                        <li><strong>For Non-COD:</strong> Configured <code>add_contact = 0</code> and utilized a shared <code>contact_id</code> (pre-created in the ERP) to prevent ERP database bloat from one-time retail customers.</li>
+                        <li><strong>For COD:</strong> Mapped pre-created ERP <code>contact_id</code> records with Master Data in the TMS to pass into the Tax Invoice (<code>IV</code>) and establish <code>AR (Lastmile)</code> per carrier, enabling accurate Batch Reconciliation when logistics providers remit lump-sum COD payouts.</li>
+                    </ul>
+                </div>
+            </li>
+            <li>
+                <div class="lang-th">
+                    <strong>Simultaneous Midnight Cut-off &amp; Auto-Reversal GL (4-Payload Revenue &amp; COGS Matching):</strong> เนื่องจากการออก Invoice เมื่อสินค้าออกจากคลังเพื่อให้ถูกต้องทางภาษีนั้น ทำให้บริษัทมีการรับรู้รายได้ที่เกินจริง จึงต้องมีการปรับปรุงรายได้ให้ใกล้เคียงความเป็นจริงให้มากที่สุด โดยการปรับปรุงยอดบัญชีสิ้นงวดของมุมมองที่ผู้บริหารต้องการ (Weekly/Monthly) และกลับรายการตามเดิมเมื่อขึ้นงวดใหม่ จึงออกแบบให้มีการปรับปรุงข้อมูลรายได้ (<code>Revenues</code>) และต้นทุนสินค้าขาย (<code>COGS</code>) ดังนี้:
+                    <ul class="summary-sublist" style="margin-top: 8px; margin-bottom: 10px;">
+                        <li>คำนวณผลรวมของ <strong>รายได้ก่อน VAT</strong> (เก็บไว้ตอนเปิด <code>IV</code>) และ <strong>COST</strong> (เก็บไว้ตอนเปิด <code>MR</code>) ที่เป็น COD และสถานะยังเป็น <code>Intransit</code> ณ สิ้นวันเสาร์ และ สิ้นเดือน เพื่อใช้เป็นยอดปรับปรุงทั้งก้อน และเนื่องจากฟิลด์ <code>value</code> ในแต่ละ GL Payload รับค่าตัวเลขได้เพียงยอดเดียว จึงต้องแยกเป็น <strong>4 Payloads (ยิงพร้อมกันในครั้งเดียว)</strong> ได้แก่:
+                            <ul style="margin-top: 6px; padding-left: 20px; list-style-type: square;">
+                                <li>ผลรวมของ <strong>รายได้ก่อน VAT</strong>, วันที่ของวันเสาร์ (หรือวันสิ้นเดือน), สูตรบัญชี (<code>TMS-IT-REV</code>) เพื่อปรับปรุงรายได้</li>
+                                <li>ผลรวมของ <strong>รายได้ก่อน VAT</strong>, วันที่ของวันอาทิตย์ (หรือวันที่ 1 ของเดือนถัดไป), สูตรบัญชี (<code>TMS-RE-REV</code>) เพื่อกลับรายการปรับปรุงรายได้</li>
+                                <li>ผลรวมของ <strong>COST</strong>, วันที่ของวันเสาร์ (หรือวันสิ้นเดือน), สูตรบัญชี (<code>TMS-IT-COGS</code>) เพื่อปรับปรุงต้นทุนขาย</li>
+                                <li>ผลรวมของ <strong>COST</strong>, วันที่ของวันอาทิตย์ (หรือวันที่ 1 ของเดือนถัดไป), สูตรบัญชี (<code>TMS-RE-COGS</code>) เพื่อกลับรายการต้นทุนสินค้าขาย</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="lang-en">
+                    <strong>Simultaneous Midnight Cut-off &amp; Auto-Reversal GL (4-Payload Revenue &amp; COGS Matching):</strong> Because issuing an Invoice upon warehouse dispatch for tax compliance causes overstated revenue recognition for undelivered parcels, period-end adjustments are required to reflect actual realized performance across executive reporting views (Weekly/Monthly) and reverse automatically in the new period. The adjustment logic for <code>Revenues</code> and Cost of Goods Sold (<code>COGS</code>) operates as follows:
+                    <ul class="summary-sublist" style="margin-top: 8px; margin-bottom: 10px;">
+                        <li>Aggregates the sum of <strong>Pre-VAT Revenue</strong> (captured during <code>IV</code> creation) and <strong>COST</strong> (captured during <code>MR</code> creation) for all COD orders remaining in <code>Intransit</code> status at the end of Saturday and Month-End (EOM). Because the <code>value</code> field in each GL Payload accepts only a single numerical amount, the batch is split into <strong>4 Payloads (transmitted simultaneously in a single execution)</strong>:
+                            <ul style="margin-top: 6px; padding-left: 20px; list-style-type: square;">
+                                <li>Sum of <strong>Pre-VAT Revenue</strong>, Saturday (or EOM) Date, Accounting Formula (<code>TMS-IT-REV</code>) — to defer in-transit revenue.</li>
+                                <li>Sum of <strong>Pre-VAT Revenue</strong>, Sunday (or 1st of Next Month) Date, Accounting Formula (<code>TMS-RE-REV</code>) — to reverse the revenue adjustment.</li>
+                                <li>Sum of <strong>COST</strong>, Saturday (or EOM) Date, Accounting Formula (<code>TMS-IT-COGS</code>) — to defer in-transit cost of goods sold.</li>
+                                <li>Sum of <strong>COST</strong>, Sunday (or 1st of Next Month) Date, Accounting Formula (<code>TMS-RE-COGS</code>) — to reverse the cost of goods sold adjustment.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+
+        <!-- Visual Architecture Swimlane Diagram -->
+        <div class="flow-wrapper">
+            <div class="flow-header-bar">
+                <div class="flow-header-title">
+                    <span class="lang-th">เปรียบเทียบลอจิกทางบัญชีแยกตามช่องทางชำระเงิน (Non-COD vs. COD)</span>
+                    <span class="lang-en">End-to-End Event-Driven API &amp; Accounting Flow (Non-COD vs. COD)</span>
+                </div>
+                <div class="flow-legend">
+                    <span class="legend-item"><span class="legend-dot" style="background:#2563eb;"></span>Non-COD Flow</span>
+                    <span class="legend-item"><span class="legend-dot" style="background:#059669;"></span>COD Flow (Carrier AR)</span>
+                    <span class="legend-item"><span class="legend-dot" style="background:#7c3aed;"></span>4-Payload Cut-off &amp; Reversal GL</span>
+                </div>
+            </div>
+
+            <div class="swimlane-grid">
+                <!-- Swimlane 1: Non-COD -->
+                <div class="swimlane-col">
+                    <div class="swimlane-banner non-cod">
+                        <span>Track A: Non-COD (Bank Transfer &amp; 2c2p)</span>
+                        <span class="banner-badge">add_contact = 0</span>
+                    </div>
+                    <div class="swimlane-body">
+                        <!-- Step 1 -->
+                        <div class="flow-step-card">
+                            <div class="flow-step-header">
+                                <span class="status-pill new">1. Status = New</span>
+                                <span class="ep-badge">POST /IV</span>
+                            </div>
+                            <div class="flow-step-desc">
+                                <span class="lang-th">ลูกค้าชำระเงินแล้ว ออกใบกำกับภาษีตามวันที่สถานะ <code>New</code> (Tax Point) พักยอดไว้ในรายได้รับล่วงหน้า <strong>และเก็บค่า <code>id</code> / <code>InvoiceNumber</code> จาก TRCloud กลับมาไว้ที่ TMS</strong></span>
+                                <span class="lang-en">Payment received. Issues Tax Invoice anchored to <code>New</code> status date (Tax Point), records Unearned Revenue, <strong>and stores the returned TRCloud <code>id</code> / <code>InvoiceNumber</code> in TMS</strong>.</span>
+                            </div>
+                            <div class="gl-box">
+                                <span class="gl-formula-tag">type: TMS-TT-IV (Bank) | TMS--2c2p-IV (2c2p)</span><br>
+                                <div class="dr-line">Dr. Bank / Dr. Accrued income-CRC</div>
+                                <div class="cr-line">Cr. Advance received</div>
+                                <div class="cr-line">Cr. Output VAT (7%)</div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="flow-step-card">
+                            <div class="flow-step-header">
+                                <span class="status-pill intransit">2. Status = Intransit</span>
+                                <span class="ep-badge">POST /MR</span>
+                            </div>
+                            <div class="flow-step-desc">
+                                <span class="lang-th">สินค้าออกจากคลัง (<code>stage = 2</code>) ตัดสต็อกด้วยต้นทุน TRCloud (<code>cost_option = 1</code>) พร้อมรับรู้รายได้จริง</span>
+                                <span class="lang-en">Goods dispatched (<code>stage = 2</code>). Deducts inventory using TRCloud costing (<code>cost_option = 1</code>) and recognizes realized income.</span>
+                            </div>
+                            <div class="gl-box">
+                                <span class="gl-formula-tag">MR type = 1 (Non-COD Issue)</span><br>
+                                <div class="dr-line">Dr. Advance received &nbsp;|&nbsp; Dr. COGS</div>
+                                <div class="cr-line">Cr. Income &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp; Cr. Inventory</div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="flow-step-card">
+                            <div class="flow-step-header">
+                                <span class="status-pill delivered">3A. Status = Delivered</span>
+                                <span class="ep-badge">POST /Update IV</span>
+                            </div>
+                            <div class="flow-step-desc">
+                                <span class="lang-th">อ้างอิงเลข <code>id</code> ของใบกำกับภาษีเดิมจาก TRCloud เพื่ออัปเดตสถานะ <code>Delivered</code> ลงในฟิลด์ <code>staff</code></span>
+                                <span class="lang-en">References existing TRCloud Invoice <code>id</code> to update delivery status (<code>staff = Delivered</code>).</span>
+                            </div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="flow-step-card return-step">
+                            <div class="flow-step-header">
+                                <span class="status-pill returned">3B. Status = Returned</span>
+                                <span class="ep-badge">POST /CN</span>
+                            </div>
+                            <div class="flow-step-desc">
+                                <span class="lang-th">อ้างอิงเลขที่ IV เดิมและยอด <code>ref_total</code> เพื่อออกใบลดหนี้ พร้อมรับของกลับเข้าคลังอัตโนมัติ (<code>return = y</code>)</span>
+                                <span class="lang-en">References original IV and <code>ref_total</code> to issue Credit Note and automatically restock returned goods (<code>return = y</code>).</span>
+                            </div>
+                            <div class="gl-box">
+                                <span class="gl-formula-tag">type: TMS-NonCOD-CN</span><br>
+                                <div class="dr-line">Dr. Income, Dr. Output VAT &nbsp;|&nbsp; Dr. Inventory</div>
+                                <div class="cr-line">Cr. Advance received &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp; Cr. COGS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Swimlane 2: COD -->
+                <div class="swimlane-col">
+                    <div class="swimlane-banner cod">
+                        <span>Track B: COD (Cash on Delivery)</span>
+                        <span class="banner-badge">Carrier Contact ID</span>
+                    </div>
+                    <div class="swimlane-body">
+                        <!-- Step 1 -->
+                        <div class="flow-step-card bypass-step">
+                            <div class="flow-step-header">
+                                <span class="status-pill">1. Status = New</span>
+                                <span class="ep-badge" style="background:#64748b;color:#fff;">NO API CALL</span>
+                            </div>
+                            <div class="flow-step-desc" style="margin-bottom:0;">
+                                <span class="lang-th"><strong>ยังไม่ยิงสร้างเอกสารใน ERP:</strong> เนื่องจากออเดอร์ COD ยังไม่มีการรับชำระเงินและของยังไม่ออกจากคลัง จึงยังไม่เกิด Tax Point (รอจนกว่าสถานะ DO จะเปลี่ยนเป็น <code>Intransit</code>)</span>
+                                <span class="lang-en"><strong>No ERP Document Created Yet:</strong> Since payment is not yet collected and goods have not left the warehouse, no Tax Point has occurred (waits until DO status reaches <code>Intransit</code>).</span>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="flow-step-card cod-step">
+                            <div class="flow-step-header">
+                                <span class="status-pill intransit">2. Status = Intransit</span>
+                                <span class="ep-badge">POST /IV &amp; /MR</span>
+                            </div>
+                            <div class="flow-step-desc">
+                                <span class="lang-th">เมื่อส่งมอบให้ขนส่ง จะยิงสร้างทั้ง <strong>IV</strong> (ผูก <code>contact_id</code> ขนส่ง ตั้งหนี้ Lastmile <strong>พร้อมเก็บค่า <code>id</code>, <code>InvoiceNumber</code> และยอดรายได้ก่อน VAT</strong>) และ <strong>MR</strong> (ตัดสต็อก <strong>พร้อมดึงค่า <code>COST</code> ที่คำนวณจาก TRCloud กลับมาเก็บไว้ทำ Cut-off GL</strong>)</span>
+                                <span class="lang-en">Upon carrier handover, triggers both <strong>IV</strong> (mapped to Carrier <code>contact_id</code> for Lastmile AR, <strong>capturing <code>id</code>, <code>InvoiceNumber</code>, and Pre-VAT Revenue</strong>) and <strong>MR</strong> (deducts stock and <strong>captures TRCloud-calculated item <code>COST</code> for Cut-off GL</strong>).</span>
+                            </div>
+                            <div class="gl-box">
+                                <span class="gl-formula-tag">IV: TMS-COD-IV &nbsp;+&nbsp; MR: type = 2</span><br>
+                                <div class="dr-line">Dr. AR (Lastmile) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp; Dr. COGS</div>
+                                <div class="cr-line">Cr. Revenues, Output VAT |&nbsp; Cr. Inventory</div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="flow-step-card cod-step">
+                            <div class="flow-step-header">
+                                <span class="status-pill delivered">3A. Status = Delivered</span>
+                                <span class="ep-badge">POST /Update IV</span>
+                            </div>
+                            <div class="flow-step-desc">
+                                <span class="lang-th">อัปเดตสถานะ <code>Delivered</code> ลงในฟิลด์ <code>staff</code> ของเอกสาร IV เดิมผ่าน System <code>id</code> (พร้อมใช้กระทบยอดเงินโอนจากขนส่ง)</span>
+                                <span class="lang-en">Updates <code>staff = Delivered</code> on the existing IV via System <code>id</code> (ready for carrier batch payout reconciliation).</span>
+                            </div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="flow-step-card return-step">
+                            <div class="flow-step-header">
+                                <span class="status-pill returned">3B. Status = Returned</span>
+                                <span class="ep-badge">POST /CN</span>
+                            </div>
+                            <div class="flow-step-desc">
+                                <span class="lang-th">อ้างอิงเลขที่ IV เดิมและยอด <code>ref_total</code> เพื่อออกใบลดหนี้โดยผูก <code>group_code</code> และ <code>code_number</code> ของบริษัทขนส่ง (Carrier) พร้อมรับของกลับเข้าคลังอัตโนมัติ (<code>return = y</code>)</span>
+                                <span class="lang-en">References original IV and <code>ref_total</code> to issue a Credit Note mapped to the <strong>Carrier's</strong> <code>group_code</code> &amp; <code>code_number</code>, reversing Lastmile AR and restocking goods (<code>return = y</code>).</span>
+                            </div>
+                            <div class="gl-box">
+                                <span class="gl-formula-tag">type: TMS-COD-CN</span><br>
+                                <div class="dr-line">Dr. Revenues, Dr. Output VAT |&nbsp; Dr. Inventory</div>
+                                <div class="cr-line">Cr. AR (Lastmile) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp; Cr. COGS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simultaneous Cut-off & Reversal Banner -->
+            <div class="cutoff-full-card">
+                <div class="cutoff-title-row">
+                    <span class="cutoff-title">⚡ Simultaneous Midnight Cut-off &amp; Auto-Reversal Engine (4 GL Payloads: Revenue &amp; COGS)</span>
+                    <span class="status-pill cutoff">Triggered Every Saturday Midnight &amp; EOM</span>
+                </div>
+                <p class="lang-th" style="margin:0; font-size:13.5px; color:#4c1d95;">
+                    สำหรับออเดอร์ <strong>COD ที่เปิด IV และ MR ไปแล้วแต่ยังค้างสถานะ <code>Intransit</code></strong> ณ เวลาเที่ยงคืนของวันเสาร์และวันสิ้นเดือน ระบบจะคำนวณ<strong>ผลรวมของรายได้ก่อน VAT (เก็บไว้ตอนเปิด IV)</strong> และ<strong>ผลรวมของ COST (ดึงจาก TRCloud ตอนเปิด MR)</strong> เนื่องจากฟิลด์ <code>value</code> รับค่าได้ทีละยอด ระบบจึงแยกยิงเข้า <code>GL</code> Endpoint <strong>พร้อมกันทั้ง 4 Payloads ในครั้งเดียว</strong> โดยแยกงวดบัญชีด้วยฟิลด์ <code>date</code> และกำหนดคู่บัญชีด้วยฟิลด์ <code>accounting_formula</code> :
+                </p>
+                <p class="lang-en" style="margin:0; font-size:13.5px; color:#4c1d95;">
+                    For <strong>COD orders where IV and MR were issued but status remains <code>Intransit</code></strong> at Saturday midnight or Month-End (EOM), the system calculates the <strong>sum of Pre-VAT Revenue (captured during IV creation)</strong> and the <strong>sum of COST (retrieved from TRCloud during MR creation)</strong>. Because the <code>value</code> field accepts a single number per call, the system executes <strong>4 simultaneous GL payloads in a single batch</strong>—separated into current and next periods by <code>date</code> and <code>accounting_formula</code>:
+                </p>
+                <div class="dual-payload-grid">
+                    <div class="payload-card">
+                        <h4>
+                            <span class="lang-th">1. Cut-off Deferral (งวดปัจจุบัน: เสาร์ / EOM)</span>
+                            <span class="lang-en">1. Cut-off Deferral (Current Period: Sat / EOM)</span>
+                            <span class="ep-badge">2 GL Payloads</span>
+                        </h4>
+                        <div class="lang-th" style="font-size:13px; color:#334155; margin-bottom:8px;">
+                            • <strong>GL Date (<code>date</code>):</strong> วันที่วันเสาร์ หรือ วันสิ้นเดือน (เช่น <code>2026-10-31</code>)<br>
+                            • <strong>Payload #1 (<code>TMS-IT-REV</code>):</strong> ส่ง <code>value</code> = ผลรวม<strong>รายได้ก่อน VAT</strong> (ที่เก็บตอนเปิด IV)<br>
+                            • <strong>Payload #2 (<code>TMS-IT-COGS</code>):</strong> ส่ง <code>value</code> = ผลรวม <strong>COST</strong> (ที่เก็บจาก TRCloud ตอนเปิด MR)
+                        </div>
+                        <div class="lang-en" style="font-size:13px; color:#334155; margin-bottom:8px;">
+                            • <strong>GL Date (<code>date</code>):</strong> Saturday or EOM date (e.g., <code>2026-10-31</code>)<br>
+                            • <strong>Payload #1 (<code>TMS-IT-REV</code>):</strong> <code>value</code> = Sum of <strong>Pre-VAT Revenue</strong> (captured at IV)<br>
+                            • <strong>Payload #2 (<code>TMS-IT-COGS</code>):</strong> <code>value</code> = Sum of <strong>COST</strong> (captured from TRCloud at MR)
+                        </div>
+                        <div class="gl-box">
+                            <span class="gl-formula-tag">TMS-IT-REV (Revenue Deferral)</span>
+                            <div class="dr-line">Dr. Revenues</div>
+                            <div class="cr-line">Cr. In-transit Revenue</div>
+                            <div style="margin-top:6px;"></div>
+                            <span class="gl-formula-tag">TMS-IT-COGS (COGS Deferral)</span>
+                            <div class="dr-line">Dr. In-transit COGS</div>
+                            <div class="cr-line">Cr. COGS</div>
+                        </div>
+                    </div>
+                    <div class="payload-card">
+                        <h4>
+                            <span class="lang-th">2. Auto-Reversal (ส่งพร้อมกัน ระบุวันงวดถัดไป)</span>
+                            <span class="lang-en">2. Auto-Reversal (Sent Simultaneously for Next Period)</span>
+                            <span class="ep-badge">2 GL Payloads</span>
+                        </h4>
+                        <div class="lang-th" style="font-size:13px; color:#334155; margin-bottom:8px;">
+                            • <strong>GL Date (<code>date</code>):</strong> วันที่วันอาทิตย์ หรือ วันที่ 1 เดือนถัดไป (เช่น <code>2026-11-01</code>)<br>
+                            • <strong>Payload #3 (<code>TMS-RE-REV</code>):</strong> ส่ง <code>value</code> = ผลรวม<strong>รายได้ก่อน VAT</strong> ยอดเดียวกัน<br>
+                            • <strong>Payload #4 (<code>TMS-RE-COGS</code>):</strong> ส่ง <code>value</code> = ผลรวม <strong>COST</strong> ยอดเดียวกัน
+                        </div>
+                        <div class="lang-en" style="font-size:13px; color:#334155; margin-bottom:8px;">
+                            • <strong>GL Date (<code>date</code>):</strong> Sunday or 1st of Next Month (e.g., <code>2026-11-01</code>)<br>
+                            • <strong>Payload #3 (<code>TMS-RE-REV</code>):</strong> <code>value</code> = Same Sum of <strong>Pre-VAT Revenue</strong><br>
+                            • <strong>Payload #4 (<code>TMS-RE-COGS</code>):</strong> <code>value</code> = Same Sum of <strong>COST</strong> from MR
+                        </div>
+                        <div class="gl-box">
+                            <span class="gl-formula-tag">TMS-RE-REV (Revenue Reversal)</span>
+                            <div class="dr-line">Dr. In-transit Revenue</div>
+                            <div class="cr-line">Cr. Revenues</div>
+                            <div style="margin-top:6px;"></div>
+                            <span class="gl-formula-tag">TMS-RE-COGS (COGS Reversal)</span>
+                            <div class="dr-line">Dr. COGS</div>
+                            <div class="cr-line">Cr. In-transit COGS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="image-showcase" style="background: #ffffff; padding: 30px 20px; overflow-x: auto;">
+            <div id="mermaid-th-container" class="lang-th">
+                <pre class="mermaid" style="margin: 0; text-align: center; background: transparent;">
+flowchart LR
+    classDef tmsNode fill:#eff6ff,stroke:#2563eb,color:#1e3a8a,stroke-width:1.5px
+    classDef tmsCut fill:#faf5ff,stroke:#7c3aed,color:#4c1d95,stroke-width:1.5px
+    classDef trcIV fill:#f0fdf4,stroke:#16a34a,color:#14532d,stroke-width:1.5px
+    classDef trcMR fill:#fffbeb,stroke:#d97706,color:#78350f,stroke-width:1.5px
+    classDef trcCN fill:#fff1f2,stroke:#e11d48,color:#881337,stroke-width:1.5px
+    classDef trcGL fill:#faf5ff,stroke:#7c3aed,color:#4c1d95,stroke-width:2px
+    classDef bypassNode fill:#f1f5f9,stroke:#94a3b8,color:#475569,stroke-dasharray: 5 5
+
+    subgraph LANE_TMS ["🟦 LANE 1: In-house TMS (Order &amp; Delivery Status Events)"]
+        direction TB
+        T0["<b>0. สร้าง SO &amp; DO ในระบบ TMS</b><br/>แยกตาม PaymentMethod (Bank / 2c2p / COD)"]:::tmsNode
+        T1["<b>1. Status = New</b><br/>• Non-COD: ชำระเงินแล้ว (เกิด Tax Point)<br/>• COD: ยังไม่รับเงิน/ยังไม่ส่งของ (รอ Intransit)"]:::tmsNode
+        T2["<b>2. Status = Intransit</b><br/>สินค้าออกจากคลัง (MYC)<br/>อ้างอิงวันที่สถานะเป็น issue_date"]:::tmsNode
+        T3A["<b>3A. Status = Delivered</b><br/>จัดส่งถึงมือลูกค้าสำเร็จ (ทุกช่องทาง)"]:::tmsNode
+        T3B["<b>3B. Status = Returned</b><br/>พัสดุตีกลับคลัง (ทุกช่องทาง)"]:::tmsNode
+        T4["<b>4. Midnight Cut-off Scheduler</b><br/>รวบยอดผลรวม <b>รายได้ก่อน VAT</b> (จาก IV) และ <b>COST</b> (จาก MR)<br/>ของออเดอร์ COD ที่ยังค้าง Intransit ณ เสาร์/สิ้นเดือน"]:::tmsCut
+
+        T0 --> T1 --> T2
+        T2 --> T3A & T3B
+        T2 -.->|"ค้างส่ง ณ วันเสาร์/สิ้นเดือน"| T4
+    end
+
+    subgraph LANE_ERP ["🟩 LANE 2: TRCloud ERP (API Endpoints &amp; Automated GL)"]
+        direction TB
+        E0["🚫 <b>Bypass /SO Endpoint</b><br/>ไม่สร้าง SO ซ้ำซ้อนบนระบบ ERP"]:::bypassNode
+        
+        E1["<b>POST /IV (เฉพาะ Non-COD)</b><br/>• สูตร: TMS-TT-IV / TMS--2c2p-IV (Shared contact_id, add_contact=0)<br/>• <b>Dr. Bank / Accrued CRC ➔ Cr. Advance received, Output VAT</b><br/>  *(ส่งคืนค่า id &amp; InvoiceNumber กลับมาเก็บที่ TMS)*"]:::trcIV
+
+        E2_NC["<b>POST /MR (Non-COD: type = 1)</b><br/>• stage = 2 (Shipped), cost_option = 1<br/>• <b>Dr. Advance received ➔ Cr. Income</b><br/>• <b>Dr. COGS ➔ Cr. Inventory</b>"]:::trcMR
+
+        E2_COD["<b>POST /IV &amp; POST /MR (เฉพาะ COD)</b><br/>• <b>IV (TMS-COD-IV):</b> Map Carrier contact_id<br/>  <b>Dr. AR (Lastmile) ➔ Cr. Revenues, Output VAT</b><br/>• <b>MR (type = 2):</b> <b>Dr. COGS ➔ Cr. Inventory</b><br/>  *(TMS เก็บค่า id, InvoiceNumber, ยอดก่อน VAT จาก IV และ COST จาก MR)*"]:::trcIV
+
+        E3A["<b>POST /Update IV (ทุกช่องทาง)</b><br/>• อ้างอิง TRCloud Invoice id<br/>• อัปเดตฟิลด์ <b>staff = Delivered</b>"]:::trcIV
+
+        E3B["<b>POST /CN (ใบลดหนี้ &amp; คืนสต็อก return = y)</b><br/>• อ้างอิงเลข IV เดิม (reference) &amp; ยอด ref_total<br/>• <b>Non-COD (TMS-NonCOD-CN):</b> ลดหนี้ Customer<br/>  Dr. Income, VAT ➔ Cr. Advance received | Dr. Inv ➔ Cr. COGS<br/>• <b>COD (TMS-COD-CN):</b> ลดหนี้ Carrier<br/>  Dr. Revenues, VAT ➔ Cr. AR (Lastmile) | Dr. Inv ➔ Cr. COGS"]:::trcCN
+
+        E4_REV["<b>POST /GL: ด้านรายได้ (2 Payloads ส่งพร้อมกัน)</b><br/>• <b>Cut-off (date = เสาร์/EOM | TMS-IT-REV):</b><br/>  Dr. Revenues ➔ Cr. In-transit Revenue<br/>• <b>Reversal (date = อาทิตย์/วันที่ 1 | TMS-RE-REV):</b><br/>  Dr. In-transit Revenue ➔ Cr. Revenues"]:::trcGL
+
+        E4_COGS["<b>POST /GL: ด้านต้นทุนขาย (2 Payloads ส่งพร้อมกัน)</b><br/>• <b>Cut-off (date = เสาร์/EOM | TMS-IT-COGS):</b><br/>  Dr. In-transit COGS ➔ Cr. COGS<br/>• <b>Reversal (date = อาทิตย์/วันที่ 1 | TMS-RE-COGS):</b><br/>  Dr. COGS ➔ Cr. In-transit COGS"]:::trcGL
+    end
+
+    T0 -.->|"No API Call"| E0
+    T1 ==>|"Non-COD: POST /IV"| E1
+    T2 ==>|"Non-COD: POST /MR"| E2_NC
+    T2 ==>|"COD: POST /IV &amp; /MR"| E2_COD
+    T3A ==>|"POST /Update IV (via Invoice id)"| E3A
+    T3B ==>|"POST /CN (via InvoiceNumber)"| E3B
+    T4 ==>|"ผลรวมรายได้ก่อน VAT (value)"| E4_REV
+    T4 ==>|"ผลรวม COST จาก MR (value)"| E4_COGS
+                </pre>
+            </div>
+
+            <div id="mermaid-en-container" class="lang-en">
+                <pre class="mermaid" style="margin: 0; text-align: center; background: transparent;">
+flowchart LR
+    classDef tmsNode fill:#eff6ff,stroke:#2563eb,color:#1e3a8a,stroke-width:1.5px
+    classDef tmsCut fill:#faf5ff,stroke:#7c3aed,color:#4c1d95,stroke-width:1.5px
+    classDef trcIV fill:#f0fdf4,stroke:#16a34a,color:#14532d,stroke-width:1.5px
+    classDef trcMR fill:#fffbeb,stroke:#d97706,color:#78350f,stroke-width:1.5px
+    classDef trcCN fill:#fff1f2,stroke:#e11d48,color:#881337,stroke-width:1.5px
+    classDef trcGL fill:#faf5ff,stroke:#7c3aed,color:#4c1d95,stroke-width:2px
+    classDef bypassNode fill:#f1f5f9,stroke:#94a3b8,color:#475569,stroke-dasharray: 5 5
+
+    subgraph LANE_TMS_EN ["🟦 LANE 1: In-house TMS (Order &amp; Delivery Status Events)"]
+        direction TB
+        T0_E["<b>0. SO &amp; DO Created in TMS</b><br/>Segmented by PaymentMethod (Bank / 2c2p / COD)"]:::tmsNode
+        T1_E["<b>1. Status = New</b><br/>• Non-COD: Paid (Tax Point Triggered)<br/>• COD: Unpaid / Undispatched (Wait for Intransit)"]:::tmsNode
+        T2_E["<b>2. Status = Intransit</b><br/>Goods Dispatched from Warehouse (MYC)<br/>Status Date mapped to issue_date"]:::tmsNode
+        T3A_E["<b>3A. Status = Delivered</b><br/>Successfully Delivered (All Channels)"]:::tmsNode
+        T3B_E["<b>3B. Status = Returned</b><br/>Parcel Returned to Warehouse (All Channels)"]:::tmsNode
+        T4_E["<b>4. Midnight Cut-off Scheduler</b><br/>Aggregates <b>Pre-VAT Revenue</b> (from IV) &amp; <b>COST</b> (from MR)<br/>for COD orders still Intransit at Sat / EOM"]:::tmsCut
+
+        T0_E --> T1_E --> T2_E
+        T2_E --> T3A_E & T3B_E
+        T2_E -.->|"Still Intransit at Sat / EOM"| T4_E
+    end
+
+    subgraph LANE_ERP_EN ["🟩 LANE 2: TRCloud ERP (API Endpoints &amp; Automated GL)"]
+        direction TB
+        E0_E["🚫 <b>Bypass /SO Endpoint</b><br/>Eliminates Redundant SO Creation in ERP"]:::bypassNode
+        
+        E1_E["<b>POST /IV (Non-COD Only)</b><br/>• Formula: TMS-TT-IV / TMS--2c2p-IV (Shared contact_id, add_contact=0)<br/>• <b>Dr. Bank / Accrued CRC ➔ Cr. Advance received, Output VAT</b><br/>  *(Returns id &amp; InvoiceNumber to TMS)*"]:::trcIV
+
+        E2_NC_E["<b>POST /MR (Non-COD: type = 1)</b><br/>• stage = 2 (Shipped), cost_option = 1<br/>• <b>Dr. Advance received ➔ Cr. Income</b><br/>• <b>Dr. COGS ➔ Cr. Inventory</b>"]:::trcMR
+
+        E2_COD_E["<b>POST /IV &amp; POST /MR (COD Only)</b><br/>• <b>IV (TMS-COD-IV):</b> Mapped to Carrier contact_id<br/>  <b>Dr. AR (Lastmile) ➔ Cr. Revenues, Output VAT</b><br/>• <b>MR (type = 2):</b> <b>Dr. COGS ➔ Cr. Inventory</b><br/>  *(TMS captures id, InvoiceNumber, Pre-VAT Revenue &amp; MR COST)*"]:::trcIV
+
+        E3A_E["<b>POST /Update IV (All Channels)</b><br/>• References TRCloud Invoice id<br/>• Updates <b>staff = Delivered</b>"]:::trcIV
+
+        E3B_E["<b>POST /CN (Credit Note &amp; Restock return = y)</b><br/>• References original IV (reference) &amp; ref_total<br/>• <b>Non-COD (TMS-NonCOD-CN):</b> Customer CN<br/>  Dr. Income, VAT ➔ Cr. Advance received | Dr. Inv ➔ Cr. COGS<br/>• <b>COD (TMS-COD-CN):</b> Carrier CN<br/>  Dr. Revenues, VAT ➔ Cr. AR (Lastmile) | Dr. Inv ➔ Cr. COGS"]:::trcCN
+
+        E4_REV_E["<b>POST /GL: Revenue Pair (2 Simultaneous Payloads)</b><br/>• <b>Cut-off (date = Sat/EOM | TMS-IT-REV):</b><br/>  Dr. Revenues ➔ Cr. In-transit Revenue<br/>• <b>Reversal (date = Sun/1st | TMS-RE-REV):</b><br/>  Dr. In-transit Revenue ➔ Cr. Revenues"]:::trcGL
+
+        E4_COGS_E["<b>POST /GL: COGS Pair (2 Simultaneous Payloads)</b><br/>• <b>Cut-off (date = Sat/EOM | TMS-IT-COGS):</b><br/>  Dr. In-transit COGS ➔ Cr. COGS<br/>• <b>Reversal (date = Sun/1st | TMS-RE-COGS):</b><br/>  Dr. COGS ➔ Cr. In-transit COGS"]:::trcGL
+    end
+
+    T0_E -.->|"No API Call"| E0_E
+    T1_E ==>|"Non-COD: POST /IV"| E1_E
+    T2_E ==>|"Non-COD: POST /MR"| E2_NC_E
+    T2_E ==>|"COD: POST /IV &amp; /MR"| E2_COD_E
+    T3A_E ==>|"POST /Update IV (via Invoice id)"| E3A_E
+    T3B_E ==>|"POST /CN (via InvoiceNumber)"| E3B_E
+    T4_E ==>|"Sum of Pre-VAT Revenue (value)"| E4_REV_E
+    T4_E ==>|"Sum of MR COST (value)"| E4_COGS_E
+                </pre>
+            </div>
+            <div class="image-caption">
+                <span class="lang-th">แผนผังการเชื่อมต่อข้อมูลข้ามระบบ (Cross-System Swimlane Flowchart): แสดงการส่งค่า API จาก In-house TMS (Lane 1) ไปสร้างเอกสารและลงบัญชีอัตโนมัติบน TRCloud ERP (Lane 2) พร้อมการเก็บค่ากลับมาคำนวณ Cut-off GL</span>
+                <span class="lang-en">Cross-System Swimlane Flowchart illustrating event triggers in In-house TMS (Lane 1), automated API endpoint routing &amp; GL postings in TRCloud ERP (Lane 2), and response data capture for Cut-off GL.</span>
+            </div>
+        </div>
+
+        <!-- Section 2: Interactive API Data Mapping -->
+        <h2 class="section-title">2. Field-Level API Data Mapping &amp; Accounting Formula Specification</h2>
+        <p class="lang-th" style="color: #475569; margin-bottom: 20px;">จัดทำเอกสาร System Mapping Specification ระดับ Field-level ครอบคลุมทั้ง 12 เงื่อนไข โดยกำหนด Data Type, ความยาวตัวอักษร, Fix Code, การดึง Master Data และสูตรการลงบัญชี (คลิกที่แท็บด้านล่างเพื่อดูรายละเอียดแต่ละส่วน)</p>
+        <p class="lang-en" style="color: #475569; margin-bottom: 20px;">Comprehensive field-level API mapping specification across all 12 business scenarios, defining data types, field lengths, fix codes, master data references, and automated accounting formulas (Click the tabs below to explore each specification).</p>
+
+        <!-- Interactive Specification Explorer -->
+        <div class="tabs-container">
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="openSpecTab(event, 'tab-matrix')">1. 12-Scenario Master Matrix</button>
+                <button class="tab-btn" onclick="openSpecTab(event, 'tab-iv')">2. IV &amp; Update IV Mapping</button>
+                <button class="tab-btn" onclick="openSpecTab(event, 'tab-mr')">3. MR (Inventory &amp; COGS)</button>
+                <button class="tab-btn" onclick="openSpecTab(event, 'tab-cn')">4. CN (Returns &amp; Restock)</button>
+                <button class="tab-btn" onclick="openSpecTab(event, 'tab-gl')">5. GL (Cut-off &amp; Reversal)</button>
+            </div>
+
+            <!-- TAB 1: Master Matrix -->
+            <div id="tab-matrix" class="tab-panel active">
+                <p class="panel-subtitle">
+                    <span class="lang-th">สรุปทั้ง <strong>12 เงื่อนไขการยิง API (12 Scenarios)</strong> จากระบบ TMS ไปยัง TRCloud ERP พร้อมรหัสสูตรบัญชีและคู่บัญชีอัตโนมัติ:</span>
+                    <span class="lang-en">Summary of all <strong>12 API integration scenarios</strong> from TMS to TRCloud ERP with automated accounting formulas and general ledger (Dr./Cr.) entries:</span>
+                </p>
+                <div class="table-responsive">
+                    <table class="mapping-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>PaymentMethod (TMS)</th>
+                                <th>Trigger / Status Date</th>
+                                <th>End-Point</th>
+                                <th>Formula / Type</th>
+                                <th>Customer / Contact Mapping</th>
+                                <th>Account Formula (Dr. / Cr.)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>1</strong></td>
+                                <td><code>Bank Transfer</code></td>
+                                <td><code>New</code></td>
+                                <td><span class="code-pill">IV</span></td>
+                                <td><code>TMS-TT-IV</code></td>
+                                <td>Shared Non-COD <code>contact_id</code> (Pre-created on ERP, <code>add_contact = 0</code>)</td>
+                                <td><strong>Dr.</strong> Bank<br><strong>Cr.</strong> Advance received, Output VAT</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2</strong></td>
+                                <td><code>2c2p</code></td>
+                                <td><code>New</code></td>
+                                <td><span class="code-pill">IV</span></td>
+                                <td><code>TMS--2c2p-IV</code></td>
+                                <td>Shared Non-COD <code>contact_id</code> (Pre-created on ERP, <code>add_contact = 0</code>)</td>
+                                <td><strong>Dr.</strong> Accrued income-CRC<br><strong>Cr.</strong> Advance received, Output VAT</td>
+                            </tr>
+                            <tr>
+                                <td><strong>3</strong></td>
+                                <td><code>COD</code></td>
+                                <td><code>Intransit</code></td>
+                                <td><span class="code-pill">IV</span></td>
+                                <td><code>TMS-COD-IV</code></td>
+                                <td>Mapped <strong>Carrier <code>contact_id</code></strong> (Pre-created on ERP &amp; mapped in TMS)</td>
+                                <td><strong>Dr.</strong> AR (Lastmile)<br><strong>Cr.</strong> Revenues, Output VAT</td>
+                            </tr>
+                            <tr>
+                                <td><strong>4</strong></td>
+                                <td><code>Bank Transfer</code> / <code>2c2p</code></td>
+                                <td><code>Intransit</code></td>
+                                <td><span class="code-pill">MR</span></td>
+                                <td><code>type = 1</code></td>
+                                <td><code>contact_id</code> from TRCloud Master</td>
+                                <td><strong>Dr.</strong> Advance received / <strong>Cr.</strong> Income<br><strong>Dr.</strong> COGS / <strong>Cr.</strong> Inventory</td>
+                            </tr>
+                            <tr>
+                                <td><strong>5</strong></td>
+                                <td><code>COD</code></td>
+                                <td><code>Intransit</code></td>
+                                <td><span class="code-pill">MR</span></td>
+                                <td><code>type = 2</code></td>
+                                <td><code>contact_id</code> from TRCloud Master</td>
+                                <td><strong>Dr.</strong> COGS<br><strong>Cr.</strong> Inventory</td>
+                            </tr>
+                            <tr>
+                                <td><strong>6</strong></td>
+                                <td><code>Bank Transfer</code> / <code>2c2p</code></td>
+                                <td><code>Returned</code></td>
+                                <td><span class="code-pill">CN</span></td>
+                                <td><code>TMS-NonCOD-CN</code></td>
+                                <td>Customer <code>group_code</code> &amp; <code>code_number</code> from Master</td>
+                                <td><strong>Dr.</strong> Income, Output VAT / <strong>Cr.</strong> Advance received<br><strong>Dr.</strong> Inventory / <strong>Cr.</strong> COGS (<code>return = y</code>)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>7</strong></td>
+                                <td><code>COD</code></td>
+                                <td><code>Returned</code></td>
+                                <td><span class="code-pill">CN</span></td>
+                                <td><code>TMS-COD-CN</code></td>
+                                <td><strong>Carrier</strong> <code>group_code</code> &amp; <code>code_number</code> from Master</td>
+                                <td><strong>Dr.</strong> Revenues, Output VAT / <strong>Cr.</strong> AR (Lastmile)<br><strong>Dr.</strong> Inventory / <strong>Cr.</strong> COGS (<code>return = y</code>)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>8</strong></td>
+                                <td><code>All Channels</code></td>
+                                <td><code>Delivered</code> (Status Update)</td>
+                                <td><span class="code-pill">Update IV</span></td>
+                                <td><code>TMS-TT-IV</code></td>
+                                <td>Master Data + TRCloud Invoice <code>id</code></td>
+                                <td><em>Updates <code>staff = Delivered</code> on existing IV</em></td>
+                            </tr>
+                            <tr>
+                                <td><strong>9</strong></td>
+                                <td><code>COD</code> (In-transit Pre-VAT Revenue Summary from IV)</td>
+                                <td>Midnight Cut-off (<code>Sat Date / EOM Date</code>)</td>
+                                <td><span class="code-pill">GL</span></td>
+                                <td><code>TMS-IT-REV</code></td>
+                                <td>
+                                    <span class="lang-th"><em>- (ปรับปรุงเฉพาะรายได้ก่อน VAT รวม)</em></span>
+                                    <span class="lang-en"><em>- (Pre-VAT Revenue Deferral Only / No Contact)</em></span>
+                                </td>
+                                <td><strong>Dr.</strong> Revenues<br><strong>Cr.</strong> In-transit Revenue</td>
+                            </tr>
+                            <tr>
+                                <td><strong>10</strong></td>
+                                <td><code>COD</code> (In-transit Pre-VAT Revenue Summary from IV)</td>
+                                <td>Sent simultaneously (<code>Sun Date / 1st of Next Month</code>)</td>
+                                <td><span class="code-pill">GL</span></td>
+                                <td><code>TMS-RE-REV</code></td>
+                                <td>
+                                    <span class="lang-th"><em>- (กลับรายการเฉพาะรายได้ก่อน VAT รวม)</em></span>
+                                    <span class="lang-en"><em>- (Pre-VAT Revenue Reversal Only / No Contact)</em></span>
+                                </td>
+                                <td><strong>Dr.</strong> In-transit Revenue<br><strong>Cr.</strong> Revenues</td>
+                            </tr>
+                            <tr>
+                                <td><strong>11</strong></td>
+                                <td><code>COD</code> (In-transit COGS Summary from MR)</td>
+                                <td>Midnight Cut-off (<code>Sat Date / EOM Date</code>)</td>
+                                <td><span class="code-pill">GL</span></td>
+                                <td><code>TMS-IT-COGS</code></td>
+                                <td>
+                                    <span class="lang-th"><em>- (ปรับปรุงเฉพาะต้นทุนขายสินค้าระหว่างทางรวม)</em></span>
+                                    <span class="lang-en"><em>- (COGS Deferral Only / No Contact)</em></span>
+                                </td>
+                                <td><strong>Dr.</strong> In-transit COGS<br><strong>Cr.</strong> COGS</td>
+                            </tr>
+                            <tr>
+                                <td><strong>12</strong></td>
+                                <td><code>COD</code> (In-transit COGS Summary from MR)</td>
+                                <td>Sent simultaneously (<code>Sun Date / 1st of Next Month</code>)</td>
+                                <td><span class="code-pill">GL</span></td>
+                                <td><code>TMS-RE-COGS</code></td>
+                                <td>
+                                    <span class="lang-th"><em>- (กลับรายการเฉพาะต้นทุนขายสินค้าระหว่างทางรวม)</em></span>
+                                    <span class="lang-en"><em>- (COGS Reversal Only / No Contact)</em></span>
+                                </td>
+                                <td><strong>Dr.</strong> COGS<br><strong>Cr.</strong> In-transit COGS</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 2: IV & Update IV -->
+            <div id="tab-iv" class="tab-panel">
+                <p class="panel-subtitle">
+                    <span class="lang-th">รายละเอียดการ Map ฟิลด์สำหรับ <strong>End-Point: <code>IV</code> (เคส 1, 2, 3)</strong> และ <strong><code>Update IV</code> (เคส 8)</strong>:</span>
+                    <span class="lang-en">Field mapping specification for <strong>End-Point: <code>IV</code> (Scenarios 1, 2, 3)</strong> and <strong><code>Update IV</code> (Scenario 8)</strong>:</span>
+                </p>
+                <div class="table-responsive">
+                    <table class="mapping-table">
+                        <thead>
+                            <tr>
+                                <th>TRCloud Column</th>
+                                <th>Type</th>
+                                <th>TMS Attribute / Logic (Non-COD vs. COD)</th>
+                                <th>Example / Fix Value</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="section-divider"><td colspan="5">DOCUMENT HEADER</td></tr>
+                            <tr>
+                                <td><code>issue_date</code></td>
+                                <td>date</td>
+                                <td>• Non-COD: Date of status <code>New</code><br>• COD: Date of status <code>Intransit</code></td>
+                                <td><code>2026-12-31</code></td>
+                                <td>
+                                    <span class="lang-th">วันที่ออกเอกสาร (YYYY-MM-DD) อิงตามวันที่เกิดสถานะจริง</span>
+                                    <span class="lang-en">Document issue date (YYYY-MM-DD) anchored to actual status date</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>company_format</code></td>
+                                <td>text</td>
+                                <td>Fix Code</td>
+                                <td><code>IV</code></td>
+                                <td>
+                                    <span class="lang-th">กลุ่มเอกสารใบกำกับภาษี</span>
+                                    <span class="lang-en">Tax Invoice document group</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>payment_term</code></td>
+                                <td>number</td>
+                                <td>Fix Code</td>
+                                <td><code>0</code></td>
+                                <td>
+                                    <span class="lang-th">เครดิตเทอม (จำนวนวัน)</span>
+                                    <span class="lang-en">Credit term (days)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>reference</code></td>
+                                <td>text</td>
+                                <td><code>DeliveryCode</code></td>
+                                <td><code>EKW2021102600311410</code></td>
+                                <td>
+                                    <span class="lang-th">เลขที่เอกสารอ้างอิงจาก TMS</span>
+                                    <span class="lang-en">Reference document code from TMS</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>tax_option</code></td>
+                                <td>setting</td>
+                                <td>Fix Code</td>
+                                <td><code>in</code></td>
+                                <td>
+                                    <span class="lang-th"><code>in</code> = ราคารวมภาษีมูลค่าเพิ่ม (Inclusive VAT)</span>
+                                    <span class="lang-en"><code>in</code> = Price inclusive of VAT</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>warehouse</code></td>
+                                <td>text</td>
+                                <td><code>Warehouse</code></td>
+                                <td><code>MYC</code></td>
+                                <td>
+                                    <span class="lang-th">คลังสินค้า</span>
+                                    <span class="lang-en">Warehouse code</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>type</code></td>
+                                <td>setting</td>
+                                <td>Fix Code by PaymentMethod</td>
+                                <td><code>TMS-TT-IV</code> / <code>TMS--2c2p-IV</code> / <code>TMS-COD-IV</code></td>
+                                <td>
+                                    <span class="lang-th">ชื่อสูตรบัญชีสำหรับลง GL อัตโนมัติ</span>
+                                    <span class="lang-en">Automated Accounting Formula code</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>c1</code></td>
+                                <td>number</td>
+                                <td><code>saleOrder</code></td>
+                                <td><code>297168</code></td>
+                                <td>
+                                    <span class="lang-th">Special Note - เก็บเลขใบสั่งขายจาก TMS</span>
+                                    <span class="lang-en">Special Note variable storing TMS Sales Order ID</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>tax_report</code></td>
+                                <td>number</td>
+                                <td>Fix Code</td>
+                                <td><code>1</code></td>
+                                <td>
+                                    <span class="lang-th"><code>1</code> = แสดงในรายงานภาษีขาย</span>
+                                    <span class="lang-en"><code>1</code> = Include in Output VAT tax report</span>
+                                </td>
+                            </tr>
+                            <tr class="section-divider"><td colspan="5">CUSTOMER BLOCK (SHARED NON-COD VS. MAPPED CARRIER AR)</td></tr>
+                            <tr>
+                                <td><code>group_code</code> &amp; <code>code_number</code></td>
+                                <td>setting / number</td>
+                                <td>• Non-COD: Fix Code (Shared Non-COD Customer)<br>• COD: Mapped with Carrier Master Data (Pre-created on ERP)</td>
+                                <td><code>C</code> / <code>0001</code></td>
+                                <td>
+                                    <span class="lang-th">รหัสกลุ่มคู่ค้าและรหัสคู่ค้าที่สร้างรอไว้บน ERP</span>
+                                    <span class="lang-en">Contact group and running code pre-created on ERP</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>name</code> / <code>address</code> / <code>email</code> / <code>telephone</code> / <code>tax_id</code></td>
+                                <td>text</td>
+                                <td>Customer attributes from TMS order</td>
+                                <td><code>จอน โด</code> / <code>29991111</code></td>
+                                <td>
+                                    <span class="lang-th">แสดงชื่อและที่อยู่ลูกค้าบนหน้าใบกำกับภาษี</span>
+                                    <span class="lang-en">Customer details displayed on the Tax Invoice</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>contact_id</code></td>
+                                <td>setting</td>
+                                <td>• Non-COD: Fix Code (Shared <code>contact_id</code> pre-created on ERP)<br>• COD: <strong>Mapped Carrier <code>contact_id</code> (Pre-created on ERP &amp; mapped in TMS)</strong></td>
+                                <td><code>0</code> (or Carrier ID)</td>
+                                <td>
+                                    <span class="lang-th">Non-COD ใช้ ID กลางเพื่อไม่ให้ DB บวม / COD ผูก ID ขนส่งเพื่อตั้งหนี้ <code>AR (Lastmile)</code></span>
+                                    <span class="lang-en">Non-COD uses shared ID to prevent DB bloat / COD maps to Carrier ID to establish <code>AR (Lastmile)</code></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>add_contact</code></td>
+                                <td>boolean</td>
+                                <td>• Non-COD: Fix Code = <code>0</code><br>• COD: Fix Code = <code>1</code></td>
+                                <td><code>0</code> / <code>1</code></td>
+                                <td>
+                                    <span class="lang-th"><code>0</code> = ไม่เพิ่มคู่ค้าใหม่ (ใช้คู่ค้าที่สร้างรอไว้บน ERP)</span>
+                                    <span class="lang-en"><code>0</code> = Do not add new contact (uses pre-created ERP contact)</span>
+                                </td>
+                            </tr>
+                            <tr class="section-divider"><td colspan="5">PRODUCT LINE ITEMS &amp; UPDATE IV EXTENSION</td></tr>
+                            <tr>
+                                <td><code>product_id</code> / <code>product</code></td>
+                                <td>text</td>
+                                <td><code>Product ID</code> (Max 150) / <code>Product Name</code></td>
+                                <td><code>FME-001</code> / <code>Dura</code></td>
+                                <td>
+                                    <span class="lang-th">รหัสสินค้าและชื่อสินค้าในรายการขาย</span>
+                                    <span class="lang-en">Product SKU and item description</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>price</code> / <code>quantity</code> / <code>discount</code> / <code>vat</code></td>
+                                <td>number</td>
+                                <td><code>Price</code>, <code>Qty</code>, <code>Discount</code> (Optional), Fix <code>vat = 7%</code></td>
+                                <td><code>990</code> / <code>4</code> / <code>2750.00</code> / <code>7%</code></td>
+                                <td>
+                                    <span class="lang-th">ราคาต่อหน่วย, จำนวน, ส่วนลด และอัตราภาษีมูลค่าเพิ่ม</span>
+                                    <span class="lang-en">Unit price, quantity, discount amount, and VAT rate</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>staff</code> &amp; <code>id</code> <em>(Update IV)</em></td>
+                                <td>text / number</td>
+                                <td><code>staff</code> = TMS <code>Delivery status</code><br><code>id</code> = <code>Invoice ID from TRCloud</code></td>
+                                <td><code>Delivered</code> / System ID</td>
+                                <td>
+                                    <span class="lang-th">ใช้ในโหมด <strong>Update IV</strong> เพื่อบันทึกสถานะจัดส่งลงในเอกสารเดิม</span>
+                                    <span class="lang-en">Used in <strong>Update IV</strong> mode to stamp delivery status onto existing invoice</span>
+                                </td>
+                            </tr>
+                            <tr class="section-divider"><td colspan="5">TRCLOUD API RESPONSE STORED IN TMS (ข้อมูลขากลับที่เก็บไว้ใน TMS)</td></tr>
+                            <tr>
+                                <td><strong>Response:</strong> <code>id</code>, <code>InvoiceNumber</code>, &amp; <strong>Pre-VAT Amount</strong></td>
+                                <td>number / text</td>
+                                <td>Returned from TRCloud upon <code>IV</code> creation</td>
+                                <td><code>IV23120001</code> / Pre-VAT Value</td>
+                                <td>
+                                    <span class="lang-th"><strong>TMS เก็บค่าจาก TRCloud:</strong> (1) <code>id</code> ใช้ยิง Update IV, (2) <code>InvoiceNumber</code> ใช้อ้างอิงตอนออก CN, และ (3) <strong>ยอดรายได้ก่อน VAT</strong> ใช้คำนวณผลรวมยิงปรับปรุง GL (<code>TMS-IT-REV</code> / <code>TMS-RE-REV</code>) ตอน Cut-off</span>
+                                    <span class="lang-en"><strong>Stored in TMS upon IV creation:</strong> (1) <code>id</code> for Update IV, (2) <code>InvoiceNumber</code> for CN reference, and (3) <strong>Pre-VAT Revenue</strong> for Cut-off GL aggregation (<code>TMS-IT-REV</code> / <code>TMS-RE-REV</code>)</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 3: MR -->
+            <div id="tab-mr" class="tab-panel">
+                <p class="panel-subtitle">
+                    <span class="lang-th">รายละเอียดการ Map ฟิลด์สำหรับ <strong>End-Point: <code>MR</code> (เคส 4 Non-COD และ เคส 5 COD)</strong> เมื่อสถานะเป็น <code>Intransit</code>:</span>
+                    <span class="lang-en">Field mapping specification for <strong>End-Point: <code>MR</code> (Scenario 4 Non-COD &amp; Scenario 5 COD)</strong> triggered at <code>Intransit</code> status:</span>
+                </p>
+                <div class="table-responsive">
+                    <table class="mapping-table">
+                        <thead>
+                            <tr>
+                                <th>TRCloud Column</th>
+                                <th>Type</th>
+                                <th>TMS Attribute / Source</th>
+                                <th>Example / Fix Value</th>
+                                <th>Description &amp; Accounting Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>issue_date</code></td>
+                                <td>date</td>
+                                <td>Date of status <code>Delivery Status = Intransit</code></td>
+                                <td><code>2026-12-31</code></td>
+                                <td>
+                                    <span class="lang-th">วันที่ของออกจากคลังจริง (YYYY-MM-DD)</span>
+                                    <span class="lang-en">Actual dispatch date (YYYY-MM-DD)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>company_format</code></td>
+                                <td>text</td>
+                                <td>Fix Code</td>
+                                <td><code>MR</code></td>
+                                <td>
+                                    <span class="lang-th">กลุ่มเอกสารใบเบิกสินค้า</span>
+                                    <span class="lang-en">Material Requisition document group</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>contact_id</code></td>
+                                <td>number</td>
+                                <td>Contact ID from TRCloud master data</td>
+                                <td><code>0</code></td>
+                                <td>
+                                    <span class="lang-th">เลข ID ของประวัติคู่ค้า</span>
+                                    <span class="lang-en">System contact ID from TRCloud master data</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>type</code></td>
+                                <td>number</td>
+                                <td>• Non-COD (Bank/2c2p): Fix Code = <code>1</code><br>• COD: Fix Code = <code>2</code></td>
+                                <td><code>1</code> or <code>2</code></td>
+                                <td>• <code>type = 1</code>: Dr. Advance received / Cr. Income &amp; Dr. COGS / Cr. Inventory<br>• <code>type = 2</code>: Dr. COGS / Cr. Inventory</td>
+                            </tr>
+                            <tr>
+                                <td><code>stage</code></td>
+                                <td>number</td>
+                                <td>Fix Code</td>
+                                <td><code>2</code></td>
+                                <td>
+                                    <span class="lang-th">สถานะเอกสาร (<code>2 = shipped / ขนส่งแล้ว</code>)</span>
+                                    <span class="lang-en">Document stage (<code>2 = shipped</code>)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>warehouse</code></td>
+                                <td>text</td>
+                                <td><code>Warehouse</code></td>
+                                <td><code>MYC</code></td>
+                                <td>
+                                    <span class="lang-th">คลังสินค้าที่ตัดสต็อก</span>
+                                    <span class="lang-en">Source warehouse for inventory deduction</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>cost_option</code></td>
+                                <td>number (1)</td>
+                                <td>Fix Code</td>
+                                <td><code>1</code></td>
+                                <td>
+                                    <span class="lang-th"><code>1 = ยึดต้นทุนตามการคำนวณของระบบ TRCLOUD</code></span>
+                                    <span class="lang-en"><code>1 = Follow TRCloud automated cost calculation</code></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Response:</strong> <code>cost</code></td>
+                                <td>number</td>
+                                <td><strong>Retrieved from TRCloud upon <code>MR</code> creation</strong> (calculated via <code>cost_option = 1</code>)</td>
+                                <td><code>120000</code></td>
+                                <td>
+                                    <span class="lang-th"><strong>TMS เก็บค่า COST ของแต่ละรายการจาก TRCloud ตอนเปิด MR</strong> เพื่อใช้คำนวณผลรวมต้นทุน (Summary Cost) สำหรับยิงปรับปรุง <code>In-transit COGS</code> (<code>TMS-IT-COGS</code> / <code>TMS-RE-COGS</code>) ที่ Endpoint <code>GL</code> ตอน Cut-off</span>
+                                    <span class="lang-en"><strong>TMS captures item-level COST calculated by TRCloud during MR creation</strong> to aggregate total Summary Cost for <code>In-transit COGS</code> GL deferral &amp; reversal (<code>TMS-IT-COGS</code> / <code>TMS-RE-COGS</code>) at Cut-off</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>product_id</code> / <code>product</code> / <code>quantity</code></td>
+                                <td>text / number</td>
+                                <td><code>Product ID</code>, <code>Product Name</code>, <code>Qty</code></td>
+                                <td><code>FME-001</code> / <code>dura</code> / <code>4</code></td>
+                                <td>
+                                    <span class="lang-th">รายการสินค้าและจำนวนที่เบิกตัดสต็อก</span>
+                                    <span class="lang-en">Product code, name, and quantity deducted</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 4: CN -->
+            <div id="tab-cn" class="tab-panel">
+                <p class="panel-subtitle">
+                    <span class="lang-th">รายละเอียดการ Map ฟิลด์สำหรับ <strong>End-Point: <code>CN</code> (เคส 6 Non-COD และ เคส 7 COD)</strong> เมื่อสถานะเป็น <code>Returned</code>:</span>
+                    <span class="lang-en">Field mapping specification for <strong>End-Point: <code>CN</code> (Scenario 6 Non-COD &amp; Scenario 7 COD)</strong> triggered at <code>Returned</code> status:</span>
+                </p>
+                <div class="table-responsive">
+                    <table class="mapping-table">
+                        <thead>
+                            <tr>
+                                <th>TRCloud Column</th>
+                                <th>Type</th>
+                                <th>TMS Attribute / Source</th>
+                                <th>Example / Fix Value</th>
+                                <th>Description &amp; Accounting Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>issue_date</code></td>
+                                <td>date</td>
+                                <td>Date of status <code>Delivery Status = Returned</code></td>
+                                <td><code>2026-12-31</code></td>
+                                <td>
+                                    <span class="lang-th">วันที่รับคืนสินค้า (YYYY-MM-DD)</span>
+                                    <span class="lang-en">Return status date (YYYY-MM-DD)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>company_format</code></td>
+                                <td>text</td>
+                                <td>Fix Code</td>
+                                <td><code>CN</code></td>
+                                <td>
+                                    <span class="lang-th">กลุ่มเอกสารใบลดหนี้</span>
+                                    <span class="lang-en">Credit Note document group</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>reference</code></td>
+                                <td>text</td>
+                                <td><code>InvoiceNumber from TRCloud</code></td>
+                                <td><code>IV23120001</code></td>
+                                <td>
+                                    <span class="lang-th">เลขที่ใบกำกับภาษีเดิมที่อ้างอิง</span>
+                                    <span class="lang-en">Referenced original Tax Invoice number</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>type</code></td>
+                                <td>setting</td>
+                                <td>• Non-COD: <code>TMS-NonCOD-CN</code><br>• COD: <code>TMS-COD-CN</code></td>
+                                <td><code>TMS-NonCOD-CN</code> / <code>TMS-COD-CN</code></td>
+                                <td>
+                                    <span class="lang-th">สูตรบัญชีลดหนี้ (ล้างรายได้/ภาษีขาย คืนเข้า Advance received หรือลดหนี้ AR Lastmile)</span>
+                                    <span class="lang-en">Credit Note formula reversing revenue/Output VAT to Advance Received or AR Lastmile</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>ref_total</code></td>
+                                <td>number</td>
+                                <td><code>Amount</code></td>
+                                <td><code>2,800.00</code></td>
+                                <td>
+                                    <span class="lang-th">มูลค่าตามใบกำกับภาษีเดิม</span>
+                                    <span class="lang-en">Original Tax Invoice total amount</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>group_code</code> &amp; <code>code_number</code></td>
+                                <td>setting / number</td>
+                                <td>• Non-COD: <strong>Customer</strong> Master Data<br>• COD: <strong>Carrier</strong> Master Data</td>
+                                <td><code>C</code> / <code>0001</code></td>
+                                <td>
+                                    <span class="lang-th">แยกการลดหนี้ระหว่างลูกค้าทั่วไปกับบริษัทขนส่ง (Carrier)</span>
+                                    <span class="lang-en">Differentiates Credit Note partner between Customer and 3rd-Party Carrier</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>return</code></td>
+                                <td>text (1)</td>
+                                <td>Fix Code</td>
+                                <td><code>y</code></td>
+                                <td>
+                                    <span class="lang-th"><code>y = ได้รับสินค้าคืนเข้าคลัง</code> (ระบบบันทึก Dr. Inventory / Cr. COGS อัตโนมัติ)</span>
+                                    <span class="lang-en"><code>y = Return goods to stock</code> (automatically posts Dr. Inventory / Cr. COGS)</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 5: GL -->
+            <div id="tab-gl" class="tab-panel">
+                <p class="panel-subtitle">
+                    <span class="lang-th">รายละเอียดการ Map ฟิลด์สำหรับ <strong>End-Point: <code>GL</code> (เคส 9–12: Cut-off Deferral &amp; Auto-Reversal)</strong> ซึ่งแยกเป็น <strong>2 คู่สูตรบัญชี (รวม 4 Payloads ส่งพร้อมกันตอนเที่ยงคืนวันเสาร์และสิ้นเดือน)</strong> เนื่องจากฟิลด์ <code>value</code> รับค่าได้เพียงยอดเดียว จึงต้องแยกส่งระหว่าง <strong>ผลรวมรายได้ก่อน VAT (ที่เก็บไว้ตอนเปิด IV)</strong> และ <strong>ผลรวม COST (ที่เก็บไว้ตอนเปิด MR)</strong>:</span>
+                    <span class="lang-en">Field mapping specification for <strong>End-Point: <code>GL</code> (Scenarios 9–12: Cut-off Deferral &amp; Auto-Reversal)</strong>, split into <strong>2 formula pairs (4 payloads transmitted simultaneously at Saturday midnight &amp; EOM)</strong> because the <code>value</code> field accepts a single amount—requiring separate payloads for the <strong>Sum of Pre-VAT Revenue (captured at IV)</strong> vs. the <strong>Sum of COST (captured at MR)</strong>:</span>
+                </p>
+                <div class="table-responsive">
+                    <table class="mapping-table">
+                        <thead>
+                            <tr>
+                                <th>TRCloud Column</th>
+                                <th>Type</th>
+                                <th>
+                                    <span class="lang-th">เคส 9 &amp; 10: ด้านรายได้<br>(Cut-off ➔ Auto-Reversal)</span>
+                                    <span class="lang-en">Scenarios 9 &amp; 10: Revenue Pair<br>(Cut-off ➔ Auto-Reversal)</span>
+                                </th>
+                                <th>
+                                    <span class="lang-th">เคส 11 &amp; 12: ด้านต้นทุนขาย<br>(Cut-off ➔ Auto-Reversal)</span>
+                                    <span class="lang-en">Scenarios 11 &amp; 12: COGS Pair<br>(Cut-off ➔ Auto-Reversal)</span>
+                                </th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>date</code></td>
+                                <td>date</td>
+                                <td>• <strong>#9 (Cut-off):</strong> <code>Sat / EOM Date</code> (<code>2026-10-31</code>)<br>• <strong>#10 (Reversal):</strong> <code>Sun / 1st Next Month</code> (<code>2026-11-01</code>)</td>
+                                <td>• <strong>#11 (Cut-off):</strong> <code>Sat / EOM Date</code> (<code>2026-10-31</code>)<br>• <strong>#12 (Reversal):</strong> <code>Sun / 1st Next Month</code> (<code>2026-11-01</code>)</td>
+                                <td>
+                                    <span class="lang-th">วันที่เอกสาร GL (ตัวกำหนดงวดบัญชีใน TRCloud)</span>
+                                    <span class="lang-en">GL document date (dictates accounting period in TRCloud)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>accounting_formula</code></td>
+                                <td>text (150)</td>
+                                <td>• <strong>#9:</strong> <span class="code-pill">TMS-IT-REV</span><br>• <strong>#10:</strong> <span class="code-pill">TMS-RE-REV</span></td>
+                                <td>• <strong>#11:</strong> <span class="code-pill">TMS-IT-COGS</span><br>• <strong>#12:</strong> <span class="code-pill">TMS-RE-COGS</span></td>
+                                <td>
+                                    <span class="lang-th">รหัสสูตรบันทึกบัญชีแยกฝั่งรายได้ (REV) และฝั่งต้นทุนขาย (COGS)</span>
+                                    <span class="lang-en">Accounting formula codes for Revenue (REV) and Cost of Goods Sold (COGS)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>company_format</code></td>
+                                <td>text</td>
+                                <td><code>GL</code></td>
+                                <td><code>GL</code></td>
+                                <td>
+                                    <span class="lang-th">กลุ่มเอกสารสมุดรายวันทั่วไป</span>
+                                    <span class="lang-en">General Ledger document group</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>note1</code></td>
+                                <td>text (255)</td>
+                                <td>• <strong>#9:</strong> <code>ปรับปรุงรายได้เป็นรายได้สินค้าระหว่างทาง</code><br>• <strong>#10:</strong> <code>กลับรายการปรับปรุงรายได้</code></td>
+                                <td>• <strong>#11:</strong> <code>ปรับปรุงต้นทุนขายเป็นต้นทุนสินค้าระหว่างทาง</code><br>• <strong>#12:</strong> <code>กลับรายการปรับปรุงต้นทุนขาย</code></td>
+                                <td>
+                                    <span class="lang-th">คำอธิบายรายการหน้าสมุดรายวัน</span>
+                                    <span class="lang-en">Journal entry description</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><code>value</code></td>
+                                <td>number</td>
+                                <td><strong>Sum of Pre-VAT Revenue</strong> (captured at <code>IV</code>)<br>for COD orders still <code>Intransit</code></td>
+                                <td><strong>Sum of COST</strong> (captured at <code>MR</code>)<br>for COD orders still <code>Intransit</code></td>
+                                <td>
+                                    <span class="lang-th">ส่งแยกยอดเงินระหว่าง <strong>ผลรวมรายได้ก่อน VAT (จาก IV)</strong> กับ <strong>ผลรวมต้นทุน COST (จาก MR)</strong> ณ สิ้นวันเสาร์ และ สิ้นเดือน</span>
+                                    <span class="lang-en">Transmits separate aggregated totals for <strong>Pre-VAT Revenue (from IV)</strong> vs. <strong>Item COST (from MR)</strong> at Saturday midnight &amp; EOM</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Account Formula (GL Impact)</strong></td>
+                                <td>Dr. / Cr.</td>
+                                <td>• <strong>#9 (<code>TMS-IT-REV</code>):</strong><br>&nbsp;&nbsp;<strong>Dr.</strong> Revenues / <strong>Cr.</strong> In-transit Revenue<br>• <strong>#10 (<code>TMS-RE-REV</code>):</strong><br>&nbsp;&nbsp;<strong>Dr.</strong> In-transit Revenue / <strong>Cr.</strong> Revenues</td>
+                                <td>• <strong>#11 (<code>TMS-IT-COGS</code>):</strong><br>&nbsp;&nbsp;<strong>Dr.</strong> In-transit COGS / <strong>Cr.</strong> COGS<br>• <strong>#12 (<code>TMS-RE-COGS</code>):</strong><br>&nbsp;&nbsp;<strong>Dr.</strong> COGS / <strong>Cr.</strong> In-transit COGS</td>
+                                <td>
+                                    <span class="lang-th">ผลลัพธ์การลงบัญชีทั้ง 4 Payloads แยกตามวันที่เอกสารและรหัสสูตรบัญชี</span>
+                                    <span class="lang-en">GL posting impact across all 4 payloads separated by date and formula</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Business Impact -->
+        <h2 class="section-title">Business Impact</h2>
+        
+        <div class="impact-box">
+            <h3>Value Delivered</h3>
+            <ul>
+                <li>
+                    <div class="lang-th">
+                        <strong>100% Elimination of Manual Invoicing &amp; Redundant SOs:</strong> ลดภาระงานของพนักงานลงอย่างมหาศาล ด้วยการตัดเส้นทางการยิง API ไปยัง SO ทิ้งทั้งหมด และผูกการสร้างเอกสาร <code>IV</code>, <code>MR</code>, <code>CN</code> และ <code>Update IV</code> เข้ากับสถานะการจัดส่งจริงพร้อมสูตรบัญชีอัตโนมัติ
+                    </div>
+                    <div class="lang-en">
+                        <strong>100% Elimination of Manual Invoicing &amp; Redundant SOs:</strong> Drastically reduced staff workload by completely bypassing the redundant SO endpoint and automating <code>IV</code>, <code>MR</code>, <code>CN</code>, and <code>Update IV</code> generation directly from real-time delivery status triggers.
+                    </div>
+                </li>
+                <li>
+                    <div class="lang-th">
+                        <strong>100% Tax Point &amp; Revenue Cut-off Accuracy:</strong> แยกจุดความรับผิดทางภาษีขาย (Tax Point) ออกจากจังหวะการรับรู้รายได้ด้วยบัญชีพัก <code>Advance received</code> สำหรับ Non-COD และใช้กลไกการยิง <code>GL</code> คู่ขนานตอนเที่ยงคืน (<code>TMS-IT-REV</code>, <code>TMS-RE-REV</code>, <code>TMS-IT-COGS</code>, และ <code>TMS-RE-COGS</code>) สำหรับ COD ที่อยู่ระหว่างขนส่ง ทำให้งบการเงินสะท้อนรายได้และต้นทุนที่แท้จริงในแต่ละงวด
+                    </div>
+                    <div class="lang-en">
+                        <strong>100% Tax Point &amp; Revenue Cut-off Accuracy:</strong> Strictly aligned VAT recognition with official Tax Point regulations using <code>Advance received</code> deferrals for Non-COD and simultaneous 4-payload midnight <code>GL</code> cut-offs/reversals (<code>TMS-IT-REV</code>, <code>TMS-RE-REV</code>, <code>TMS-IT-COGS</code>, and <code>TMS-RE-COGS</code>) for in-transit COD orders.
+                    </div>
+                </li>
+                <li>
+                    <div class="lang-th">
+                        <strong>Streamlined 3rd-Party COD Carrier Reconciliation:</strong> การผูก <code>contact_id</code> และรหัสคู่ค้าของธุรกรรม COD เข้ากับบริษัทขนส่ง (<code>AR Lastmile</code>) โดยตรง ช่วยให้ฝ่ายการเงินสามารถกระทบยอดเงินโอนก้อนใหญ่จากขนส่งและหักกลบยอดรับคืนสินค้า (<code>CN</code>) ได้อย่างรวดเร็วและแม่นยำ
+                    </div>
+                    <div class="lang-en">
+                        <strong>Streamlined 3rd-Party COD Carrier Reconciliation:</strong> Mapping COD invoices and credit notes directly to 3rd-party carrier accounts receivable (<code>AR Lastmile</code>) enabled fast, accurate batch settlement reconciliation across thousands of monthly deliveries.
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function setLanguage(lang) {
+        document.body.classList.remove('lang-th', 'lang-en');
+        document.body.classList.add('lang-' + lang);
+        document.getElementById('btn-th').classList.toggle('active', lang === 'th');
+        document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+        document.documentElement.lang = lang;
+        try { localStorage.setItem('nv_portfolio_lang', lang); } catch(e) {}
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        try {
+            const savedLang = localStorage.getItem('nv_portfolio_lang') || 'en';
+            setLanguage(savedLang);
+        } catch(e) {
+            setLanguage('en');
+        }
+    });
+
+    function openSpecTab(evt, tabId) {
+        var panels = document.getElementsByClassName("tab-panel");
+        for (var i = 0; i < panels.length; i++) {
+            panels[i].classList.remove("active");
+        }
+        var buttons = document.getElementsByClassName("tab-btn");
+        for (var j = 0; j < buttons.length; j++) {
+            buttons[j].classList.remove("active");
+        }
+        document.getElementById(tabId).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+</script>
+
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+        startOnLoad: false,
+        theme: 'base',
+        securityLevel: 'loose',
+        flowchart: {
+            useMaxWidth: true,
+            htmlLabels: true,
+            curve: 'basis'
+        }
+    });
+
+    async function renderAllMermaid() {
+        const enContainer = document.getElementById('mermaid-en-container');
+        const wasHidden = enContainer && getComputedStyle(enContainer).display === 'none';
+        if (wasHidden) {
+            enContainer.style.setProperty('display', 'block', 'important');
+        }
+        await mermaid.run({
+            querySelector: '.mermaid'
+        });
+        if (wasHidden) {
+            enContainer.style.removeProperty('display');
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderAllMermaid);
+    } else {
+        renderAllMermaid();
+    }
+</script>
+</body>
+</html>

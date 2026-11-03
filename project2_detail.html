@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details | LogiPO-Bot</title>
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --secondary-color: #38bdf8;
+            --accent-blue: #3b82f6;
+            --bg-color: #f8fafc;
+            --text-color: #334155;
+        }
+        body { font-family: 'Segoe UI', system-ui, Tahoma, sans-serif; margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
+        
+        /* Language Toggle Visibility */
+        body.lang-th .lang-en { display: none !important; }
+        body.lang-en .lang-th { display: none !important; }
+
+        /* Header */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+        .logo { font-size: 1.5rem; font-weight: bold; color: white; text-decoration: none; letter-spacing: 1px; }
+        .logo span { color: var(--secondary-color); }
+        .nav-right { display: flex; align-items: center; gap: 18px; }
+        .lang-switcher {
+            display: inline-flex;
+            background: #1e293b;
+            border-radius: 6px;
+            padding: 3px;
+            border: 1px solid #334155;
+        }
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            font-family: inherit;
+            font-size: 12.5px;
+            font-weight: 700;
+            padding: 4px 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover { color: #ffffff; }
+        .lang-btn.active { background: var(--secondary-color); color: var(--primary-color); }
+        .back-btn { color: var(--secondary-color); text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+        .back-btn:hover { text-decoration: underline; }
+        
+        /* Container */
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        h1 { color: var(--primary-color); border-bottom: 3px solid var(--secondary-color); display: inline-block; padding-bottom: 10px; margin-bottom: 10px; }
+        
+        /* Gap Analysis Table */
+        .gap-analysis { background: white; padding: 28px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 40px; border: 1px solid #e2e8f0; }
+        .gap-analysis h2 { margin-top: 0; color: #1e293b; }
+        .gap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .gap-grid { grid-template-columns: 1fr; } }
+        .as-is { background-color: #fef2f2; padding: 18px; border-left: 4px solid #ef4444; border-radius: 5px; }
+        .to-be { background-color: #f0fdf4; padding: 18px; border-left: 4px solid #22c55e; border-radius: 5px; }
+        .as-is ul, .to-be ul { margin: 0; padding-left: 20px; }
+        .as-is li, .to-be li { margin-bottom: 10px; }
+        
+        /* Flowchart Section */
+        .architecture { background: white; padding: 28px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 40px; border: 1px solid #e2e8f0; }
+        .architecture h2 { margin-top: 0; color: #1e293b; }
+        .flowchart-img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        /* Action Buttons */
+        .actions { display: flex; gap: 15px; margin-top: 24px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; color: white; border-radius: 6px; text-decoration: none; font-weight: bold; text-align: center; transition: opacity 0.2s; }
+        .btn:hover { opacity: 0.9; }
+        .btn-line { background-color: #06c755; }
+        .btn-email { background-color: #f59e0b; }
+    </style>
+</head>
+<body class="lang-en">
+
+    <header>
+        <a href="index.html" class="logo">NV<span>.</span></a>
+        <div class="nav-right">
+            <div class="lang-switcher" role="group" aria-label="Language Switcher">
+                <button type="button" id="btn-th" class="lang-btn" onclick="setLanguage('th')">TH</button>
+                <button type="button" id="btn-en" class="lang-btn active" onclick="setLanguage('en')">EN</button>
+            </div>
+            <a href="index.html" class="back-btn">
+                <span class="lang-en">← Back to Portfolio</span>
+                <span class="lang-th">← กลับหน้าหลัก</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>"LogiPO-Bot" PO Automation</h1>
+        <p style="font-size: 1.08rem; color: #475569; margin-bottom: 30px;">
+            <span class="lang-en">An end-to-end workflow utilizing OCR, LINE Messaging API, and Google Apps Script to streamline Purchase Order approvals and ERP synchronization.</span>
+            <span class="lang-th">ระบบจัดการและอนุมัติใบสั่งซื้อ (PO) อัตโนมัติแบบครบวงจร ด้วยเทคโนโลยี OCR, LINE Messaging API และ Google Apps Script เชื่อมต่อตรงเข้าสู่ระบบ ERP</span>
+        </p>
+
+        <!-- 1. Gap Analysis Section -->
+        <div class="gap-analysis">
+            <h2>
+                <span class="lang-en">1. Gap Analysis &amp; Business Case</span>
+                <span class="lang-th">1. การวิเคราะห์ปัญหาและผลลัพธ์ทางธุรกิจ (Gap Analysis &amp; Business Case)</span>
+            </h2>
+            <div class="gap-grid">
+                <div class="as-is">
+                    <h3 style="color: #ef4444; margin-top:0;">
+                        <span class="lang-en">As-Is (Current State)</span>
+                        <span class="lang-th">As-Is (กระบวนการทำงานแบบเดิม)</span>
+                    </h3>
+                    <ul class="lang-en">
+                        <li><strong>Off-System Processing:</strong> Manual PO creation outside the ERP causes severe operational bottlenecks.</li>
+                        <li><strong>Delayed Cash Flow Visibility:</strong> Accounting struggles to accurately update weekly cash flow reports due to significant data lag.</li>
+                        <li><strong>Inefficient Approvals:</strong> Physical document routing delays decisions and creates blind spots in tracking.</li>
+                        <li><strong>Data Integrity Risks:</strong> High risk of duplicate data entry when eventually syncing into the ERP.</li>
+                    </ul>
+                    <ul class="lang-th">
+                        <li><strong>การทำเอกสารนอกระบบ (Off-System Processing):</strong> การเปิดใบสั่งซื้อ (PO) แบบ Manual นอกระบบ ERP ทำให้เกิดคอขวดในการทำงานหน้างาน</li>
+                        <li><strong>ข้อมูลกระแสเงินสดล่าช้า (Delayed Cash Flow Visibility):</strong> ฝ่ายบัญชีไม่สามารถอัปเดตรายงานกระแสเงินสดรายสัปดาห์ได้อย่างแม่นยำเนื่องจากข้อมูล PO เข้าระบบล่าช้า</li>
+                        <li><strong>การรออนุมัติที่ไร้ประสิทธิภาพ (Inefficient Approvals):</strong> การเดินเอกสารกระดาษทำให้การตัดสินใจล่าช้าและติดตามสถานะเอกสารได้ยาก</li>
+                        <li><strong>ความเสี่ยงข้อมูลซ้ำซ้อน (Data Integrity Risks):</strong> เสี่ยงต่อการคีย์ข้อมูลซ้ำซ้อนหรือผิดพลาดเมื่อต้องนำมาบันทึกลงระบบ ERP ย้อนหลัง</li>
+                    </ul>
+                </div>
+                <div class="to-be">
+                    <h3 style="color: #22c55e; margin-top:0;">
+                        <span class="lang-en">To-Be (Target State)</span>
+                        <span class="lang-th">To-Be (กระบวนการทำงานอัตโนมัติ)</span>
+                    </h3>
+                    <ul class="lang-en">
+                        <li><strong>Automated Data Capture:</strong> Smart PO extraction via LINE OCR transforms off-system documents into digital data instantly.</li>
+                        <li><strong>Real-Time Cash Flow Visibility:</strong> Instant API injection into the ERP enables Accounting to generate accurate, up-to-date weekly cash flow reports without delay.</li>
+                        <li><strong>Seamless Approval Workflow:</strong> 100% paperless and dynamic Email approvals ensure fast decision-making and eliminate tracking blind spots.</li>
+                        <li><strong>Systematic Data Governance:</strong> Built-in duplicate checks and validation rules secure data integrity before ERP integration.</li>
+                    </ul>
+                    <ul class="lang-th">
+                        <li><strong>สกัดข้อมูลอัตโนมัติ (Automated Data Capture):</strong> อ่านข้อมูลจากไฟล์ PDF ใบสั่งซื้อผ่าน LINE OCR แปลงเป็นข้อมูลดิจิทัลพร้อมตรวจสอบทันที</li>
+                        <li><strong>เห็นภาพรวมกระแสเงินสดแบบ Real-Time:</strong> ส่งข้อมูลเข้า ERP ผ่าน API ทันทีที่อนุมัติ ช่วยให้ฝ่ายบัญชีจัดทำรายงานกระแสเงินสดรายสัปดาห์ได้ถูกต้องและรวดเร็ว</li>
+                        <li><strong>อนุมัติไร้กระดาษ 100% (Seamless Approval Workflow):</strong> ส่งอีเมลขออนุมัติแบบโต้ตอบอัตโนมัติ ช่วยให้ผู้บริหารตัดสินใจได้รวดเร็วและตรวจสอบสถานะได้ทุกขั้นตอน</li>
+                        <li><strong>ควบคุมคุณภาพข้อมูล (Systematic Data Governance):</strong> มีระบบเช็คเลขที่เอกสารซ้ำ (New / Revision / Locked) ก่อนส่งเข้า ERP ป้องกันการตั้งหนี้ซ้ำซ้อน 100%</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <a href="mockup.html" target="_blank" class="btn btn-line">
+                    <span class="lang-en">📱 View LINE UX Mockup</span>
+                    <span class="lang-th">📱 ดูตัวอย่างหน้าจอ LINE UX</span>
+                </a>
+                <a href="mock_mail.html" target="_blank" class="btn btn-email">
+                    <span class="lang-en">✉️ View Email UX Mockup</span>
+                    <span class="lang-th">✉️ ดูตัวอย่างหน้าจอ Email UX</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 2. System Architecture (Image Flowchart) -->
+        <div class="architecture">
+            <h2>
+                <span class="lang-en">2. System Architecture &amp; Data Flow</span>
+                <span class="lang-th">2. สถาปัตยกรรมระบบและลำดับการไหลของข้อมูล (System Architecture &amp; Data Flow)</span>
+            </h2>
+            <p class="lang-en">The system is designed with a strong focus on data governance, utilizing Google Sheets as a staging database for duplicate validation and formatting prior to REST API execution into TRCloud ERP.</p>
+            <p class="lang-th">ออกแบบโดยเน้นการควบคุมความถูกต้องของข้อมูล (Data Governance) โดยใช้ Google Sheets เป็นพื้นที่พักข้อมูล (Staging Area) เพื่อตรวจสอบสถานะเอกสารซ้ำและจัดรูปแบบข้อมูลให้ตรงตามมาตรฐาน API ก่อนยิงเข้าสู่ระบบ TRCloud ERP</p>
+            
+            <!-- Supports both .jpg and .png seamlessly -->
+            <img src="OCR Data Processing Pipeline-2026-10-09-071914.jpg" onerror="this.onerror=null;this.src='OCR Data Processing Pipeline-2026-10-09-071914.png';" alt="System Architecture Flowchart" class="flowchart-img">
+        </div>
+    </div>
+
+    <script>
+        function setLanguage(lang) {
+            document.body.classList.remove('lang-th', 'lang-en');
+            document.body.classList.add('lang-' + lang);
+            document.getElementById('btn-th').classList.toggle('active', lang === 'th');
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            document.documentElement.lang = lang;
+            try { localStorage.setItem('nv_portfolio_lang', lang); } catch(e) {}
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const savedLang = localStorage.getItem('nv_portfolio_lang') || 'en';
+                setLanguage(savedLang);
+            } catch(e) {
+                setLanguage('en');
+            }
+        });
+    </script>
+</body>
+</html>
