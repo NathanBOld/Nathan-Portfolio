@@ -597,5 +597,53 @@
             }
         });
     </script>
+
+<script>
+  // ฟังก์ชันทำงานทันทีเมื่อมีคนเปิดหน้าเว็บ Portfolio
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const visitorData = {
+      time: new Date().toLocaleString('th-TH'),
+      platform: navigator.platform,
+      userAgent: navigator.userAgent,
+      referrer: document.referrer || 'Direct Link / Bookmark'
+    };
+
+    // ดึงข้อมูล IP และ Location คร่าวๆ จาก ipapi.co (ฟรี)
+    fetch('https://ipapi.co/json/')
+      .then(response => response.json())
+      .then(data => {
+        let message = `\n🔔 มีผู้เข้าชม Portfolio!\n` +
+                      `⏱️ เวลา: ${visitorData.time}\n` +
+                      `📍 เมือง/ประเทศ: ${data.city}, ${data.country_name}\n` +
+                      `🏢 ISP/เครือข่าย: ${data.org}\n` +
+                      `💻 อุปกรณ์: ${visitorData.platform}\n` +
+                      `🔗 แหล่งที่มา: ${visitorData.referrer}`;
+        
+        sendToLine(message);
+      })
+      .catch(error => {
+        // Fallback กรณีดึง IP ไม่ได้
+        let message = `\n🔔 มีผู้เข้าชม Portfolio!\n` +
+                      `⏱️ เวลา: ${visitorData.time}\n` +
+                      `💻 อุปกรณ์: ${visitorData.platform}\n` +
+                      `🔗 แหล่งที่มา: ${visitorData.referrer}`;
+        sendToLine(message);
+      });
+  });
+
+  // ฟังก์ชันส่งข้อมูลไปยัง Google Apps Script Web App เพื่อยิงเข้า LINE OA
+  function sendToLine(msg) {
+    var scriptUrl = 'https://script.google.com/macros/s/AKfycbw5_xTCy1N6KdXMWpgcWjPEoClmHAHyHr620QzHMEwnbVvJaX-nmKeR5N1KRQaLii5mpw/exec'; // <-- เอา URL ที่ได้ตอน Deploy มาใส่ตรงนี้
+
+    fetch(scriptUrl, {
+      method: 'POST',
+      mode: 'no-cors', // ป้องกันปัญหา CORS บน GitHub Pages
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: msg })
+    }).catch(error => console.error('Error:', error));
+  }
+</script>
 </body>
 </html>
