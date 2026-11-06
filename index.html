@@ -599,30 +599,43 @@
     </script>
 
 <script>
-  // ฟังก์ชันทำงานทันทีเมื่อมีคนเปิดหน้าเว็บ Portfolio
   window.addEventListener('DOMContentLoaded', (event) => {
     const visitorData = {
       time: new Date().toLocaleString('th-TH'),
       platform: navigator.platform,
-      userAgent: navigator.userAgent,
+      screenSize: `${window.innerWidth}x${window.innerHeight}`,
       referrer: document.referrer || 'Direct Link / Bookmark'
     };
 
-    // ดึงข้อมูล IP และ Location คร่าวๆ จาก ipapi.co (ฟรี)
+    // ติดตามว่าผู้เข้าชมคลิกดูโปรเจกต์ไหนเป็นพิเศษไหม
+    let clickedProjects = [];
+    document.querySelectorAll('.project-card, a[href*="github.com"]').forEach(element => {
+      element.addEventListener('click', function() {
+        let projectName = this.innerText.trim().split('\n')[0];
+        if (!clickedProjects.includes(projectName)) {
+          clickedProjects.push(projectName);
+        }
+      });
+    });
+
+    // ดึงข้อมูล IP และ Location ที่ละเอียดขึ้นจาก ipapi.co
     fetch('https://ipapi.co/json/')
       .then(response => response.json())
       .then(data => {
-        let message = `\n🔔 มีผู้เข้าชม Portfolio!\n` +
-                      `⏱️ เวลา: ${visitorData.time}\n` +
-                      `📍 เมือง/ประเทศ: ${data.city}, ${data.country_name}\n` +
-                      `🏢 ISP/เครือข่าย: ${data.org}\n` +
-                      `💻 อุปกรณ์: ${visitorData.platform}\n` +
-                      `🔗 แหล่งที่มา: ${visitorData.referrer}`;
-        
-        sendToLine(message);
+        // รอให้ผู้ใช้อยู่หน้าเว็บสัก 3 วินาที เพื่อเช็กพฤติกรรมการคลิก
+        setTimeout(() => {
+          let message = `\n🔔 มีผู้เข้าชม Portfolio!\n` +
+                        `⏱️ เวลา: ${visitorData.time}\n` +
+                        `📍 พิกัด: ${data.city}, ${data.region}, ${data.country_name}\n` +
+                        `🏢 เครือข่าย (ISP): ${data.org}\n` +
+                        `💻 อุปกรณ์: ${visitorData.platform} (${visitorData.screenSize})\n` +
+                        `🔗 แหล่งที่มา: ${visitorData.referrer}\n` +
+                        `🎯 โปรเจกต์ที่สนใจ: ${clickedProjects.length > 0 ? clickedProjects.join(', ') : 'ยังไม่มีการคลิกดูเฉพาะเจาะจง'}`;
+          
+          sendToLine(message);
+        }, 3000);
       })
       .catch(error => {
-        // Fallback กรณีดึง IP ไม่ได้
         let message = `\n🔔 มีผู้เข้าชม Portfolio!\n` +
                       `⏱️ เวลา: ${visitorData.time}\n` +
                       `💻 อุปกรณ์: ${visitorData.platform}\n` +
@@ -631,13 +644,12 @@
       });
   });
 
-  // ฟังก์ชันส่งข้อมูลไปยัง Google Apps Script Web App เพื่อยิงเข้า LINE OA
   function sendToLine(msg) {
-    var scriptUrl = 'https://script.google.com/macros/s/AKfycbw5_xTCy1N6KdXMWpgcWjPEoClmHAHyHr620QzHMEwnbVvJaX-nmKeR5N1KRQaLii5mpw/exec'; // <-- เอา URL ที่ได้ตอน Deploy มาใส่ตรงนี้
+    var scriptUrl = 'ใส่_Google_Apps_Script_Web_App_URL_ที่นี่'; // ใส่ URL ของคุณตรงนี้เหมือนเดิม
 
     fetch(scriptUrl, {
       method: 'POST',
-      mode: 'no-cors', // ป้องกันปัญหา CORS บน GitHub Pages
+      mode: 'no-cors',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -645,5 +657,6 @@
     }).catch(error => console.error('Error:', error));
   }
 </script>
+
 </body>
 </html>
