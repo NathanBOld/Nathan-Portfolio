@@ -599,62 +599,72 @@
     </script>
 
 <script>
-  window.addEventListener('DOMContentLoaded', (event) => {
-    const visitorData = {
-      time: new Date().toLocaleString('th-TH'),
-      platform: navigator.platform,
-      screenSize: `${window.innerWidth}x${window.innerHeight}`,
-      referrer: document.referrer || 'Direct Link / Bookmark'
-    };
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5_xTCy1N6KdXMWpgcWjPEoClmHAHyHr620QzHMEwnbVvJaX-nmKeR5N1KRQaLii5mpw/exec'; // <-- ใส่ลิงก์ Web App เดิมของคุณตรงนี้
 
-    // ติดตามว่าผู้เข้าชมคลิกดูโปรเจกต์ไหนเป็นพิเศษไหม
-    let clickedProjects = [];
-    document.querySelectorAll('.project-card, a[href*="github.com"]').forEach(element => {
-      element.addEventListener('click', function() {
-        let projectName = this.innerText.trim().split('\n')[0];
-        if (!clickedProjects.includes(projectName)) {
-          clickedProjects.push(projectName);
-        }
-      });
-    });
+  let userIpData = {
+    city: 'ไม่ทราบ',
+    region: '',
+    org: 'ไม่ทราบเครือข่าย'
+  };
 
-    // ดึงข้อมูล IP และ Location ที่ละเอียดขึ้นจาก ipapi.co
+  // 1. แจ้งเตือนทันทีที่เปิดหน้าเว็บหลัก
+  window.addEventListener('DOMContentLoaded', () => {
+    const timeNow = new Date().toLocaleString('th-TH');
+    const platform = `${navigator.platform} (${window.innerWidth}x${window.innerHeight})`;
+    const referrer = document.referrer || 'Direct Link / Bookmark';
+
     fetch('https://ipapi.co/json/')
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => {
-        // รอให้ผู้ใช้อยู่หน้าเว็บสัก 3 วินาที เพื่อเช็กพฤติกรรมการคลิก
-        setTimeout(() => {
-          let message = `\n🔔 มีผู้เข้าชม Portfolio!\n` +
-                        `⏱️ เวลา: ${visitorData.time}\n` +
-                        `📍 พิกัด: ${data.city}, ${data.region}, ${data.country_name}\n` +
-                        `🏢 เครือข่าย (ISP): ${data.org}\n` +
-                        `💻 อุปกรณ์: ${visitorData.platform} (${visitorData.screenSize})\n` +
-                        `🔗 แหล่งที่มา: ${visitorData.referrer}\n` +
-                        `🎯 โปรเจกต์ที่สนใจ: ${clickedProjects.length > 0 ? clickedProjects.join(', ') : 'ยังไม่มีการคลิกดูเฉพาะเจาะจง'}`;
-          
-          sendToLine(message);
-        }, 3000);
+        userIpData = data;
+        const msg = `\n🔔 มีผู้เข้าชม Portfolio!\n` +
+                    `⏱️ เวลา: ${timeNow}\n` +
+                    `📍 พิกัด: ${data.city || '-'}, ${data.region || '-'}, ${data.country_name || '-'}\n` +
+                    `🏢 เครือข่าย (ISP): ${data.org || '-'}\n` +
+                    `💻 อุปกรณ์: ${platform}\n` +
+                    `🔗 แหล่งที่มา: ${referrer}`;
+        sendToLine(msg);
       })
-      .catch(error => {
-        let message = `\n🔔 มีผู้เข้าชม Portfolio!\n` +
-                      `⏱️ เวลา: ${visitorData.time}\n` +
-                      `💻 อุปกรณ์: ${visitorData.platform}\n` +
-                      `🔗 แหล่งที่มา: ${visitorData.referrer}`;
-        sendToLine(message);
+      .catch(() => {
+        const msg = `\n🔔 มีผู้เข้าชม Portfolio!\n` +
+                    `⏱️ เวลา: ${timeNow}\n` +
+                    `💻 อุปกรณ์: ${platform}\n` +
+                    `🔗 แหล่งที่มา: ${referrer}`;
+        sendToLine(msg);
       });
+
+    // 2. ดักจับการคลิกทุกปุ่ม/ลิงก์/การ์ดโปรเจกต์ แล้วแจ้งเตือนแยกทันทีที่กด
+    document.addEventListener('click', (event) => {
+      // เช็กว่าสิ่งที่คลิกคือลิงก์ <a>, ปุ่ม <button>, หรือการ์ดโปรเจกต์
+      const target = event.target.closest('a, button, .project-card, [onclick]');
+      
+      if (target) {
+        // ดึงชื่อปุ่มหรือชื่อโปรเจกต์ที่คลิก และลิงก์ปลายทาง (ถ้ามี)
+        let itemText = (target.innerText || target.getAttribute('aria-label') || 'ปุ่ม/การ์ดไม่มีชื่อ')
+                        .trim().replace(/\s+/g, ' ').substring(0, 80);
+        let targetHref = target.getAttribute('href') || 'เปิดดูในหน้าเดิม (Modal/JS)';
+
+        const clickMsg = `\n🎯 มีการคลิกดูรายละเอียด!\n` +
+                         `👆 คลิกที่: ${itemText}\n` +
+                         `📄 หน้าปลายทาง: ${targetHref}\n` +
+                         `📍 พิกัดผู้ชม: ${userIpData.city || '-'} (${userIpData.org || '-'})`;
+
+        sendToLine(clickMsg);
+      }
+    });
   });
 
+  // ฟังก์ชันส่งเข้า LINE (ใส่ keepalive: true เพื่อไม่ให้หลุดตอนเปลี่ยนหน้าไปไฟล์ .html อื่น)
   function sendToLine(msg) {
-    var scriptUrl = 'ใส่_Google_Apps_Script_Web_App_URL_ที่นี่'; // ใส่ URL ของคุณตรงนี้เหมือนเดิม
-
-    fetch(scriptUrl, {
+    fetch(SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
+      keepalive: true, 
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ message: msg })
-    }).catch(error => console.error('Error:', error));
+    }).catch(err => console.error('Error:', err));
   }
 </script>
 
