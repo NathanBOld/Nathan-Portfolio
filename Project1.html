@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-Way Reconciliation | Project Details | NV. Portfolio</title>
+    <meta name="description" content="Automated AR Reconciliation & Multi-Invoice Payment Splitting — Power Query ETL and Excel VBA pipeline across 3PL, TMS, and TRCloud ERP.">
+
+    <!-- โหลดภาษาที่เลือกไว้ก่อน render (ใช้ key เดียวกับหน้าหลัก) -->
+    <script>
+        (function () {
+            var l = 'en';
+            try { l = localStorage.getItem('nv_portfolio_lang') || 'en'; } catch (e) {}
+            document.documentElement.setAttribute('data-lang', l);
+            document.documentElement.lang = l;
+        })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           1. DESIGN TOKENS (ชุดเดียวกับ index.html)
+           ========================================================= */
+        :root {
+            --navy-950: #081428;
+            --navy-900: #0b1b33;
+            --navy-800: #112a4d;
+            --navy-700: #1e3a5f;
+            --blue-600: #1d4ed8;
+            --blue-100: #dbeafe;
+            --blue-50:  #eff6ff;
+            --sky-300:  #93c5fd;
+
+            --white:     #ffffff;
+            --slate-50:  #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+            --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+
+            --font: 'Inter', 'IBM Plex Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            --container: 1080px;
+        }
+
+        /* =========================================================
+           2. LANGUAGE SWITCH
+           ========================================================= */
+        html:not([data-lang="th"]) .lang-th,
+        html[data-lang="th"] .lang-en { display: none !important; }
+        html[data-lang="th"] body { line-height: 1.8; }
+
+        /* =========================================================
+           3. BASE
+           ========================================================= */
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            font-family: var(--font);
+            font-size: 16px;
+            line-height: 1.65;
+            color: var(--slate-700);
+            background: var(--slate-50);
+            -webkit-font-smoothing: antialiased;
+        }
+        a { color: inherit; text-decoration: none; }
+        .inline-link { color: var(--blue-600); font-weight: 600; border-bottom: 1px solid var(--blue-100); }
+        .inline-link:hover { border-bottom-color: var(--blue-600); }
+        code {
+            font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.82em;
+            background: var(--slate-100);
+            color: var(--navy-800);
+            padding: 1px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+        .container { max-width: var(--container); margin: 0 auto; padding: 0 24px; }
+
+        /* =========================================================
+           4. HEADER
+           ========================================================= */
+        .site-header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(11, 27, 51, 0.96);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+        .logo { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.5px; color: var(--white); }
+        .logo span { color: var(--sky-300); }
+        .nav-right { display: flex; align-items: center; gap: 24px; }
+        .back-link { color: var(--slate-300); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+        .back-link:hover { color: var(--white); }
+
+        .lang-switcher {
+            display: inline-flex; padding: 3px; gap: 2px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+        }
+        .lang-btn {
+            border: 0; background: transparent; cursor: pointer;
+            font-family: inherit; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px;
+            color: var(--slate-400);
+            padding: 5px 12px; border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover { color: var(--white); }
+        .lang-btn.active { background: var(--white); color: var(--navy-900); }
+
+        /* =========================================================
+           5. PAGE HERO
+           ========================================================= */
+        .page-hero {
+            background: linear-gradient(160deg, var(--navy-950) 0%, var(--navy-800) 100%);
+            color: var(--white);
+            padding: 56px 0 48px;
+        }
+        .breadcrumb {
+            font-size: 0.75rem; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase;
+            color: var(--sky-300); margin-bottom: 14px;
+        }
+        .page-hero h1 {
+            font-size: clamp(1.7rem, 3.6vw, 2.3rem);
+            line-height: 1.25; letter-spacing: -0.4px;
+            margin: 0 0 14px; max-width: 820px;
+        }
+        .lead { max-width: 760px; margin: 0; font-size: 1.02rem; color: var(--slate-300); }
+
+        .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+        .hero-tag {
+            font-size: 0.78rem; font-weight: 500; color: var(--slate-300);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 4px 12px; border-radius: 999px;
+        }
+
+        .facts {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+            margin-top: 36px; padding-top: 28px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .fact-val { font-size: 1.45rem; font-weight: 700; line-height: 1.2; }
+        .fact-lbl { font-size: 0.8rem; color: var(--slate-400); margin-top: 4px; }
+
+        /* =========================================================
+           6. CONTENT SECTIONS
+           ========================================================= */
+        main { padding: 56px 0 24px; }
+        .panel {
+            background: var(--white);
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-sm);
+        }
+        .panel-head { margin-bottom: 24px; }
+        .section-index {
+            display: block;
+            font-size: 0.72rem; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase;
+            color: var(--blue-600); margin-bottom: 6px;
+        }
+        .panel h2 { margin: 0 0 8px; font-size: 1.4rem; color: var(--navy-900); letter-spacing: -0.2px; }
+        .panel-sub { margin: 0; color: var(--slate-500); font-size: 0.95rem; }
+
+        /* Perspectives */
+        .perspective-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .perspective {
+            border: 1px solid var(--slate-200);
+            border-top: 3px solid var(--navy-900);
+            border-radius: var(--radius-md);
+            padding: 22px;
+            background: var(--white);
+        }
+        .perspective.is-tech { border-top-color: var(--blue-600); }
+        .perspective-label {
+            display: block;
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+            color: var(--slate-400); margin-bottom: 4px;
+        }
+        .perspective h3 { margin: 0 0 12px; font-size: 1.05rem; color: var(--navy-900); }
+        .goal {
+            margin: 0 0 14px; padding: 10px 14px;
+            background: var(--slate-50); border-radius: var(--radius-sm);
+            font-size: 0.9rem; color: var(--slate-600);
+        }
+        .goal strong { color: var(--navy-900); }
+        .check-list { list-style: none; margin: 0; padding: 0; }
+        .check-list li {
+            position: relative;
+            padding: 0 0 12px 22px;
+            font-size: 0.92rem; color: var(--slate-600);
+        }
+        .check-list li:last-child { padding-bottom: 0; }
+        .check-list li::before {
+            content: ''; position: absolute; left: 2px; top: 9px;
+            width: 8px; height: 8px; border-radius: 2px;
+            background: var(--navy-900);
+        }
+        .perspective.is-tech .check-list li::before { background: var(--blue-600); }
+        .check-list strong { color: var(--navy-900); font-weight: 600; }
+
+        /* Composite Key Callout */
+        .callout {
+            margin-top: 24px;
+            display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center;
+            padding: 20px 22px;
+            background: var(--blue-50);
+            border: 1px solid var(--blue-100);
+            border-radius: var(--radius-md);
+        }
+        .key-example {
+            font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+            font-size: 1.1rem; font-weight: 700; color: var(--navy-900);
+            background: var(--white); border: 1px solid var(--blue-100);
+            padding: 10px 14px; border-radius: var(--radius-sm);
+            white-space: nowrap;
+        }
+        .key-example .seg-date { color: var(--navy-900); }
+        .key-example .seg-3pl  { color: var(--blue-600); }
+        .key-example .seg-run  { color: var(--slate-500); }
+        .callout-title { margin: 0 0 4px; font-size: 0.95rem; font-weight: 600; color: var(--navy-900); }
+        .callout p { margin: 0; font-size: 0.88rem; color: var(--slate-600); }
+
+        /* Flowchart */
+        .flow-wrap {
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            padding: 24px 12px;
+            background: var(--white);
+            overflow-x: auto;
+        }
+        .mermaid { margin: 0; text-align: center; background: transparent; }
+
+        .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px; font-size: 0.8rem; color: var(--slate-500); }
+        .legend span { display: inline-flex; align-items: center; gap: 6px; }
+        .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; border: 1px solid var(--slate-300); }
+
+        /* Steps */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .step {
+            display: flex; flex-direction: column;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            background: var(--white);
+            overflow: hidden;
+            transition: box-shadow 0.25s, transform 0.25s;
+        }
+        .step:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .step-img-wrap {
+            position: relative;
+            background: var(--slate-100);
+            border-bottom: 1px solid var(--slate-200);
+            aspect-ratio: 16 / 10;
+            overflow: hidden;
+            cursor: zoom-in;
+        }
+        .step-img-wrap img {
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: top left;
+            display: block;
+            transition: transform 0.3s;
+        }
+        .step-img-wrap:hover img { transform: scale(1.03); }
+        .step-img-wrap::after {
+            content: '⤢';
+            position: absolute; right: 10px; bottom: 10px;
+            width: 28px; height: 28px; border-radius: 6px;
+            background: rgba(11, 27, 51, 0.8); color: var(--white);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem;
+            opacity: 0; transition: opacity 0.2s;
+        }
+        .step-img-wrap:hover::after { opacity: 1; }
+
+        .step-body { padding: 18px 20px 20px; }
+        .step-num {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 26px; height: 26px; padding: 0 8px;
+            border-radius: 999px;
+            background: var(--navy-900); color: var(--white);
+            font-size: 0.75rem; font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .step.is-rv .step-num { background: var(--blue-600); }
+        .step h4 { margin: 0 0 6px; font-size: 0.98rem; color: var(--navy-900); line-height: 1.4; }
+        .step p { margin: 0; font-size: 0.88rem; color: var(--slate-600); }
+
+        /* Next project */
+        .next-nav {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+            margin: 8px 0 56px;
+        }
+        .next-card {
+            display: block;
+            padding: 22px 24px;
+            background: var(--white);
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .next-card:hover { border-color: var(--navy-900); box-shadow: var(--shadow-md); }
+        .next-card .lbl {
+            font-size: 0.72rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+            color: var(--slate-400);
+        }
+        .next-card .ttl { margin-top: 4px; font-weight: 600; color: var(--navy-900); }
+        .next-card.is-next { text-align: right; }
+
+        /* Footer */
+        .site-footer {
+            background: var(--navy-950); color: var(--slate-500);
+            padding: 24px 0; font-size: 0.82rem; text-align: center;
+        }
+
+        /* =========================================================
+           7. LIGHTBOX
+           ========================================================= */
+        .modal {
+            display: none;
+            position: fixed; inset: 0; z-index: 1000;
+            background: rgba(8, 20, 40, 0.94);
+            backdrop-filter: blur(4px);
+            padding: 56px 24px 24px;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        .modal.open { display: flex; }
+        .modal img {
+            max-width: 100%; max-height: 80vh;
+            border-radius: var(--radius-md);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            animation: zoomIn 0.25s ease;
+        }
+        .modal-caption { margin-top: 14px; color: var(--slate-300); font-size: 0.9rem; text-align: center; }
+        .modal-close {
+            position: absolute; top: 16px; right: 24px;
+            width: 40px; height: 40px; border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent; color: var(--white);
+            font-size: 1.5rem; line-height: 1; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .modal-close:hover { background: rgba(255, 255, 255, 0.1); }
+        body.modal-open { overflow: hidden; }
+        @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* =========================================================
+           8. RESPONSIVE
+           ========================================================= */
+        @media (max-width: 860px) {
+            .facts { grid-template-columns: repeat(2, 1fr); row-gap: 20px; }
+            .perspective-grid { grid-template-columns: 1fr; }
+            .callout { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .panel { padding: 22px; }
+            .next-nav { grid-template-columns: 1fr; }
+            .next-card.is-next { text-align: left; }
+            .back-link .lang-en, .back-link .lang-th { font-size: 0.82rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= HEADER ================= -->
+    <header class="site-header">
+        <div class="container nav">
+            <a href="index.html" class="logo">NV<span>.</span></a>
+            <div class="nav-right">
+                <a href="index.html#projects" class="back-link">
+                    <span class="lang-en">← Back to Portfolio</span>
+                    <span class="lang-th">← กลับหน้าหลัก</span>
+                </a>
+                <div class="lang-switcher" role="group" aria-label="Language Switcher">
+                    <button type="button" id="btn-en" class="lang-btn" onclick="setLanguage('en')" aria-label="English">EN</button>
+                    <button type="button" id="btn-th" class="lang-btn" onclick="setLanguage('th')" aria-label="ภาษาไทย">TH</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= PAGE HERO ================= -->
+    <section class="page-hero">
+        <div class="container">
+            <div class="breadcrumb">
+                <span class="lang-en">Featured Project · Hero Project</span>
+                <span class="lang-th">โปรเจกต์เด่น · Hero Project</span>
+            </div>
+            <h1>Automated AR Reconciliation &amp; Multi-Invoice Payment Splitting</h1>
+            <p class="lead lang-en">
+                A zero-formula automation built with Power Query and Excel VBA to map, audit, and reconcile Cash on Delivery (COD)
+                payment data across 3PL carriers, TMS, and TRCloud ERP.
+            </p>
+            <p class="lead lang-th">
+                ระบบกระทบยอดลูกหนี้ (3-Way Reconciliation) และแยกไฟล์ตัดรับชำระอัตโนมัติแบบไม่ต้องพึ่งสูตร Excel
+                พัฒนาด้วย Power Query ETL และ VBA Macro เชื่อมข้อมูลระหว่างขนส่ง (3PL), ระบบ TMS และ TRCloud ERP
+            </p>
+
+            <div class="hero-tags">
+                <span class="hero-tag">Power Query ETL</span>
+                <span class="hero-tag">Excel VBA</span>
+                <span class="hero-tag">3-Way Matching</span>
+                <span class="hero-tag">TRCloud ERP</span>
+                <span class="hero-tag">TMS</span>
+            </div>
+
+            <div class="facts">
+                <div>
+                    <div class="fact-val">2+ hrs → mins</div>
+                    <div class="fact-lbl">
+                        <span class="lang-en">Daily manual work eliminated</span>
+                        <span class="lang-th">ลดเวลาทำงาน Manual ต่อวัน</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="fact-val">3 Sources</div>
+                    <div class="fact-lbl">
+                        <span class="lang-en">3PL · TMS · ERP matched</span>
+                        <span class="lang-th">กระทบยอด 3PL · TMS · ERP</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="fact-val">Dual Gatekeeper</div>
+                    <div class="fact-lbl">
+                        <span class="lang-en">No duplicate TMS / RV posting</span>
+                        <span class="lang-th">ป้องกันข้อมูลซ้ำทั้ง TMS และ RV</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="fact-val">0 Formulas</div>
+                    <div class="fact-lbl">
+                        <span class="lang-en">No fragile VLOOKUP chains</span>
+                        <span class="lang-th">ไม่พึ่งสูตร VLOOKUP ที่เปราะบาง</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <div class="container">
+
+            <!-- ================= 1. OVERVIEW ================= -->
+            <section class="panel" id="overview">
+                <div class="panel-head">
+                    <span class="section-index">01 — <span class="lang-en">Overview</span><span class="lang-th">ภาพรวม</span></span>
+                    <h2>
+                        <span class="lang-en">Project Overview: 2 Perspectives</span>
+                        <span class="lang-th">ภาพรวมโปรเจกต์จาก 2 มุมมอง</span>
+                    </h2>
+                </div>
+
+                <div class="perspective-grid">
+                    <!-- Business -->
+                    <div class="perspective">
+                        <span class="perspective-label"><span class="lang-en">Perspective 1</span><span class="lang-th">มุมมองที่ 1</span></span>
+                        <h3><span class="lang-en">Business</span><span class="lang-th">ด้านธุรกิจ</span></h3>
+                        <p class="goal">
+                            <strong><span class="lang-en">Goal:</span><span class="lang-th">เป้าหมาย:</span></strong>
+                            <span class="lang-en">Optimize operational time and eliminate financial leakage.</span>
+                            <span class="lang-th">ลดเวลาปฏิบัติงานและป้องกันความผิดพลาดทางการเงิน</span>
+                        </p>
+
+                        <ul class="check-list lang-en">
+                            <li>Reduced manual Copy/Paste file generation from <strong>over 2 hours to minutes</strong> per day.</li>
+                            <li>Eliminated human errors and file lag caused by fragile VLOOKUP formulas.</li>
+                            <li>Proactively prevented duplicate document uploads into TMS.</li>
+                            <li><strong>Seamless downstream integration (<code>Tab: PostToRV</code>):</strong> outputs a ready-to-paste table of unposted invoices for the <a href="rv-api-project.html" class="inline-link">Bulk RV API Web App</a>.</li>
+                        </ul>
+                        <ul class="check-list lang-th">
+                            <li>ลดเวลาการทำไฟล์ตัดรับชำระจาก <strong>มากกว่า 2 ชั่วโมงต่อวัน เหลือไม่กี่นาที</strong></li>
+                            <li>ขจัด Human Error และปัญหาไฟล์ค้างจากการผูกสูตร VLOOKUP จำนวนมาก</li>
+                            <li>ป้องกันการอัปโหลดเอกสารซ้ำเข้าระบบ TMS ล่วงหน้าอย่างเป็นระบบ</li>
+                            <li><strong>เชื่อมต่อการตัดหนี้ ERP แบบไร้รอยต่อ (<code>Tab: PostToRV</code>):</strong> สร้างตารางบิลที่ยังไม่ตัดรับชำระ พร้อม Copy &amp; Paste เข้าสู่ <a href="rv-api-project.html" class="inline-link">Bulk RV API Web App</a> ทันที</li>
+                        </ul>
+                    </div>
+
+                    <!-- Technical -->
+                    <div class="perspective is-tech">
+                        <span class="perspective-label"><span class="lang-en">Perspective 2</span><span class="lang-th">มุมมองที่ 2</span></span>
+                        <h3><span class="lang-en">Technical</span><span class="lang-th">ด้านเทคนิค</span></h3>
+                        <p class="goal">
+                            <strong><span class="lang-en">Goal:</span><span class="lang-th">เป้าหมาย:</span></strong>
+                            <span class="lang-en">Build a robust, scalable, and foolproof data pipeline.</span>
+                            <span class="lang-th">สร้าง Data Pipeline ที่แข็งแกร่ง รองรับปริมาณสูง และตรวจสอบได้</span>
+                        </p>
+
+                        <ul class="check-list lang-en">
+                            <li><strong>Power Query (ETL &amp; Gatekeeper):</strong> reconciles 3PL, TMS, and TRCloud data, keeps only matched and un-uploaded records, and pre-generates target filenames.</li>
+                            <li><strong>Dual-Gatekeeper Architecture:</strong> blocks duplicate TMS uploads via <code>DO Reconciled</code>, and blocks duplicate RV postings by filtering <code>TRC</code> for <code>Status = Debtor</code>.</li>
+                            <li><strong>VBA &amp; Zero-Formula Approach:</strong> reads the pre-generated filenames, auto-creates batch sheets, and exports standardized files without cell formulas.</li>
+                        </ul>
+                        <ul class="check-list lang-th">
+                            <li><strong>Power Query (ETL &amp; Gatekeeper):</strong> กระทบยอด 3 ทาง (3PL, TMS, TRCloud) คัดเฉพาะรายการที่ตรงกันและยังไม่เคยอัปโหลด พร้อมสร้างชื่อไฟล์ปลายทางอัตโนมัติ</li>
+                            <li><strong>Dual-Gatekeeper Architecture:</strong> ฝั่ง TMS กรองซ้ำด้วยชีท <code>DO Reconciled</code> ฝั่ง ERP กรองบิลที่เคย Post RV แล้วออกด้วย <code>Status = Debtor</code> จากชีท <code>TRC</code></li>
+                            <li><strong>VBA &amp; Zero-Formula Approach:</strong> อ่านชื่อไฟล์เพื่อแยกชีทและส่งออกไฟล์ Excel ตามรอบการโอน โดยไม่พึ่งสูตรในเซลล์</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Composite Batch Key Callout -->
+                <div class="callout">
+                    <div class="key-example" aria-label="Example key 07112025DHL6">
+                        <span class="seg-date">07112025</span><span class="seg-3pl">DHL</span><span class="seg-run">6</span>
+                    </div>
+                    <div>
+                        <p class="callout-title">
+                            <span class="lang-en">Composite Batch Key — <code>PaidDate/Customer</code></span>
+                            <span class="lang-th">คีย์แยกก้อนชำระเงิน — <code>PaidDate/Customer</code></span>
+                        </p>
+                        <p class="lang-en">
+                            <code>ddMMyyyy</code> + <code>3PL Code</code> + <code>3PL Payment Run#</code>.
+                            It separates each lump-sum transfer into its own RV batch and is output in <code>Tab: PostToRV</code> together with <code>InvoiceNumber</code> and <code>Amount</code>.
+                        </p>
+                        <p class="lang-th">
+                            <code>วันที่รับชำระ ddMMyyyy</code> + <code>รหัส 3PL</code> + <code>เลข Run ก้อนโอนของ 3PL</code>
+                            ใช้แยกเงินโอนแต่ละก้อนเป็น RV Batch ของตัวเอง และส่งออกในแท็บ <code>PostToRV</code> คู่กับ <code>InvoiceNumber</code> และ <code>Amount</code>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= 2. ARCHITECTURE ================= -->
+            <section class="panel" id="architecture">
+                <div class="panel-head">
+                    <span class="section-index">02 — <span class="lang-en">Architecture</span><span class="lang-th">สถาปัตยกรรม</span></span>
+                    <h2>
+                        <span class="lang-en">System Architecture &amp; Data Flow</span>
+                        <span class="lang-th">สถาปัตยกรรมระบบและผังการไหลของข้อมูล</span>
+                    </h2>
+                    <p class="panel-sub lang-en">
+                        End-to-end pipeline: 3-source ETL, duplicate prevention, and 3 output tabs — <strong>TMS Check</strong> (audit),
+                        <strong>Create DO</strong> (split &amp; export to TMS), and <strong>PostToRV</strong> (paste into the Bulk RV API Web App).
+                    </p>
+                    <p class="panel-sub lang-th">
+                        กระบวนการ End-to-End ตั้งแต่ ETL จาก 3 แหล่ง การป้องกันข้อมูลซ้ำ จนถึงผลลัพธ์ 3 แท็บ ได้แก่ <strong>TMS Check</strong> (ตรวจสอบ),
+                        <strong>Create DO</strong> (แยกไฟล์อัปโหลดเข้า TMS) และ <strong>PostToRV</strong> (วางข้อมูลเข้า Bulk RV API Web App)
+                    </p>
+                </div>
+
+                <div class="flow-wrap">
+                    <!-- ENGLISH FLOWCHART -->
+                    <div id="mermaid-en-container" class="lang-en">
+                        <pre class="mermaid">
+flowchart TD
+    classDef srcBox fill:#f8fafc,stroke:#64748b,color:#0f172a,stroke-width:1.5px
+    classDef pqEngine fill:#0b1b33,stroke:#0b1b33,color:#ffffff,stroke-width:2px
+    classDef tabBox fill:#eff6ff,stroke:#93c5fd,color:#0b1b33,stroke-width:1.5px
+    classDef tabRV fill:#dbeafe,stroke:#1d4ed8,color:#0b1b33,stroke-width:2px
+    classDef actBtn fill:#ffffff,stroke:#94a3b8,color:#334155,stroke-width:1.5px
+    classDef resBox fill:#f1f5f9,stroke:#475569,color:#0f172a,stroke-width:1.5px
+    classDef resRV fill:#1d4ed8,stroke:#1d4ed8,color:#ffffff,stroke-width:2px
+
+    subgraph S1 ["1. Data Sources"]
+        DS1["<b>3rd Party Reports</b><br/>DHL, Flash, Kerry, DPX"]:::srcBox
+        DS2["<b>TMS-Sales Report</b>"]:::srcBox
+        DS3["<b>ERP TRCloud-Invoice (Tab: TRC)</b><br/>Includes Invoice Status (Debtor / Paid)"]:::srcBox
+        DS4["<b>TMS-DO Reconciled</b><br/>To prevent duplicate TMS upload"]:::srcBox
+    end
+
+    subgraph S2 ["2. Core Engine"]
+        PQ[("<b>Power Query Engine</b><br/>Collect, Clean &amp; 3-Way Match")]:::pqEngine
+    end
+
+    subgraph S3 ["3. Multi-Purpose Output Tabs (Excel)"]
+        T_CHECK["<b>Tab: TMS Check - Audit View</b><br/>3-Way Reconciliation<br/>based on TMS DO Date"]:::tabBox
+        T_DO["<b>Tab: Create DO - Operation View</b><br/>Paid items not yet<br/>uploaded to TMS"]:::tabBox
+        T_RV["<b>Tab: PostToRV - ERP API View</b><br/>Filter TRC Status = 'Debtor' (Unpaid)<br/>PaidDate/Customer | InvoiceNumber | Amount"]:::tabRV
+    end
+
+    subgraph S4 ["4. Action Buttons (VBA)"]
+        B_REF(["Click <b>'Refresh'</b>"]):::actBtn
+        B_SPLIT(["Click <b>'Split'</b>:<br/>Split Data into Multiple Tabs"]):::actBtn
+        B_EXP(["Click <b>'Export'</b>:<br/>Create &amp; Format Excel Files"]):::actBtn
+        B_CLR(["Click <b>'Clear'</b>:<br/>Delete Temporary Split Sheets"]):::actBtn
+    end
+
+    subgraph S5 ["5. Final Results (Dual Output: TMS &amp; ERP)"]
+        R_BATCH[("<b>Batch Files (.xlsx)</b><br/>Cut operation time by 2+ hours")]:::resBox
+        R_TMS["<b>Upload to TMS</b><br/>(Accounting &gt;&gt; Batch List)"]:::resBox
+        R_RV["<b>Bulk RV API Web App</b><br/>Batch-post Receipt Vouchers (RV)<br/>to TRCloud ERP via REST API"]:::resRV
+    end
+
+    DS1 & DS2 & DS3 --> PQ
+    DS4 -.->|"Check TMS Duplicates"| PQ
+
+    PQ -->|"Process Data"| T_CHECK
+    PQ -->|"Process Data"| T_DO
+    PQ -->|"Filter Status = Debtor"| T_RV
+
+    B_REF -.->|"Fetch Latest Data"| T_CHECK
+    B_REF -.->|"Fetch Latest Data"| T_DO
+    B_REF -.->|"Fetch Latest Data"| T_RV
+    T_CHECK -.-> T_DO
+
+    T_DO -->|"User Action"| B_SPLIT
+    B_SPLIT --> B_EXP
+    B_EXP --> B_CLR
+    B_EXP --> R_BATCH
+    R_BATCH --> R_TMS
+
+    T_RV ==>|"Copy &amp; Paste"| R_RV
+                        </pre>
+                    </div>
+
+                    <!-- THAI FLOWCHART -->
+                    <div id="mermaid-th-container" class="lang-th">
+                        <pre class="mermaid">
+flowchart TD
+    classDef srcBox fill:#f8fafc,stroke:#64748b,color:#0f172a,stroke-width:1.5px
+    classDef pqEngine fill:#0b1b33,stroke:#0b1b33,color:#ffffff,stroke-width:2px
+    classDef tabBox fill:#eff6ff,stroke:#93c5fd,color:#0b1b33,stroke-width:1.5px
+    classDef tabRV fill:#dbeafe,stroke:#1d4ed8,color:#0b1b33,stroke-width:2px
+    classDef actBtn fill:#ffffff,stroke:#94a3b8,color:#334155,stroke-width:1.5px
+    classDef resBox fill:#f1f5f9,stroke:#475569,color:#0f172a,stroke-width:1.5px
+    classDef resRV fill:#1d4ed8,stroke:#1d4ed8,color:#ffffff,stroke-width:2px
+
+    subgraph S1_TH ["1. แหล่งข้อมูลดิบ (Data Sources)"]
+        DS1_T["<b>3rd Party Reports</b><br/>DHL, Flash, Kerry, DPX"]:::srcBox
+        DS2_T["<b>TMS-Sales Report</b>"]:::srcBox
+        DS3_T["<b>ERP TRCloud-Invoice (Tab: TRC)</b><br/>เช็ค Status = Debtor เพื่อกรองบิลที่เคย Post RV แล้ว"]:::srcBox
+        DS4_T["<b>TMS-DO Reconciled</b><br/>ป้องกันการอัปโหลดซ้ำเข้า TMS"]:::srcBox
+    end
+
+    subgraph S2_TH ["2. ระบบประมวลผลหลัก (Core Engine)"]
+        PQ_T[("<b>Power Query Engine</b><br/>รวบรวม ทำความสะอาด และทำ 3-Way Matching")]:::pqEngine
+    end
+
+    subgraph S3_TH ["3. ชีทผลลัพธ์ 3 มุมมอง (Output Tabs)"]
+        T_CHECK_T["<b>Tab: TMS Check - Audit View</b><br/>กระทบยอด 3 ทาง<br/>ตามวันที่สร้าง DO ใน TMS"]:::tabBox
+        T_DO_T["<b>Tab: Create DO - Operation View</b><br/>รายการที่รับชำระแล้ว<br/>แต่ยังไม่อัปโหลดเข้า TMS"]:::tabBox
+        T_RV_T["<b>Tab: PostToRV - ERP API View</b><br/>กรองเฉพาะบิลค้างชำระ (Status = Debtor)<br/>PaidDate/Customer | InvoiceNumber | Amount"]:::tabRV
+    end
+
+    subgraph S4_TH ["4. ปุ่มคำสั่งอัตโนมัติ (VBA)"]
+        B_REF_T(["กดปุ่ม <b>'Refresh'</b>"]):::actBtn
+        B_SPLIT_T(["กดปุ่ม <b>'Split'</b>:<br/>แยกข้อมูลเป็นหลายชีทตามรอบโอน"]):::actBtn
+        B_EXP_T(["กดปุ่ม <b>'Export'</b>:<br/>สร้างและจัดรูปแบบไฟล์ Excel แยกใบ"]):::actBtn
+        B_CLR_T(["กดปุ่ม <b>'Clear'</b>:<br/>ลบชีทย่อยชั่วคราว"]):::actBtn
+    end
+
+    subgraph S5_TH ["5. ผลลัพธ์สุดท้าย (TMS และ ERP)"]
+        R_BATCH_T[("<b>Batch Files (.xlsx)</b><br/>ลดเวลาทำงานมากกว่า 2 ชั่วโมง/วัน")]:::resBox
+        R_TMS_T["<b>Upload to TMS</b><br/>เมนู Accounting &gt;&gt; Batch List"]:::resBox
+        R_RV_T["<b>Bulk RV API Web App</b><br/>สร้างใบสำคัญรับ (RV) ใน TRCloud ERP<br/>ผ่าน REST API ภายใน 2 วินาที"]:::resRV
+    end
+
+    DS1_T & DS2_T & DS3_T --> PQ_T
+    DS4_T -.->|"เช็ครายการซ้ำฝั่ง TMS"| PQ_T
+
+    PQ_T -->|"ประมวลผลข้อมูล"| T_CHECK_T
+    PQ_T -->|"ประมวลผลข้อมูล"| T_DO_T
+    PQ_T -->|"กรอง Status = Debtor"| T_RV_T
+
+    B_REF_T -.->|"ดึงข้อมูลล่าสุด"| T_CHECK_T
+    B_REF_T -.->|"ดึงข้อมูลล่าสุด"| T_DO_T
+    B_REF_T -.->|"ดึงข้อมูลล่าสุด"| T_RV_T
+    T_CHECK_T -.-> T_DO_T
+
+    T_DO_T -->|"User Action"| B_SPLIT_T
+    B_SPLIT_T --> B_EXP_T
+    B_EXP_T --> B_CLR_T
+    B_EXP_T --> R_BATCH_T
+    R_BATCH_T --> R_TMS_T
+
+    T_RV_T ==>|"Copy &amp; Paste"| R_RV_T
+                        </pre>
+                    </div>
+                </div>
+
+                <div class="legend">
+                    <span><i style="background:#f8fafc;border-color:#64748b"></i><span class="lang-en">Data Source</span><span class="lang-th">แหล่งข้อมูล</span></span>
+                    <span><i style="background:#0b1b33;border-color:#0b1b33"></i><span class="lang-en">Processing Engine</span><span class="lang-th">ระบบประมวลผล</span></span>
+                    <span><i style="background:#eff6ff;border-color:#93c5fd"></i><span class="lang-en">Output Tab</span><span class="lang-th">ชีทผลลัพธ์</span></span>
+                    <span><i style="background:#ffffff;border-color:#94a3b8"></i><span class="lang-en">VBA Action</span><span class="lang-th">ปุ่มคำสั่ง VBA</span></span>
+                    <span><i style="background:#1d4ed8;border-color:#1d4ed8"></i><span class="lang-en">ERP Integration</span><span class="lang-th">เชื่อมต่อ ERP</span></span>
+                </div>
+            </section>
+
+            <!-- ================= 3. USER GUIDE ================= -->
+            <section class="panel" id="guide">
+                <div class="panel-head">
+                    <span class="section-index">03 — <span class="lang-en">User Guide</span><span class="lang-th">คู่มือการใช้งาน</span></span>
+                    <h2>
+                        <span class="lang-en">Step-by-Step User Guide</span>
+                        <span class="lang-th">คู่มือการใช้งานทีละขั้นตอน</span>
+                    </h2>
+                    <p class="panel-sub">
+                        <span class="lang-en">Daily operational workflow for end-users. Click any image to enlarge.</span>
+                        <span class="lang-th">ขั้นตอนการปฏิบัติงานรายวันสำหรับผู้ใช้งานหน้างาน คลิกที่รูปเพื่อขยาย</span>
+                    </p>
+                </div>
+
+                <div class="steps-grid">
+
+                    <!-- Step 1 -->
+                    <article class="step">
+                        <div class="step-img-wrap" onclick="openModal(this)">
+                            <img src="DataBaseSheet.png" onerror="this.onerror=null;this.src='DataBaseSheet.jpg';" alt="Step 1: Export & Paste Raw Data" loading="lazy">
+                        </div>
+                        <div class="step-body">
+                            <span class="step-num">1</span>
+                            <h4><span class="lang-en">Export &amp; Paste Raw Data</span><span class="lang-th">ดาวน์โหลดและวางข้อมูลดิบ</span></h4>
+                            <p class="lang-en">Download raw reports from 3PL, TMS, and ERP, then paste them into the color-coded sheets (green, orange, and red tabs).</p>
+                            <p class="lang-th">ดาวน์โหลดไฟล์ข้อมูลดิบจาก 3PL, TMS และ ERP แล้ววางตามชีทที่กำหนด (แท็บสีเขียว ส้ม และแดง)</p>
+                        </div>
+                    </article>
+
+                    <!-- Step 2 -->
+                    <article class="step">
+                        <div class="step-img-wrap" onclick="openModal(this)">
+                            <img src="TMS Date.png" onerror="this.onerror=null;this.src='TMS Date.jpg';" alt="Step 2: Refresh Power Query Reconciliation" loading="lazy">
+                        </div>
+                        <div class="step-body">
+                            <span class="step-num">2</span>
+                            <h4><span class="lang-en">Refresh Power Query Reconciliation</span><span class="lang-th">Refresh การกระทบยอดด้วย Power Query</span></h4>
+                            <p class="lang-en">In "TMS Check", enter the DO Creation Date range and click the blue Refresh button to run 3-source reconciliation automatically.</p>
+                            <p class="lang-th">ไปที่ชีท TMS Check ใส่ช่วงวันที่ DO Create Date แล้วกดปุ่มสีฟ้า ระบบจะดึงข้อมูลจาก 3 แหล่งมา Reconcile ให้อัตโนมัติ</p>
+                        </div>
+                    </article>
+
+                    <!-- Step 3 -->
+                    <article class="step is-rv">
+                        <div class="step-img-wrap" onclick="openModal(this)">
+                            <img src="Refresh Button.png" onerror="this.onerror=null;this.src='Refresh Button.jpg';" alt="Step 3: Refresh Output Tabs" loading="lazy">
+                        </div>
+                        <div class="step-body">
+                            <span class="step-num">3</span>
+                            <h4><span class="lang-en">Refresh Output Tabs (Create DO &amp; PostToRV)</span><span class="lang-th">Refresh ชีทผลลัพธ์ (Create DO และ PostToRV)</span></h4>
+                            <p class="lang-en">Click "Refresh" to update <strong>Create DO</strong> (filtered against <code>DO Reconciled</code>) and <strong>PostToRV</strong> (filtered for <code>Status = Debtor</code>, with the batch key, <code>InvoiceNumber</code>, and <code>Amount</code>).</p>
+                            <p class="lang-th">กด "Refresh" เพื่ออัปเดตชีท <strong>Create DO</strong> (กรองซ้ำกับ <code>DO Reconciled</code>) และชีท <strong>PostToRV</strong> (กรองเฉพาะ <code>Status = Debtor</code> พร้อมคีย์แยกก้อน, <code>InvoiceNumber</code> และ <code>Amount</code>)</p>
+                        </div>
+                    </article>
+
+                    <!-- Step 4 -->
+                    <article class="step">
+                        <div class="step-img-wrap" onclick="openModal(this)">
+                            <img src="Split Button.png" onerror="this.onerror=null;this.src='Split Button.jpg';" alt="Step 4: Split into Batch Sheets" loading="lazy">
+                        </div>
+                        <div class="step-body">
+                            <span class="step-num">4</span>
+                            <h4><span class="lang-en">Split into Batch Sheets</span><span class="lang-th">แยกข้อมูลเป็นชีทตามรอบโอน</span></h4>
+                            <p class="lang-en">Click the "Split" macro button to partition reconciled records into separate worksheets by carrier and payout date.</p>
+                            <p class="lang-th">กดปุ่ม "Split" เพื่อแยกรายการที่กระทบยอดแล้วออกเป็นชีทย่อยตามขนส่งและวันที่โอนเงิน</p>
+                        </div>
+                    </article>
+
+                    <!-- Step 5 -->
+                    <article class="step">
+                        <div class="step-img-wrap" onclick="openModal(this)">
+                            <img src="Split.png" onerror="this.onerror=null;this.src='Split.jpg';" alt="Step 5: Review Generated Sheets" loading="lazy">
+                        </div>
+                        <div class="step-body">
+                            <span class="step-num">5</span>
+                            <h4><span class="lang-en">Review Generated Sheets</span><span class="lang-th">ตรวจสอบชีทที่สร้างขึ้น</span></h4>
+                            <p class="lang-en">The macro groups invoices into individual sheets and shows a completion dialog. Click "OK".</p>
+                            <p class="lang-th">ระบบแยก Invoice ไปอยู่ในแต่ละชีทอัตโนมัติ และแสดงกล่องข้อความเมื่อเสร็จสิ้น กด "OK"</p>
+                        </div>
+                    </article>
+
+                    <!-- Step 6 -->
+                    <article class="step">
+                        <div class="step-img-wrap" onclick="openModal(this)">
+                            <img src="Export Button.png" onerror="this.onerror=null;this.src='Export Button.jpg';" alt="Step 6: Export Individual Files" loading="lazy">
+                        </div>
+                        <div class="step-body">
+                            <span class="step-num">6</span>
+                            <h4><span class="lang-en">Export Individual Files</span><span class="lang-th">ส่งออกเป็นไฟล์แยก</span></h4>
+                            <p class="lang-en">Click "Export" to convert each worksheet into an upload-ready Excel workbook.</p>
+                            <p class="lang-th">กดปุ่ม "Export" เพื่อส่งออกแต่ละชีทเป็นไฟล์ Excel แยกตามรอบการโอน พร้อมอัปโหลด</p>
+                        </div>
+                    </article>
+
+                    <!-- Step 7 -->
+                    <article class="step">
+                        <div class="step-img-wrap" onclick="openModal(this)">
+                            <img src="Location_Define.png" onerror="this.onerror=null;this.src='Location_Define.jpg';" alt="Step 7: Select Target Folder" loading="lazy">
+                        </div>
+                        <div class="step-body">
+                            <span class="step-num">7</span>
+                            <h4><span class="lang-en">Select Target Folder</span><span class="lang-th">เลือกโฟลเดอร์ปลายทาง</span></h4>
+                            <p class="lang-en">Choose where to save the exported files, either an existing folder or a new one.</p>
+                            <p class="lang-th">ระบุโฟลเดอร์ที่ต้องการเก็บไฟล์ เลือกโฟลเดอร์ที่มีอยู่แล้วหรือสร้างใหม่ก็ได้</p>
+                        </div>
+                    </article>
+
+                    <!-- Step 8 -->
+                    <article class="step">
+                        <div class="step-img-wrap" onclick="openModal(this)">
+                            <img src="Clear_Button.png" onerror="this.onerror=null;this.src='Clear_Button.jpg';" alt="Step 8: Clear Workspace" loading="lazy">
+                        </div>
+                        <div class="step-body">
+                            <span class="step-num">8</span>
+                            <h4><span class="lang-en">Clear Workspace</span><span class="lang-th">ล้างพื้นที่ทำงาน</span></h4>
+                            <p class="lang-en">Click "Clear" to remove temporary split sheets and reset the workbook for the next cycle.</p>
+                            <p class="lang-th">กดปุ่ม "Clear" เพื่อลบชีทย่อยชั่วคราวทั้งหมด และเตรียมไฟล์สำหรับรอบถัดไป</p>
+                        </div>
+                    </article>
+
+                    <!-- Step 9 -->
+                    <article class="step">
+                        <div class="step-img-wrap" onclick="openModal(this)">
+                            <img src="Final_File.png" onerror="this.onerror=null;this.src='Final_File.jpg';" alt="Step 9: Verify Exported Files" loading="lazy">
+                        </div>
+                        <div class="step-body">
+                            <span class="step-num">9</span>
+                            <h4><span class="lang-en">Verify Exported Files</span><span class="lang-th">ตรวจสอบไฟล์ที่ส่งออก</span></h4>
+                            <p class="lang-en">Check the batch files in the target folder. Each is named automatically with the payment date and 3PL code.</p>
+                            <p class="lang-th">ตรวจสอบไฟล์ในโฟลเดอร์ที่เลือก ซึ่งตั้งชื่อตามวันที่รับชำระและรหัสขนส่งโดยอัตโนมัติ</p>
+                        </div>
+                    </article>
+
+                    <!-- Step 10 -->
+                    <article class="step">
+                        <div class="step-img-wrap" onclick="openModal(this)">
+                            <img src="TMS-UploadReconcile.jpg" onerror="this.onerror=null;this.src='TMS-UploadReconcile.png';" alt="Step 10: Batch Import into TMS" loading="lazy">
+                        </div>
+                        <div class="step-body">
+                            <span class="step-num">10</span>
+                            <h4><span class="lang-en">Batch Import into TMS</span><span class="lang-th">อัปโหลดไฟล์เข้า TMS</span></h4>
+                            <p class="lang-en">In TMS, go to Accounting &gt;&gt; Batch List &gt;&gt; Import, attach the file, and select the last-mile carrier and payment date shown in the filename.</p>
+                            <p class="lang-th">ในระบบ TMS ไปที่ Accounting &gt;&gt; Batch List &gt;&gt; Import เลือกไฟล์ แล้วเลือกขนส่ง (Lastmile) และวันที่โอนเงินตามชื่อไฟล์</p>
+                        </div>
+                    </article>
+
+                    <!-- Step 11 -->
+                    <article class="step is-rv">
+                        <div class="step-img-wrap" onclick="openModal(this)">
+                            <img src="DataPostRV.jpg" onerror="this.onerror=null;this.src='DataPostRV.png';" alt="Step 11: Send Invoice Data to Bulk RV API" loading="lazy">
+                        </div>
+                        <div class="step-body">
+                            <span class="step-num">11</span>
+                            <h4><span class="lang-en">Send Invoice Data to Bulk RV API</span><span class="lang-th">ส่งข้อมูลบิลเข้า Bulk RV API</span></h4>
+                            <p class="lang-en">In <code>PostToRV</code>, copy the <code>InvoiceNumber</code> and <code>Amount</code> columns and paste them into the <a href="rv-api-project.html" class="inline-link">Bulk RV API Web App</a>. Use <code>PaidDate/Customer</code> to select the customer and document date.</p>
+                            <p class="lang-th">ในแท็บ <code>PostToRV</code> คัดลอกคอลัมน์ <code>InvoiceNumber</code> และ <code>Amount</code> ไปวางใน <a href="rv-api-project.html" class="inline-link">Bulk RV API Web App</a> แล้วใช้ <code>PaidDate/Customer</code> เพื่อเลือกลูกค้าและระบุวันที่เอกสาร</p>
+                        </div>
+                    </article>
+
+                </div>
+            </section>
+
+            <!-- ================= NEXT / BACK ================= -->
+            <nav class="next-nav" aria-label="Project navigation">
+                <a href="index.html#projects" class="next-card">
+                    <div class="lbl"><span class="lang-en">← Back</span><span class="lang-th">← กลับ</span></div>
+                    <div class="ttl"><span class="lang-en">All Projects</span><span class="lang-th">ผลงานทั้งหมด</span></div>
+                </a>
+                <a href="rv-api-project.html" class="next-card is-next">
+                    <div class="lbl"><span class="lang-en">Next in Pipeline →</span><span class="lang-th">ขั้นตอนถัดไปของ Pipeline →</span></div>
+                    <div class="ttl">Bulk RV API Web App</div>
+                </a>
+            </nav>
+
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        © 2026 Nathan Vejvanitchayasakul
+    </footer>
+
+    <!-- ================= LIGHTBOX ================= -->
+    <div id="imageModal" class="modal" role="dialog" aria-modal="true" aria-label="Image preview" onclick="if (event.target === this) closeModal()">
+        <button type="button" class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+        <img id="fullImage" alt="">
+        <div id="modalCaption" class="modal-caption"></div>
+    </div>
+
+    <!-- ================= SCRIPTS ================= -->
+    <script>
+        /* Language */
+        function setLanguage(lang) {
+            document.documentElement.setAttribute('data-lang', lang);
+            document.documentElement.lang = lang;
+            ['en', 'th'].forEach(function (l) {
+                var btn = document.getElementById('btn-' + l);
+                btn.classList.toggle('active', l === lang);
+                btn.setAttribute('aria-pressed', l === lang);
+            });
+            try { localStorage.setItem('nv_portfolio_lang', lang); } catch (e) {}
+        }
+        window.addEventListener('DOMContentLoaded', function () {
+            setLanguage(document.documentElement.getAttribute('data-lang') || 'en');
+        });
+
+        /* Lightbox */
+        function openModal(wrap) {
+            var img = wrap.querySelector('img');
+            var modal = document.getElementById('imageModal');
+            var full = document.getElementById('fullImage');
+            full.src = img.currentSrc || img.src;
+            full.alt = img.alt;
+            document.getElementById('modalCaption').textContent = img.alt;
+            modal.classList.add('open');
+            document.body.classList.add('modal-open');
+        }
+        function closeModal() {
+            document.getElementById('imageModal').classList.remove('open');
+            document.body.classList.remove('modal-open');
+        }
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            securityLevel: 'loose',
+            themeVariables: {
+                fontFamily: 'Inter, "IBM Plex Sans Thai", system-ui, sans-serif',
+                fontSize: '14px',
+                lineColor: '#64748b',
+                clusterBkg: '#ffffff',
+                clusterBorder: '#e2e8f0',
+                titleColor: '#0b1b33',
+                edgeLabelBackground: '#ffffff'
+            },
+            flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
+        });
+
+        /* Render ทั้ง 2 ภาษา: เปิดกล่องที่ซ่อนไว้ชั่วคราวเพื่อให้ Mermaid คำนวณขนาดได้ถูกต้อง */
+        async function renderAllMermaid() {
+            const boxes = ['mermaid-en-container', 'mermaid-th-container']
+                .map(id => document.getElementById(id))
+                .filter(Boolean);
+            const hidden = boxes.filter(el => getComputedStyle(el).display === 'none');
+
+            hidden.forEach(el => el.style.setProperty('display', 'block', 'important'));
+            await mermaid.run({ querySelector: '.mermaid' });
+            hidden.forEach(el => el.style.removeProperty('display'));
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', renderAllMermaid);
+        } else {
+            renderAllMermaid();
+        }
+    </script>
+</body>
+</html>
