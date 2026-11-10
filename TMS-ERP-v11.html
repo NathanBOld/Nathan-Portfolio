@@ -202,6 +202,7 @@
             color: var(--slate-400);
         }
         .channel dd { margin: 2px 0 0; font-size: 0.88rem; color: var(--slate-700); }
+        .channel dd strong { color: var(--navy-900); }
 
         /* Solution pillars */
         .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -617,7 +618,7 @@
                             </div>
                             <div>
                                 <dt>Tax Point</dt>
-                                <dd><span class="lang-en">Upon goods dispatch (<code>In-transit</code>)</span><span class="lang-th">เมื่อส่งมอบสินค้า (<code>In-transit</code>)</span></dd>
+                                <dd><span class="lang-en">When the DO status changes to <code>Intransit</code> (goods handed to carrier). <strong>The IV is issued at this point.</strong></span><span class="lang-th">เมื่อสถานะ DO เปลี่ยนเป็น <code>Intransit</code> (สินค้าออกจากคลังส่งมอบให้ขนส่ง) <strong>และออก IV ณ จุดนี้</strong></span></dd>
                             </div>
                         </dl>
                     </div>
@@ -630,7 +631,7 @@
                             </div>
                             <div>
                                 <dt>Tax Point</dt>
-                                <dd><span class="lang-en">Upon payment receipt</span><span class="lang-th">เมื่อรับชำระเงิน</span></dd>
+                                <dd><span class="lang-en">Upon payment receipt, when the DO is created (status <code>New</code>)</span><span class="lang-th">เมื่อรับชำระเงิน ซึ่งเป็นตอนสร้าง DO (สถานะ <code>New</code>)</span></dd>
                             </div>
                         </dl>
                     </div>
@@ -643,7 +644,7 @@
                             </div>
                             <div>
                                 <dt>Tax Point</dt>
-                                <dd><span class="lang-en">Upon payment receipt</span><span class="lang-th">เมื่อรับชำระเงิน</span></dd>
+                                <dd><span class="lang-en">Upon payment receipt, when the DO is created (status <code>New</code>)</span><span class="lang-th">เมื่อรับชำระเงิน ซึ่งเป็นตอนสร้าง DO (สถานะ <code>New</code>)</span></dd>
                             </div>
                         </dl>
                     </div>
@@ -660,8 +661,8 @@
                     <div class="pillar">
                         <span class="pillar-num">2</span>
                         <h4><span class="lang-en">Date-Driven Tax Point</span><span class="lang-th">Tax Point อิงวันที่จริง</span></h4>
-                        <p class="lang-en">The TMS <strong>Date of Delivery Status</strong> becomes the ERP Document Date, which fixes the exact Tax Point.</p>
-                        <p class="lang-th">ใช้ <strong>วันที่ของสถานะการจัดส่ง</strong> จาก TMS เป็นวันที่เอกสารบน ERP เพื่อกำหนด Tax Point อย่างเคร่งครัด</p>
+                        <p class="lang-en">The TMS <strong>DO status date</strong> becomes the ERP Document Date, which fixes the exact Tax Point.</p>
+                        <p class="lang-th">ใช้ <strong>วันที่ของสถานะ DO</strong> จาก TMS เป็นวันที่เอกสารบน ERP เพื่อกำหนด Tax Point อย่างเคร่งครัด</p>
                     </div>
                     <div class="pillar">
                         <span class="pillar-num">3</span>
@@ -682,8 +683,8 @@
                         <span class="lang-en">Workflow Architecture, Tax Point &amp; GL Automation</span>
                         <span class="lang-th">สถาปัตยกรรม Workflow, Tax Point และ GL อัตโนมัติ</span>
                     </h2>
-                    <p class="panel-sub lang-en">Financial logic redesigned on an event-driven basis: real logistics triggers drive automated Dr./Cr. formulas and partner master data mapping.</p>
-                    <p class="panel-sub lang-th">ออกแบบ Business Logic ด้านการเงินใหม่แบบ Event-Driven ตามสถานะการจัดส่งจริง พร้อมโครงสร้างการลงบัญชี (Dr./Cr.) และการผูก Master Data คู่ค้าอย่างรัดกุม</p>
+                    <p class="panel-sub lang-en">Financial logic redesigned on an event-driven basis: real DO status triggers drive automated Dr./Cr. formulas and partner master data mapping.</p>
+                    <p class="panel-sub lang-th">ออกแบบ Business Logic ด้านการเงินใหม่แบบ Event-Driven ตามสถานะ DO จริง พร้อมโครงสร้างการลงบัญชี (Dr./Cr.) และการผูก Master Data คู่ค้าอย่างรัดกุม</p>
                 </div>
 
                 <!-- Design Principles -->
@@ -693,12 +694,12 @@
                         <div>
                             <h4>Separation of Tax Point vs. Revenue Recognition</h4>
                             <ul class="dot-list lang-en">
-                                <li><strong>Non-COD (Bank Transfer / 2c2p):</strong> At <code>New</code>, a Tax Invoice (<code>IV</code>) dated on the <code>New</code> status date recognizes Output VAT immediately and is held as <strong>Advance Received</strong>. <strong>Income</strong> and <code>COGS</code> are recognized when goods leave the warehouse (<code>Intransit</code>) via <code>MR</code>.</li>
-                                <li><strong>COD:</strong> No documents at <code>New</code>. Both <code>IV</code> and <code>MR</code> are triggered together at <code>Intransit</code>.</li>
+                                <li><strong>Non-COD (Bank Transfer / 2c2p):</strong> When the DO is created with status <code>New</code>, payment has already been received. A Tax Invoice (<code>IV</code>) dated on the <code>New</code> status date recognizes Output VAT immediately and is held as <strong>Advance Received</strong>. <strong>Income</strong> and <code>COGS</code> are recognized when goods leave the warehouse (<code>Intransit</code>) via <code>MR</code>.</li>
+                                <li><strong>COD:</strong> The DO is also created at <code>New</code>, but no ERP document is issued yet because payment hasn't been collected. <strong>The <code>IV</code> is issued when the DO status changes to <code>Intransit</code></strong>, dated on the Intransit status date (Tax Point), together with the <code>MR</code>.</li>
                             </ul>
                             <ul class="dot-list lang-th">
-                                <li><strong>Non-COD (Bank Transfer / 2c2p):</strong> เมื่อสถานะเป็น <code>New</code> ยิงสร้างใบกำกับภาษี (<code>IV</code>) โดยใช้วันที่สถานะ <code>New</code> เป็นวันที่ใบกำกับ รับรู้ภาษีขายทันที และบันทึกเป็น <strong>รายได้รับล่วงหน้า</strong> ก่อน แล้วจึงรับรู้ <strong>รายได้</strong> และตัดต้นทุน (<code>COGS</code>) เมื่อของออกจากคลัง (<code>Intransit</code>) ผ่าน <code>MR</code></li>
-                                <li><strong>COD:</strong> ยังไม่เปิดเอกสารตอน <code>New</code> แต่เปิดทั้ง <code>IV</code> และ <code>MR</code> พร้อมกันเมื่อสถานะเป็น <code>Intransit</code></li>
+                                <li><strong>Non-COD (Bank Transfer / 2c2p):</strong> เมื่อสร้าง DO (สถานะ <code>New</code>) ลูกค้าชำระเงินแล้ว จึงยิงสร้างใบกำกับภาษี (<code>IV</code>) โดยใช้วันที่สถานะ <code>New</code> เป็นวันที่ใบกำกับ รับรู้ภาษีขายทันที และบันทึกเป็น <strong>รายได้รับล่วงหน้า</strong> ก่อน แล้วจึงรับรู้ <strong>รายได้</strong> และตัดต้นทุน (<code>COGS</code>) เมื่อของออกจากคลัง (<code>Intransit</code>) ผ่าน <code>MR</code></li>
+                                <li><strong>COD:</strong> DO ถูกสร้างที่สถานะ <code>New</code> เช่นกัน แต่ยังไม่ออกเอกสารใน ERP เพราะยังไม่ได้รับเงิน <strong>ระบบจะออก <code>IV</code> ตั้งแต่สถานะ DO เปลี่ยนเป็น <code>Intransit</code></strong> โดยใช้วันที่ Intransit เป็นวันที่ใบกำกับภาษี (Tax Point) พร้อมกับเปิด <code>MR</code></li>
                             </ul>
                         </div>
                     </div>
@@ -764,13 +765,13 @@
                             <div class="lane-body">
                                 <div class="step">
                                     <div class="step-head">
-                                        <span class="pill new">1 · New</span>
+                                        <span class="pill new">1 · DO Created (New)</span>
                                         <span class="ep">POST /IV</span>
                                     </div>
-                                    <p class="step-desc lang-en">Payment received. The Tax Invoice is dated on the <code>New</code> status date (Tax Point) and recorded as Unearned Revenue. <strong>The returned TRCloud <code>id</code> / <code>InvoiceNumber</code> is stored in TMS.</strong></p>
-                                    <p class="step-desc lang-th">ลูกค้าชำระแล้ว ออกใบกำกับภาษีตามวันที่สถานะ <code>New</code> (Tax Point) พักยอดในรายได้รับล่วงหน้า <strong>และเก็บ <code>id</code> / <code>InvoiceNumber</code> จาก TRCloud กลับไว้ที่ TMS</strong></p>
+                                    <p class="step-desc lang-en">The DO is created with status <code>New</code>, and payment has already been received. The Tax Invoice is dated on the <code>New</code> status date (Tax Point) and recorded as Unearned Revenue. <strong>The returned TRCloud <code>id</code> / <code>InvoiceNumber</code> is stored in TMS.</strong></p>
+                                    <p class="step-desc lang-th">สร้าง DO พร้อมสถานะ <code>New</code> ซึ่งลูกค้าชำระเงินแล้ว ออกใบกำกับภาษีตามวันที่สถานะ <code>New</code> (Tax Point) พักยอดในรายได้รับล่วงหน้า <strong>และเก็บ <code>id</code> / <code>InvoiceNumber</code> จาก TRCloud กลับไว้ที่ TMS</strong></p>
                                     <div class="gl">
-                                        <span class="gl-tag">TMS-TT-IV (Bank) · TMS--2c2p-IV (2c2p)</span>
+                                        <span class="gl-tag">TMS-TT-IV (Bank) · TMS-2c2p-IV (2c2p)</span>
                                         <div class="je"><span class="side">Dr.</span>Bank / Accrued income-CRC</div>
                                         <div class="je cr"><span class="side">Cr.</span>Advance received</div>
                                         <div class="je cr"><span class="side">Cr.</span>Output VAT (7%)</div>
@@ -831,20 +832,20 @@
                             <div class="lane-body">
                                 <div class="step is-bypass">
                                     <div class="step-head">
-                                        <span class="pill">1 · New</span>
+                                        <span class="pill">1 · DO Created (New)</span>
                                         <span class="ep is-none">NO API CALL</span>
                                     </div>
-                                    <p class="step-desc lang-en"><strong>No ERP document yet.</strong> Payment hasn't been collected and goods haven't left the warehouse, so no Tax Point exists until the DO reaches <code>Intransit</code>.</p>
-                                    <p class="step-desc lang-th"><strong>ยังไม่สร้างเอกสารใน ERP:</strong> ยังไม่รับเงินและของยังไม่ออกจากคลัง จึงยังไม่เกิด Tax Point (รอจนสถานะ DO เป็น <code>Intransit</code>)</p>
+                                    <p class="step-desc lang-en"><strong>The DO is created, but no ERP document yet.</strong> Payment hasn't been collected and goods haven't left the warehouse, so the IV waits until the DO status changes to <code>Intransit</code>.</p>
+                                    <p class="step-desc lang-th"><strong>สร้าง DO แล้ว แต่ยังไม่ออกเอกสารใน ERP:</strong> ยังไม่ได้รับเงินและของยังไม่ออกจากคลัง จึงรอออก IV เมื่อสถานะ DO เปลี่ยนเป็น <code>Intransit</code></p>
                                 </div>
 
                                 <div class="step">
                                     <div class="step-head">
-                                        <span class="pill intransit">2 · Intransit</span>
+                                        <span class="pill intransit">2 · Intransit · IV Issued</span>
                                         <span class="ep">POST /IV &amp; /MR</span>
                                     </div>
-                                    <p class="step-desc lang-en">On carrier handover, both <strong>IV</strong> and <strong>MR</strong> are triggered. IV is mapped to the carrier <code>contact_id</code> for Lastmile AR and <strong>captures <code>id</code>, <code>InvoiceNumber</code>, and Pre-VAT Revenue</strong>. MR deducts stock and <strong>captures TRCloud-calculated <code>COST</code> for the Cut-off GL</strong>.</p>
-                                    <p class="step-desc lang-th">เมื่อส่งมอบให้ขนส่ง ยิงทั้ง <strong>IV</strong> (ผูก <code>contact_id</code> ขนส่ง ตั้งหนี้ Lastmile <strong>เก็บ <code>id</code>, <code>InvoiceNumber</code> และรายได้ก่อน VAT</strong>) และ <strong>MR</strong> (ตัดสต็อก <strong>เก็บ <code>COST</code> จาก TRCloud ไว้ทำ Cut-off GL</strong>)</p>
+                                    <p class="step-desc lang-en"><strong>The IV is issued as soon as the DO status becomes <code>Intransit</code></strong> (goods handed to the carrier), dated on the Intransit status date (Tax Point). IV is mapped to the carrier <code>contact_id</code> for Lastmile AR and <strong>captures <code>id</code>, <code>InvoiceNumber</code>, and Pre-VAT Revenue</strong>. MR is posted at the same time to deduct stock and <strong>capture the TRCloud-calculated <code>COST</code> for the Cut-off GL</strong>.</p>
+                                    <p class="step-desc lang-th"><strong>ออก IV ทันทีตั้งแต่สถานะ DO เป็น <code>Intransit</code></strong> (สินค้าออกจากคลังส่งมอบให้ขนส่ง) โดยใช้วันที่ Intransit เป็นวันที่ใบกำกับภาษี (Tax Point) ผูก <code>contact_id</code> ขนส่งเพื่อตั้งหนี้ Lastmile <strong>เก็บ <code>id</code>, <code>InvoiceNumber</code> และรายได้ก่อน VAT</strong> พร้อมยิง MR ตัดสต็อก <strong>และเก็บ <code>COST</code> จาก TRCloud ไว้ทำ Cut-off GL</strong></p>
                                     <div class="gl">
                                         <span class="gl-tag">IV: TMS-COD-IV · MR: type = 2</span>
                                         <div class="je"><span class="side">Dr.</span>AR (Lastmile)</div>
@@ -974,11 +975,11 @@ flowchart LR
     classDef trcGL fill:#eef2ff,stroke:#4338ca,color:#1e1b4b,stroke-width:2px
     classDef bypassNode fill:#f1f5f9,stroke:#94a3b8,color:#475569,stroke-dasharray: 5 5
 
-    subgraph LANE_TMS_EN ["LANE 1: In-house TMS (Order &amp; Delivery Status Events)"]
+    subgraph LANE_TMS_EN ["LANE 1: In-house TMS (Order &amp; DO Status Events)"]
         direction TB
-        T0_E["<b>0. SO &amp; DO Created in TMS</b><br/>Segmented by PaymentMethod (Bank / 2c2p / COD)"]:::tmsNode
-        T1_E["<b>1. Status = New</b><br/>• Non-COD: Paid (Tax Point Triggered)<br/>• COD: Unpaid / Undispatched (Wait for Intransit)"]:::tmsNode
-        T2_E["<b>2. Status = Intransit</b><br/>Goods Dispatched from Warehouse (MYC)<br/>Status Date mapped to issue_date"]:::tmsNode
+        T0_E["<b>0. SO Created in TMS</b><br/>Segmented by PaymentMethod (Bank / 2c2p / COD)"]:::tmsNode
+        T1_E["<b>1. DO Created · Status = New</b><br/>• Non-COD: Paid (Tax Point → IV issued)<br/>• COD: Unpaid (IV deferred until Intransit)"]:::tmsNode
+        T2_E["<b>2. DO Status = Intransit</b><br/>Goods handed to carrier (MYC)<br/>• COD: IV issued here (Tax Point)<br/>Status Date mapped to issue_date"]:::tmsNode
         T3A_E["<b>3A. Status = Delivered</b><br/>Successfully Delivered (All Channels)"]:::tmsNode
         T3B_E["<b>3B. Status = Returned</b><br/>Parcel Returned to Warehouse (All Channels)"]:::tmsNode
         T4_E["<b>4. Midnight Cut-off Scheduler</b><br/>Aggregates <b>Pre-VAT Revenue</b> (from IV) &amp; <b>COST</b> (from MR)<br/>for COD orders still Intransit at Sat / EOM"]:::tmsCut
@@ -992,11 +993,11 @@ flowchart LR
         direction TB
         E0_E["<b>Bypass /SO Endpoint</b><br/>Eliminates Redundant SO Creation in ERP"]:::bypassNode
 
-        E1_E["<b>POST /IV (Non-COD Only)</b><br/>• Formula: TMS-TT-IV / TMS--2c2p-IV (Shared contact_id, add_contact=0)<br/>• <b>Dr. Bank / Accrued CRC ➔ Cr. Advance received, Output VAT</b><br/><i>(Returns id &amp; InvoiceNumber to TMS)</i>"]:::trcIV
+        E1_E["<b>POST /IV (Non-COD Only)</b><br/>• Formula: TMS-TT-IV / TMS-2c2p-IV (Shared contact_id, add_contact=0)<br/>• <b>Dr. Bank / Accrued CRC ➔ Cr. Advance received, Output VAT</b><br/><i>(Returns id &amp; InvoiceNumber to TMS)</i>"]:::trcIV
 
         E2_NC_E["<b>POST /MR (Non-COD: type = 1)</b><br/>• stage = 2 (Shipped), cost_option = 1<br/>• <b>Dr. Advance received ➔ Cr. Income</b><br/>• <b>Dr. COGS ➔ Cr. Inventory</b>"]:::trcMR
 
-        E2_COD_E["<b>POST /IV &amp; POST /MR (COD Only)</b><br/>• <b>IV (TMS-COD-IV):</b> Mapped to Carrier contact_id<br/><b>Dr. AR (Lastmile) ➔ Cr. Revenues, Output VAT</b><br/>• <b>MR (type = 2):</b> <b>Dr. COGS ➔ Cr. Inventory</b><br/><i>(TMS captures id, InvoiceNumber, Pre-VAT Revenue &amp; MR COST)</i>"]:::trcIV
+        E2_COD_E["<b>POST /IV &amp; POST /MR (COD Only · at Intransit)</b><br/>• <b>IV (TMS-COD-IV):</b> Mapped to Carrier contact_id<br/><b>Dr. AR (Lastmile) ➔ Cr. Revenues, Output VAT</b><br/>• <b>MR (type = 2):</b> <b>Dr. COGS ➔ Cr. Inventory</b><br/><i>(TMS captures id, InvoiceNumber, Pre-VAT Revenue &amp; MR COST)</i>"]:::trcIV
 
         E3A_E["<b>POST /Update IV (All Channels)</b><br/>• References TRCloud Invoice id<br/>• Updates <b>staff = Delivered</b>"]:::trcIV
 
@@ -1029,11 +1030,11 @@ flowchart LR
     classDef trcGL fill:#eef2ff,stroke:#4338ca,color:#1e1b4b,stroke-width:2px
     classDef bypassNode fill:#f1f5f9,stroke:#94a3b8,color:#475569,stroke-dasharray: 5 5
 
-    subgraph LANE_TMS ["LANE 1: In-house TMS (สถานะคำสั่งซื้อและการจัดส่ง)"]
+    subgraph LANE_TMS ["LANE 1: In-house TMS (คำสั่งซื้อและสถานะ DO)"]
         direction TB
-        T0["<b>0. สร้าง SO &amp; DO ในระบบ TMS</b><br/>แยกตาม PaymentMethod (Bank / 2c2p / COD)"]:::tmsNode
-        T1["<b>1. Status = New</b><br/>• Non-COD: ชำระเงินแล้ว (เกิด Tax Point)<br/>• COD: ยังไม่รับเงิน/ยังไม่ส่งของ (รอ Intransit)"]:::tmsNode
-        T2["<b>2. Status = Intransit</b><br/>สินค้าออกจากคลัง (MYC)<br/>อ้างอิงวันที่สถานะเป็น issue_date"]:::tmsNode
+        T0["<b>0. สร้าง SO ในระบบ TMS</b><br/>แยกตาม PaymentMethod (Bank / 2c2p / COD)"]:::tmsNode
+        T1["<b>1. สร้าง DO · Status = New</b><br/>• Non-COD: ชำระเงินแล้ว (เกิด Tax Point → ออก IV)<br/>• COD: ยังไม่รับเงิน (ยังไม่ออก IV รอ Intransit)"]:::tmsNode
+        T2["<b>2. สถานะ DO = Intransit</b><br/>สินค้าออกจากคลังส่งมอบให้ขนส่ง (MYC)<br/>• COD: ออก IV ณ จุดนี้ (Tax Point)<br/>อ้างอิงวันที่สถานะเป็น issue_date"]:::tmsNode
         T3A["<b>3A. Status = Delivered</b><br/>จัดส่งถึงมือลูกค้าสำเร็จ (ทุกช่องทาง)"]:::tmsNode
         T3B["<b>3B. Status = Returned</b><br/>พัสดุตีกลับคลัง (ทุกช่องทาง)"]:::tmsNode
         T4["<b>4. Midnight Cut-off Scheduler</b><br/>รวบยอด <b>รายได้ก่อน VAT</b> (จาก IV) และ <b>COST</b> (จาก MR)<br/>ของออเดอร์ COD ที่ยังค้าง Intransit ณ เสาร์/สิ้นเดือน"]:::tmsCut
@@ -1047,11 +1048,11 @@ flowchart LR
         direction TB
         E0["<b>Bypass /SO Endpoint</b><br/>ไม่สร้าง SO ซ้ำซ้อนบนระบบ ERP"]:::bypassNode
 
-        E1["<b>POST /IV (เฉพาะ Non-COD)</b><br/>• สูตร: TMS-TT-IV / TMS--2c2p-IV (Shared contact_id, add_contact=0)<br/>• <b>Dr. Bank / Accrued CRC ➔ Cr. Advance received, Output VAT</b><br/><i>(ส่งคืนค่า id &amp; InvoiceNumber กลับมาเก็บที่ TMS)</i>"]:::trcIV
+        E1["<b>POST /IV (เฉพาะ Non-COD)</b><br/>• สูตร: TMS-TT-IV / TMS-2c2p-IV (Shared contact_id, add_contact=0)<br/>• <b>Dr. Bank / Accrued CRC ➔ Cr. Advance received, Output VAT</b><br/><i>(ส่งคืนค่า id &amp; InvoiceNumber กลับมาเก็บที่ TMS)</i>"]:::trcIV
 
         E2_NC["<b>POST /MR (Non-COD: type = 1)</b><br/>• stage = 2 (Shipped), cost_option = 1<br/>• <b>Dr. Advance received ➔ Cr. Income</b><br/>• <b>Dr. COGS ➔ Cr. Inventory</b>"]:::trcMR
 
-        E2_COD["<b>POST /IV &amp; POST /MR (เฉพาะ COD)</b><br/>• <b>IV (TMS-COD-IV):</b> Map Carrier contact_id<br/><b>Dr. AR (Lastmile) ➔ Cr. Revenues, Output VAT</b><br/>• <b>MR (type = 2):</b> <b>Dr. COGS ➔ Cr. Inventory</b><br/><i>(TMS เก็บ id, InvoiceNumber, ยอดก่อน VAT จาก IV และ COST จาก MR)</i>"]:::trcIV
+        E2_COD["<b>POST /IV &amp; POST /MR (เฉพาะ COD · ออกเมื่อ Intransit)</b><br/>• <b>IV (TMS-COD-IV):</b> Map Carrier contact_id<br/><b>Dr. AR (Lastmile) ➔ Cr. Revenues, Output VAT</b><br/>• <b>MR (type = 2):</b> <b>Dr. COGS ➔ Cr. Inventory</b><br/><i>(TMS เก็บ id, InvoiceNumber, ยอดก่อน VAT จาก IV และ COST จาก MR)</i>"]:::trcIV
 
         E3A["<b>POST /Update IV (ทุกช่องทาง)</b><br/>• อ้างอิง TRCloud Invoice id<br/>• อัปเดตฟิลด์ <b>staff = Delivered</b>"]:::trcIV
 
@@ -1074,8 +1075,8 @@ flowchart LR
                         </div>
                     </div>
                     <figcaption>
-                        <span class="lang-en">Cross-system swimlane: event triggers in the in-house TMS (Lane 1) drive API routing and automated GL postings in TRCloud ERP (Lane 2). Response data is captured for the Cut-off GL.</span>
-                        <span class="lang-th">แผนผัง Swimlane ข้ามระบบ: การส่งค่า API จาก TMS (Lane 1) ไปสร้างเอกสารและลงบัญชีอัตโนมัติบน TRCloud ERP (Lane 2) พร้อมเก็บค่ากลับมาคำนวณ Cut-off GL</span>
+                        <span class="lang-en">Cross-system swimlane: DO status events in the in-house TMS (Lane 1) drive API routing and automated GL postings in TRCloud ERP (Lane 2). Response data is captured for the Cut-off GL.</span>
+                        <span class="lang-th">แผนผัง Swimlane ข้ามระบบ: สถานะ DO ใน TMS (Lane 1) เป็นตัวกำหนดการยิง API ไปสร้างเอกสารและลงบัญชีอัตโนมัติบน TRCloud ERP (Lane 2) พร้อมเก็บค่ากลับมาคำนวณ Cut-off GL</span>
                     </figcaption>
                 </figure>
             </section>
@@ -1113,7 +1114,7 @@ flowchart LR
                                     <tr>
                                         <th>#</th>
                                         <th>PaymentMethod (TMS)</th>
-                                        <th>Trigger / Status Date</th>
+                                        <th>Trigger / DO Status Date</th>
                                         <th>End-Point</th>
                                         <th>Formula / Type</th>
                                         <th>Customer / Contact Mapping</th>
@@ -1124,7 +1125,7 @@ flowchart LR
                                     <tr>
                                         <td><strong>1</strong></td>
                                         <td><code>Bank Transfer</code></td>
-                                        <td><code>New</code></td>
+                                        <td><code>New</code> (DO Created)</td>
                                         <td><span class="ep-pill">IV</span></td>
                                         <td><code>TMS-TT-IV</code></td>
                                         <td>Shared Non-COD <code>contact_id</code> (Pre-created on ERP, <code>add_contact = 0</code>)</td>
@@ -1133,16 +1134,16 @@ flowchart LR
                                     <tr>
                                         <td><strong>2</strong></td>
                                         <td><code>2c2p</code></td>
-                                        <td><code>New</code></td>
+                                        <td><code>New</code> (DO Created)</td>
                                         <td><span class="ep-pill">IV</span></td>
-                                        <td><code>TMS--2c2p-IV</code></td>
+                                        <td><code>TMS-2c2p-IV</code></td>
                                         <td>Shared Non-COD <code>contact_id</code> (Pre-created on ERP, <code>add_contact = 0</code>)</td>
                                         <td><strong>Dr.</strong> Accrued income-CRC<br><strong>Cr.</strong> Advance received, Output VAT</td>
                                     </tr>
                                     <tr>
                                         <td><strong>3</strong></td>
                                         <td><code>COD</code></td>
-                                        <td><code>Intransit</code></td>
+                                        <td><code>Intransit</code> (COD IV issued)</td>
                                         <td><span class="ep-pill">IV</span></td>
                                         <td><code>TMS-COD-IV</code></td>
                                         <td>Mapped <strong>Carrier <code>contact_id</code></strong> (Pre-created on ERP &amp; mapped in TMS)</td>
@@ -1256,9 +1257,9 @@ flowchart LR
                                     <tr>
                                         <td><code>issue_date</code></td>
                                         <td>date</td>
-                                        <td>• Non-COD: Date of status <code>New</code><br>• COD: Date of status <code>Intransit</code></td>
+                                        <td>• Non-COD: Date the DO is created (status <code>New</code>)<br>• COD: Date the DO status changes to <code>Intransit</code></td>
                                         <td><code>2026-12-31</code></td>
-                                        <td><span class="lang-en">Document issue date (YYYY-MM-DD) anchored to actual status date</span><span class="lang-th">วันที่ออกเอกสาร (YYYY-MM-DD) อิงตามวันที่เกิดสถานะจริง</span></td>
+                                        <td><span class="lang-en">Document issue date (YYYY-MM-DD) anchored to the actual DO status date</span><span class="lang-th">วันที่ออกเอกสาร (YYYY-MM-DD) อิงตามวันที่เกิดสถานะ DO จริง</span></td>
                                     </tr>
                                     <tr>
                                         <td><code>company_format</code></td>
@@ -1299,7 +1300,7 @@ flowchart LR
                                         <td><code>type</code></td>
                                         <td>setting</td>
                                         <td>Fix Code by PaymentMethod</td>
-                                        <td><code>TMS-TT-IV</code> / <code>TMS--2c2p-IV</code> / <code>TMS-COD-IV</code></td>
+                                        <td><code>TMS-TT-IV</code> / <code>TMS-2c2p-IV</code> / <code>TMS-COD-IV</code></td>
                                         <td><span class="lang-en">Automated Accounting Formula code</span><span class="lang-th">ชื่อสูตรบัญชีสำหรับลง GL อัตโนมัติ</span></td>
                                     </tr>
                                     <tr>
@@ -1322,7 +1323,7 @@ flowchart LR
                                         <td><code>group_code</code> &amp; <code>code_number</code></td>
                                         <td>setting / number</td>
                                         <td>• Non-COD: Fix Code (Shared Non-COD Customer)<br>• COD: Mapped with Carrier Master Data (Pre-created on ERP)</td>
-                                        <td><code>C</code> / <code>0001</code></td>
+                                        <td><code>C001</code> / <code>K001</code></td>
                                         <td><span class="lang-en">Contact group and running code pre-created on ERP</span><span class="lang-th">รหัสกลุ่มคู่ค้าและรหัสคู่ค้าที่สร้างรอไว้บน ERP</span></td>
                                     </tr>
                                     <tr>
@@ -1336,14 +1337,14 @@ flowchart LR
                                         <td><code>contact_id</code></td>
                                         <td>setting</td>
                                         <td>• Non-COD: Fix Code (Shared <code>contact_id</code> pre-created on ERP)<br>• COD: <strong>Mapped Carrier <code>contact_id</code> (Pre-created on ERP &amp; mapped in TMS)</strong></td>
-                                        <td><code>0</code> (or Carrier ID)</td>
+                                        <td><code>Shared ID</code> / </code>Carrier ID</code></td>
                                         <td><span class="lang-en">Non-COD uses shared ID to prevent DB bloat / COD maps to Carrier ID to establish <code>AR (Lastmile)</code></span><span class="lang-th">Non-COD ใช้ ID กลางเพื่อไม่ให้ DB บวม / COD ผูก ID ขนส่งเพื่อตั้งหนี้ <code>AR (Lastmile)</code></span></td>
                                     </tr>
                                     <tr>
                                         <td><code>add_contact</code></td>
                                         <td>boolean</td>
-                                        <td>• Non-COD: Fix Code = <code>0</code><br>• COD: Fix Code = <code>1</code></td>
-                                        <td><code>0</code> / <code>1</code></td>
+                                        <td>• Non-COD: Fix Code = <code>0</code><br>• COD: Fix Code = <code>0</code></td>
+                                        <td><code>0</code></td>
                                         <td><span class="lang-en"><code>0</code> = Do not add new contact (uses pre-created ERP contact)</span><span class="lang-th"><code>0</code> = ไม่เพิ่มคู่ค้าใหม่ (ใช้คู่ค้าที่สร้างรอไว้บน ERP)</span></td>
                                     </tr>
 
@@ -1386,8 +1387,8 @@ flowchart LR
                     <!-- TAB 3: MR -->
                     <div id="tab-mr" class="spec-panel" role="tabpanel">
                         <p class="spec-intro">
-                            <span class="lang-en">Field mapping for <strong>End-Point <code>MR</code> (Scenario 4 Non-COD &amp; Scenario 5 COD)</strong>, triggered at <code>Intransit</code>.</span>
-                            <span class="lang-th">การ Map ฟิลด์สำหรับ <strong>End-Point <code>MR</code> (เคส 4 Non-COD และเคส 5 COD)</strong> เมื่อสถานะเป็น <code>Intransit</code></span>
+                            <span class="lang-en">Field mapping for <strong>End-Point <code>MR</code> (Scenario 4 Non-COD &amp; Scenario 5 COD)</strong>, triggered when the DO status changes to <code>Intransit</code>.</span>
+                            <span class="lang-th">การ Map ฟิลด์สำหรับ <strong>End-Point <code>MR</code> (เคส 4 Non-COD และเคส 5 COD)</strong> เมื่อสถานะ DO เปลี่ยนเป็น <code>Intransit</code></span>
                         </p>
                         <div class="table-wrap">
                             <table class="spec-table">
@@ -1419,7 +1420,7 @@ flowchart LR
                                         <td><code>contact_id</code></td>
                                         <td>number</td>
                                         <td>Contact ID from TRCloud master data</td>
-                                        <td><code>0</code></td>
+                                        <td><code>C001</code><code>K001</code></td>
                                         <td><span class="lang-en">System contact ID from TRCloud master data</span><span class="lang-th">เลข ID ของประวัติคู่ค้า</span></td>
                                     </tr>
                                     <tr>
@@ -1526,7 +1527,7 @@ flowchart LR
                                         <td><code>group_code</code> &amp; <code>code_number</code></td>
                                         <td>setting / number</td>
                                         <td>• Non-COD: <strong>Customer</strong> Master Data<br>• COD: <strong>Carrier</strong> Master Data</td>
-                                        <td><code>C</code> / <code>0001</code></td>
+                                        <td><code>C001</code> / <code>K001</code></td>
                                         <td><span class="lang-en">Differentiates the Credit Note partner between Customer and 3rd-Party Carrier</span><span class="lang-th">แยกการลดหนี้ระหว่างลูกค้าทั่วไปกับบริษัทขนส่ง</span></td>
                                     </tr>
                                     <tr>
@@ -1622,8 +1623,8 @@ flowchart LR
                     <div class="impact">
                         <div class="impact-kpi">100%</div>
                         <h4><span class="lang-en">Manual Invoicing &amp; Redundant SOs Eliminated</span><span class="lang-th">ตัดการเปิด Invoice มือและ SO ซ้ำซ้อน</span></h4>
-                        <p class="lang-en">The redundant SO endpoint is bypassed entirely, and <code>IV</code>, <code>MR</code>, <code>CN</code>, and <code>Update IV</code> are generated automatically from real-time delivery status triggers.</p>
-                        <p class="lang-th">ตัดเส้นทาง API ไปยัง SO ทิ้งทั้งหมด และผูกการสร้าง <code>IV</code>, <code>MR</code>, <code>CN</code> และ <code>Update IV</code> เข้ากับสถานะการจัดส่งจริงพร้อมสูตรบัญชีอัตโนมัติ</p>
+                        <p class="lang-en">The redundant SO endpoint is bypassed entirely, and <code>IV</code>, <code>MR</code>, <code>CN</code>, and <code>Update IV</code> are generated automatically from real-time DO status triggers.</p>
+                        <p class="lang-th">ตัดเส้นทาง API ไปยัง SO ทิ้งทั้งหมด และผูกการสร้าง <code>IV</code>, <code>MR</code>, <code>CN</code> และ <code>Update IV</code> เข้ากับสถานะ DO จริงพร้อมสูตรบัญชีอัตโนมัติ</p>
                     </div>
                     <div class="impact">
                         <div class="impact-kpi">100%</div>
