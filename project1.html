@@ -509,7 +509,7 @@
                             <li><strong>VBA &amp; Zero-Formula Approach:</strong> reads the pre-generated filenames, auto-creates batch sheets, and exports standardized files without cell formulas.</li>
                         </ul>
                         <ul class="check-list lang-th">
-                            <li><strong>Power Query (ETL &amp; Gatekeeper):</strong> กระทบยอด 3 ทาง (3PL, TMS, TRCloud) คัดเฉพาะรายการที่ตรงกันและยังไม่เคยอัปโหลด พร้อมสร้างชื่อไฟล์ปลายทางอัตโนมัติ</li>
+                            <li><strong>Power Query (ETL &amp; Gatekeeper):</strong> กระทบยอด 3 ทาง (3PL, TMS, TRCloud), คัดเฉพาะรายการที่ตรงกันและยังไม่เคยอัปโหลด พร้อมสร้างชื่อไฟล์ปลายทางอัตโนมัติ</li>
                             <li><strong>Dual-Gatekeeper Architecture:</strong> ฝั่ง TMS กรองซ้ำด้วยชีท <code>DO Reconciled</code> ฝั่ง ERP กรองบิลที่เคย Post RV แล้วออกด้วย <code>Status = Debtor</code> จากชีท <code>TRC</code></li>
                             <li><strong>VBA &amp; Zero-Formula Approach:</strong> อ่านชื่อไฟล์เพื่อแยกชีทและส่งออกไฟล์ Excel ตามรอบการโอน โดยไม่พึ่งสูตรในเซลล์</li>
                         </ul>
@@ -532,7 +532,7 @@
                         </p>
                         <p class="lang-th">
                             <code>วันที่รับชำระ ddMMyyyy</code> + <code>รหัส 3PL</code> + <code>เลข Run ก้อนโอนของ 3PL</code>
-                            ใช้แยกเงินโอนแต่ละก้อนเป็น RV Batch ของตัวเอง และส่งออกในแท็บ <code>PostToRV</code> คู่กับ <code>InvoiceNumber</code> และ <code>Amount</code>
+                            ใช้แยกเงินโอนแต่ละก้อนเป็น RV Batch ของตัวเอง และส่งออกในแท็บ <code>PostToRV</code> คู่กับ <code>InvoiceNumber</code> , <code>Amount</code> และแท็บ <code>Create DO</code> คู่กับ <code>Fullfillment Code</code> ,<code>Tracking Code</code> และ <code>Paid Amount</code>
                         </p>
                     </div>
                 </div>
@@ -727,7 +727,7 @@ flowchart TD
                     <!-- Step 2 -->
                     <article class="step">
                         <div class="step-img-wrap" onclick="openModal(this)">
-                            <img src="TMS_Date.png" onerror="this.onerror=null;this.src='TMS_Date.jpg';" alt="Step 2: Refresh Power Query Reconciliation" loading="lazy">
+                            <img src="TMS_date.png" onerror="this.onerror=null;this.src='TMS_date.jpg';" alt="Step 2: Refresh Power Query Reconciliation" loading="lazy">
                         </div>
                         <div class="step-body">
                             <span class="step-num">2</span>

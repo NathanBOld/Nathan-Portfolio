@@ -223,6 +223,29 @@
             color: var(--slate-400); font-size: 1.1rem;
         }
 
+	/* Lifecycle stage label + Key bottleneck row */
+        .gap-stage {
+            display: block;
+            margin: 0 0 4px 26px;
+            font-size: 0.66rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+            color: var(--slate-400);
+        }
+        .gap-row.is-key {
+            background: var(--slate-50);
+            box-shadow: inset 3px 0 0 var(--navy-900);
+        }
+        .gap-row.is-key .is-tobe {
+            background: linear-gradient(90deg, rgba(239, 246, 255, 0.9), rgba(239, 246, 255, 0.2));
+        }
+        .key-badge {
+            display: inline-block;
+            margin-left: 4px;
+            font-size: 0.6rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+            color: var(--white); background: var(--muted-red);
+            padding: 2px 8px; border-radius: 999px;
+            white-space: nowrap; align-self: center;
+        }
+
         /* =========================================================
            8. UX MOCKUPS
            ========================================================= */
@@ -436,10 +459,10 @@
             <div class="facts">
                 <div>
                     <div class="fact-val">100%</div>
-                    <div class="fact-lbl">
-                        <span class="lang-en">Paperless approval workflow</span>
-                        <span class="lang-th">อนุมัติแบบไร้กระดาษ</span>
-                    </div>
+   <div class="fact-lbl">
+       <span class="lang-en">Automated Data Flow</span>
+       <span class="lang-th">ข้อมูลอัตโนมัติ</span>
+   </div>
                 </div>
                 <div>
                     <div class="fact-val">Real-Time</div>
@@ -458,8 +481,8 @@
                 <div>
                     <div class="fact-val">Weekly</div>
                     <div class="fact-lbl">
-                        <span class="lang-en">Cash flow reports always up to date</span>
-                        <span class="lang-th">รายงานกระแสเงินสดอัปเดตทันเวลา</span>
+                        <span class="lang-en">Estimate Cash flow reports always up to date</span>
+                        <span class="lang-th">รายงานพยากรณ์กระแสเงินสดอัปเดตทันเวลา</span>
                     </div>
                 </div>
             </div>
@@ -477,9 +500,13 @@
                         <span class="lang-en">Gap Analysis: As-Is → To-Be</span>
                         <span class="lang-th">วิเคราะห์ช่องว่าง: กระบวนการเดิม → กระบวนการใหม่</span>
                     </h2>
-                    <p class="panel-sub">
-                        <span class="lang-en">Each operational pain point is mapped directly to its automated solution.</span>
-                        <span class="lang-th">จับคู่ปัญหาหน้างานแต่ละข้อกับโซลูชันอัตโนมัติที่แก้ไขโดยตรง</span>
+                    <p class="panel-sub lang-en">
+                        Pain points are mapped along the PO lifecycle, from creation to ERP posting.
+                        <strong>Step 3, the hand-off to Accounting for ERP entry,</strong> was the primary bottleneck.
+                    </p>
+                    <p class="panel-sub lang-th">
+                        จับคู่ปัญหากับโซลูชันตามวงจรชีวิตของ PO ตั้งแต่สร้างจนบันทึกเข้า ERP
+                        โดย <strong>ขั้นที่ 3 การส่งต่อให้ทีมบัญชีคีย์เข้า ERP</strong> คือคอขวดหลักของกระบวนการ
                     </p>
                 </div>
 
@@ -490,15 +517,16 @@
                         <div class="h-tobe"><span class="lang-en">To-Be · Target State</span><span class="lang-th">To-Be · กระบวนการอัตโนมัติ</span></div>
                     </div>
 
-                    <!-- Row 1 -->
+                    <!-- Row 1: Create -->
                     <div class="gap-row">
                         <div class="gap-cell is-asis">
+                            <span class="gap-stage"><span class="lang-en">Step 1 · Create</span><span class="lang-th">ขั้นที่ 1 · สร้าง PO</span></span>
                             <h4><span class="gap-icon">✕</span>
-                                <span class="lang-en">Off-System Processing</span>
-                                <span class="lang-th">การทำเอกสารนอกระบบ</span>
+                                <span class="lang-en">Off-System PO Creation</span>
+                                <span class="lang-th">การสร้าง PO นอกระบบ</span>
                             </h4>
-                            <p class="lang-en">Manual PO creation outside the ERP causes severe operational bottlenecks.</p>
-                            <p class="lang-th">การเปิด PO แบบ Manual นอกระบบ ERP ทำให้เกิดคอขวดในการทำงานหน้างาน</p>
+                            <p class="lang-en">Manual PO creation outside the ERP causes operational bottlenecks from the very first step.</p>
+                            <p class="lang-th">การเปิด PO แบบ Manual นอกระบบ ERP ทำให้เกิดคอขวดตั้งแต่ขั้นตอนแรก</p>
                         </div>
                         <div class="gap-arrow" aria-hidden="true">→</div>
                         <div class="gap-cell is-tobe">
@@ -511,15 +539,61 @@
                         </div>
                     </div>
 
-                    <!-- Row 2 -->
+                    <!-- Row 2: Approve -->
                     <div class="gap-row">
                         <div class="gap-cell is-asis">
+                            <span class="gap-stage"><span class="lang-en">Step 2 · Approve</span><span class="lang-th">ขั้นที่ 2 · อนุมัติ</span></span>
+                            <h4><span class="gap-icon">✕</span>
+                                <span class="lang-en">Email-Based PDF Approval</span>
+                                <span class="lang-th">ขออนุมัติด้วย PDF ทางอีเมล</span>
+                            </h4>
+                            <p class="lang-en">POs are sent as PDF attachments by email, and approvers reply by typing free-text responses. Approval status gets buried in email threads, is hard to track, and leaves no standardized audit trail.</p>
+                            <p class="lang-th">ส่งเอกสาร PO เป็นไฟล์ PDF แนบอีเมล และผู้อนุมัติต้องพิมพ์ตอบกลับเอง สถานะการอนุมัติจึงกระจายอยู่ในเธรดอีเมล ติดตามยาก และไม่มีหลักฐานการอนุมัติที่เป็นมาตรฐาน</p>
+                        </div>
+                        <div class="gap-arrow" aria-hidden="true">→</div>
+                        <div class="gap-cell is-tobe">
+                            <h4><span class="gap-icon">✓</span>
+                                <span class="lang-en">Structured Email Approval Workflow</span>
+                                <span class="lang-th">อีเมลขออนุมัติแบบมีโครงสร้าง</span>
+                            </h4>
+                            <p class="lang-en">Dynamic approval emails replace PDF-and-reply. Approvers respond with standardized Approve / Reject actions, and every decision is logged automatically with a timestamp for full traceability.</p>
+                            <p class="lang-th">เปลี่ยนจากการแนบ PDF และพิมพ์ตอบ เป็นอีเมลขออนุมัติแบบโต้ตอบที่มีตัวเลือก อนุมัติ / ไม่อนุมัติ เป็นมาตรฐาน ทุกการตัดสินใจถูกบันทึกพร้อมเวลาอัตโนมัติ ตรวจสอบย้อนหลังได้</p>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Hand-off to ERP (KEY BOTTLENECK) -->
+                    <div class="gap-row is-key">
+                        <div class="gap-cell is-asis">
+                            <span class="gap-stage"><span class="lang-en">Step 3 · Hand-off to ERP</span><span class="lang-th">ขั้นที่ 3 · ส่งต่อเข้า ERP</span></span>
+                            <h4><span class="gap-icon">✕</span>
+                                <span class="lang-en">Manual Hand-off for ERP Entry</span>
+                                <span class="lang-th">ส่งต่อให้บัญชีคีย์เข้า ERP</span>
+                                <span class="key-badge"><span class="lang-en">Key Bottleneck</span><span class="lang-th">คอขวดหลัก</span></span>
+                            </h4>
+                            <p class="lang-en">After approval, Logistics forwards each approved PO to the Accounting team, who must re-key it into the ERP by hand. POs queue up waiting for Accounting's capacity, which makes this the slowest step in the entire PO cycle.</p>
+                            <p class="lang-th">หลังอนุมัติ ทีมโลจิสติกส์ต้องส่งเรื่องต่อให้ทีมบัญชีเพื่อคีย์ PO เข้าระบบ ERP เองทีละใบ งานจึงไปกองรอคิวที่ทีมบัญชี กลายเป็นคอขวดสำคัญที่สุดของกระบวนการ</p>
+                        </div>
+                        <div class="gap-arrow" aria-hidden="true">→</div>
+                        <div class="gap-cell is-tobe">
+                            <h4><span class="gap-icon">✓</span>
+                                <span class="lang-en">Zero-Touch ERP Posting</span>
+                                <span class="lang-th">ส่งเข้า ERP อัตโนมัติทันทีที่อนุมัติ</span>
+                            </h4>
+                            <p class="lang-en">The moment a PO is approved, it is pushed to TRCloud ERP via REST API automatically. There is no hand-off between teams and no re-keying, which frees Accounting from manual data entry.</p>
+                            <p class="lang-th">ทันทีที่อนุมัติ ระบบส่ง PO เข้า TRCloud ERP ผ่าน REST API อัตโนมัติ ไม่ต้องส่งต่อระหว่างทีมและไม่ต้องคีย์ซ้ำ ทีมบัญชีหมดภาระงานคีย์ข้อมูล</p>
+                        </div>
+                    </div>
+
+                    <!-- Row 4: Report -->
+                    <div class="gap-row">
+                        <div class="gap-cell is-asis">
+                            <span class="gap-stage"><span class="lang-en">Step 4 · Report</span><span class="lang-th">ขั้นที่ 4 · รายงาน</span></span>
                             <h4><span class="gap-icon">✕</span>
                                 <span class="lang-en">Delayed Cash Flow Visibility</span>
                                 <span class="lang-th">ข้อมูลกระแสเงินสดล่าช้า</span>
                             </h4>
-                            <p class="lang-en">Data lag prevents Accounting from accurately updating weekly cash flow reports.</p>
-                            <p class="lang-th">ฝ่ายบัญชีอัปเดตรายงานกระแสเงินสดรายสัปดาห์ได้ไม่แม่นยำ เพราะข้อมูล PO เข้าระบบล่าช้า</p>
+                            <p class="lang-en">A PO only reaches the ERP after Accounting keys it in, so weekly cash flow reports lag behind actual purchase commitments.</p>
+                            <p class="lang-th">PO เข้าระบบ ERP ก็ต่อเมื่อทีมบัญชีคีย์เสร็จ รายงานคาดการณ์กระแสเงินสดรายสัปดาห์ จึงไม่ทันต่อสถานะการณ์จริง </p>
                         </div>
                         <div class="gap-arrow" aria-hidden="true">→</div>
                         <div class="gap-cell is-tobe">
@@ -527,41 +601,21 @@
                                 <span class="lang-en">Real-Time Cash Flow Visibility</span>
                                 <span class="lang-th">เห็นกระแสเงินสดแบบ Real-Time</span>
                             </h4>
-                            <p class="lang-en">Instant API injection into the ERP upon approval keeps weekly cash flow reports accurate and current.</p>
-                            <p class="lang-th">ส่งข้อมูลเข้า ERP ผ่าน API ทันทีที่อนุมัติ ฝ่ายบัญชีจัดทำรายงานกระแสเงินสดรายสัปดาห์ได้ถูกต้องและรวดเร็ว</p>
+                            <p class="lang-en">Approved POs land in the ERP immediately, keeping weekly cash flow reports accurate and current.</p>
+                            <p class="lang-th">PO ที่อนุมัติแล้วเข้า ERP ทันที ฝ่ายบัญชีจัดทำรายงานคาดการณ์กระแสดเงินสดรายสัปดาห์ได้ถูกต้องและทันเวลา</p>
                         </div>
                     </div>
 
-                    <!-- Row 3 -->
+                    <!-- Row 5: Control -->
                     <div class="gap-row">
                         <div class="gap-cell is-asis">
-                            <h4><span class="gap-icon">✕</span>
-                                <span class="lang-en">Inefficient Approvals</span>
-                                <span class="lang-th">การรออนุมัติที่ไร้ประสิทธิภาพ</span>
-                            </h4>
-                            <p class="lang-en">Physical document routing delays decisions and creates tracking blind spots.</p>
-                            <p class="lang-th">การเดินเอกสารกระดาษทำให้ตัดสินใจล่าช้าและติดตามสถานะได้ยาก</p>
-                        </div>
-                        <div class="gap-arrow" aria-hidden="true">→</div>
-                        <div class="gap-cell is-tobe">
-                            <h4><span class="gap-icon">✓</span>
-                                <span class="lang-en">Seamless Approval Workflow</span>
-                                <span class="lang-th">อนุมัติไร้กระดาษ 100%</span>
-                            </h4>
-                            <p class="lang-en">Fully paperless, dynamic email approvals enable fast decisions with full status traceability.</p>
-                            <p class="lang-th">ส่งอีเมลขออนุมัติแบบโต้ตอบอัตโนมัติ ผู้บริหารตัดสินใจได้เร็วและตรวจสอบสถานะได้ทุกขั้นตอน</p>
-                        </div>
-                    </div>
-
-                    <!-- Row 4 -->
-                    <div class="gap-row">
-                        <div class="gap-cell is-asis">
+                            <span class="gap-stage"><span class="lang-en">Step 5 · Control</span><span class="lang-th">ขั้นที่ 5 · ควบคุม</span></span>
                             <h4><span class="gap-icon">✕</span>
                                 <span class="lang-en">Data Integrity Risks</span>
                                 <span class="lang-th">ความเสี่ยงข้อมูลซ้ำซ้อน</span>
                             </h4>
-                            <p class="lang-en">High risk of duplicate or incorrect entries when back-filling data into the ERP.</p>
-                            <p class="lang-th">เสี่ยงต่อการคีย์ข้อมูลซ้ำหรือผิดพลาดเมื่อต้องบันทึกลง ERP ย้อนหลัง</p>
+                            <p class="lang-en">Re-keying from PDF by hand risks duplicate or incorrect POs in the ERP.</p>
+                            <p class="lang-th">การคีย์ข้อมูลซ้ำจาก PDF ด้วยมือ เสี่ยงต่อการบันทึก PO ซ้ำหรือผิดพลาดใน ERP</p>
                         </div>
                         <div class="gap-arrow" aria-hidden="true">→</div>
                         <div class="gap-cell is-tobe">
